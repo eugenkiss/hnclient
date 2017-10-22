@@ -1,0 +1,15 @@
+{
+  "short_name": "hnclient",
+  "name": "HN Client",
+  "icons": [
+    {
+      "src": "favicon.png",
+      "sizes": "16x16",
+      "type": "image/png"
+    }
+  ],
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#fff",
+  "theme_color": "#f5cc78"
+}
