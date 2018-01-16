@@ -148,7 +148,7 @@ class App extends React.Component {
 
   renderBody() {
     const result = []
-    for (let i = 0; i < history.length - 2; i++) {
+    for (let i = 0; i < history.length - 1; i++) {
       result.push(this.renderHistoryEntry(routerStore.history[i], i, false))
     }
     result.push(this.renderHistoryEntry(routerStore.current, routerStore.history.length, true))
