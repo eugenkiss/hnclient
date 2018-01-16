@@ -72,8 +72,7 @@ const HeaderContainer = styled(Flex)`
   position: sticky;
   top: 0;
   background: #ffa52a;
-  border-bottom: 1px solid rgba(255,255,255,0.15);
-  box-shadow: 0 1px 2px rgba(0,0,0,0.4);
+  box-shadow: 0 2px 2px -1px rgba(0,0,0,0.4);
   z-index: 9999;
   font-size: 20px;
   align-items: center;
