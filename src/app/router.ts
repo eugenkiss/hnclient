@@ -8,6 +8,7 @@ export type RestoreUiCb = (data: any) => void
 
 export class RouterStore {
   @observable current: State
+  @observable history = observable.array<State>()
 
   uiStates: {[id:number]: {[id:string]: any}} = {}
   saveUiCbs = new Array<SaveUiCb>()
@@ -73,18 +74,25 @@ export class RouterStore {
 
 function makeMobxRouterPlugin(routerStore: RouterStore): PluginFactory {
   function mobxRouterPlugin() {
+    // noinspection JSUnusedGlobalSymbols
     return {
-      onTransitionSuccess: (toState: State) => {
+      onTransitionSuccess: (toState: State, fromState: State) => {
         routerStore.current = toState
+        if (fromState == null || toState.meta.id > fromState.meta.id) {
+          routerStore.history.push(toState)
+        } else {
+          routerStore.history.pop()
+        }
       },
     }
   }
-  (mobxRouterPlugin as PluginFactory).pluginName = "MOBX_PLUGIN"
-  return mobxRouterPlugin
+  (mobxRouterPlugin as any as PluginFactory).pluginName = "MOBX_PLUGIN"
+  return mobxRouterPlugin as any as PluginFactory
 }
 
 function makeViewRestorePlugin(routerStore: RouterStore): PluginFactory {
   function viewRestorePlugin() {
+    // noinspection JSUnusedGlobalSymbols
     return {
       onTransitionStart: (toState: State, fromState: State) => {
         routerStore.callSaveUiCbs(fromState)
@@ -94,10 +102,11 @@ function makeViewRestorePlugin(routerStore: RouterStore): PluginFactory {
       },
     }
   }
-  (viewRestorePlugin as PluginFactory).pluginName = "VIEW_RESTORE_PLUGIN"
-  return viewRestorePlugin
+  (viewRestorePlugin as any as PluginFactory).pluginName = "VIEW_RESTORE_PLUGIN"
+  return viewRestorePlugin as any as PluginFactory
 }
 
+// noinspection JSUnusedLocalSymbols
 const asyncMiddleware =
   (router: Router) =>
     (toState: any, fromState: State, done: any) => {

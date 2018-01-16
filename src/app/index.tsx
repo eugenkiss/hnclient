@@ -8,6 +8,7 @@ import * as FontAwesome from 'react-fontawesome'
 import {space} from 'styled-system'
 import {injectGlobal} from 'emotion'
 import styled from 'react-emotion'
+import {State} from 'router5/create-router'
 import './utils/extensions'
 import {router, routerStore, routesMap, uiStore} from './deps'
 import {DATE, GIT_HASH, GIT_STATUS, IS_DEV} from './cfg'
@@ -97,7 +98,7 @@ const BackButton = styled((ps) => <FontAwesome name='chevron-left' {...ps}/>)`
 const RefreshButton = styled((ps) => <FontAwesome name='refresh' {...ps}/>)`
   ${space};
   cursor: pointer;
-`
+` as any
 
 @observer
 export class Header extends Component<{}> {
@@ -134,10 +135,24 @@ const BodyContainer = styled('div')`
 @observer
 class App extends React.Component {
 
+  renderHistoryEntry(entry: State, i: number, shown) {
+    return (
+      <div key={i} style={{
+        display: shown ? undefined : 'none',
+        width: '100%', height: '100%'
+        }}>
+        {routesMap.get(entry.name).comp(entry.params)}
+      </div>
+    )
+  }
+
   renderBody() {
-    const cur = routerStore.current
-    if (cur == null) return null
-    return routesMap.get(cur.name).comp(cur.params)
+    const result = []
+    for (let i = 0; i < history.length - 2; i++) {
+      result.push(this.renderHistoryEntry(routerStore.history[i], i, false))
+    }
+    result.push(this.renderHistoryEntry(routerStore.current, routerStore.history.length, true))
+    return result
   }
 
   render() {
