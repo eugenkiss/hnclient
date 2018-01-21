@@ -1,7 +1,14 @@
-import styled from 'react-emotion'
-
+import styled from 'styled-components'
 import {
-  alignItems, alignSelf, color, flex, flexDirection, flexWrap, fontSize, justifyContent, space,
+  alignItems,
+  alignSelf,
+  color,
+  flex,
+  flexDirection,
+  flexWrap,
+  fontSize,
+  justifyContent,
+  space,
   width
 } from 'styled-system'
 

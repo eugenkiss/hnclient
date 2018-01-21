@@ -53,6 +53,13 @@ cfg.resolve = {
   mainFields: ['module', 'browser', 'main'],
 }
 
+if (isBuild) {
+  cfg.resolve.alias = {
+    "react": "inferno-compat",
+    "react-dom": "inferno-compat",
+  }
+}
+
 cfg.module = {
   loaders: [
     {
@@ -81,11 +88,6 @@ cfg.plugins = [
 ]
 
 cfg.plugins.push(
-  new HtmlWebpackPlugin({
-    template: root('src', 'public', 'index.html'),
-    favicon: root('src', 'public', 'favicon.png'),
-    inject: 'body',
-  }),
   new CopyWebpackPlugin([{
     from: root('src/public')
   }]),
@@ -103,6 +105,11 @@ if (isBuild) {
   )
 } else {
   cfg.plugins.push(
+    new HtmlWebpackPlugin({
+      template: root('src', 'public', 'template.html'),
+      favicon: root('src', 'public', 'favicon.png'),
+      inject: 'body',
+    }),
     new DllReferencePlugin({
       context: root('src', 'app'),
       manifest: root(OUTPUT_DLL, 'dependencies.dll.manifest.json')

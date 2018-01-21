@@ -1,28 +1,39 @@
-import {action, autorun, observable} from 'mobx'
-import {fromPromise, FULFILLED, PENDING, whenAsync} from 'mobx-utils'
+import {autorun} from 'mobx'
+import {PENDING} from 'mobx-utils'
 import * as NProgress from 'nprogress'
 import {ApiClient} from './api/client'
-import {RouterStore} from './router'
+import {makeRouter, RouterStore} from './router'
 import {Story} from './models/story'
+import {canUseDOM} from './utils'
+import {MapReq, Req} from './utils/req'
+import {Route} from "router5"
+import * as routes from './routes'
+import {Router} from 'router5/create-router'
 
-const fulfilledReq = fromPromise.resolve(null)
+export class Store {
 
-export class UiStore {
+  api = new ApiClient('https://api.hackerwebapp.com')
+  routerStore = new RouterStore()
+  routesMap = routes.routesMap
+  router: Router = null
 
-  constructor(
-    public api: ApiClient,
-    public routerStore: RouterStore,
-  ) {
+  constructor() {
+    const rs: Array<Route> = []
+    this.routesMap.forEach(v => rs.push(v))
+    this.router = makeRouter(rs, this)
+
+    if (!canUseDOM) return
+
     if ('scrollRestoration' in history) { history.scrollRestoration = 'manual' }
 
-    routerStore.restoreUiStates()
+    this.routerStore.restoreUiStates()
     window.addEventListener('unload', () => {
-      routerStore.persistUiStates()
+      this.routerStore.persistUiStates()
     })
 
     autorun(() => {
-      if ( this.getStoriesReq.state === PENDING
-        || this.getStoryReq.state === PENDING
+      if ( this.getStories.state === PENDING
+        || this.getStory.lastState === PENDING
       ) {
         NProgress.start()
       } else {
@@ -31,22 +42,7 @@ export class UiStore {
     })
   }
 
-  @observable lastGetStoriesValue: Array<Story>
-  @observable getStoriesReq: Req<Array<Story>> = fulfilledReq
-  @action getStories = async () => {
-    this.getStoriesReq = fromPromise(this.api.getStories())
-    await whenAsync(() => this.getStoriesReq.state !== 'pending')
-    if (this.getStoriesReq.state !== FULFILLED) return
-    this.lastGetStoriesValue = this.getStoriesReq.value
-  }
+  getStories = new Req<Array<Story>>(() => this.api.getStories())
 
-  @observable storyCache = observable.map<Story>()
-  @observable getStoryReq: Req<Story> = fulfilledReq
-  @action getStory = async (id) => {
-    this.getStoryReq = fromPromise(this.api.getStory(id))
-    const req = this.getStoryReq
-    await whenAsync(() => req.state !== 'pending')
-    if (req.state !== FULFILLED) return
-    this.storyCache.set(req.value.id.toString(), req.value)
-  }
+  getStory = new MapReq<Number, Story>((id: number) => this.api.getStory(id))
 }

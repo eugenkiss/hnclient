@@ -1,6 +1,6 @@
 import 'whatwg-fetch'
 import {ApiError} from './client'
-import {buildUrl} from '../utils'
+import {buildUrl, canUseDOM, sleep} from '../utils'
 
 export class BaseApiError {
   constructor(
@@ -26,6 +26,7 @@ export class BaseApiClient {
   ) {}
 
   request = async (url: string, options: Object): Promise<{ json: any, response: Response }> => {
+    if (!canUseDOM) await sleep(100000000)
     let response: Response
     try {
       response = await fetch(url)

@@ -2,6 +2,7 @@
 #############
 
 port_dev=5001
+port_ssr=5002
 
 # Use dist instead of build prefix
 # to remove the need for PHONY
@@ -11,6 +12,8 @@ out_dll_dev=dist-dll-dev
 webpack=./node_modules/webpack/bin/webpack.js
 webpack-dev-server=./node_modules/webpack-dev-server/bin/webpack-dev-server.js
 sw-precache=./node_modules/sw-precache/cli.js
+ts-node=./node_modules/ts-node/dist/bin.js
+#typescript=./node_modules/typescript/bin/tsc # TODO
 
 
 # Installation #
@@ -40,6 +43,11 @@ $(out_dll_dev): node_modules webpack.dll.js
 	$(webpack) --config webpack.dll.js --progress --profile
 
 build-dll-dev: $(out_dll_dev)
+
+gen-shells-dev: node_modules
+	ENV=loc \
+	PORT=$(or $(port),$(port_ssr)) \
+	$(ts-node) -O '{"module":"commonjs"}' src/ssr/gen-shells.tsx
 
 
 # Building #

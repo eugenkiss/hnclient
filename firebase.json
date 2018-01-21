@@ -1,10 +1,18 @@
 {
   "hosting": {
     "public": "dist",
-    "rewrites": [ {
-      "source": "**",
-      "destination": "/index.html"
-    } ],
+    "rewrites":
+      [
+        {
+          "source": "/",
+          "destination": "/home.html"
+        },
+        {
+          "source": "/story/*",
+          "destination": "/story.html"
+        }
+      ]
+    ,
     "headers": [ {
       "source" : "/service-worker.js",
       "headers" : [ {

@@ -1,72 +1,23 @@
+import 'tslib'
 import * as React from 'react'
-import * as ReactDOM from 'react-dom'
 import {Component} from 'react'
-import {observer} from 'mobx-react'
+import * as ReactDOM from 'react-dom'
+import {inject, observer, Provider} from 'mobx-react'
 import MobxDevTools from 'mobx-react-devtools'
 import {Helmet} from 'react-helmet'
 import * as FontAwesome from 'react-fontawesome'
 import {space} from 'styled-system'
-import {injectGlobal} from 'emotion'
-import styled from 'react-emotion'
-import {State} from 'router5/create-router'
+import styled, {injectGlobal} from 'styled-components'
 import './utils/extensions'
-import {router, routerStore, routesMap, uiStore} from './deps'
 import {DATE, GIT_HASH, GIT_STATUS, IS_DEV} from './cfg'
 import {HomeRoute} from './routes'
 import {Box, Flex} from './comps/basic'
+import {canUseDOM} from './utils'
+import {Store} from './store'
 
-if (!IS_DEV) {
-  (function () {
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('/service-worker.js')
-    }
-  })()
-}
+const {css} = require('../css')
 
-router.start()
-
-injectGlobal`
-body {
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
-  background: #eee;
-}
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-a {
-  color: inherit; 
-  text-decoration: inherit; 
-}
-
-/* loading progress bar styles */
-#nprogress {
-  position: sticky;
-  top: 0;
-  z-index: 9999;
-  pointer-events: none;
-}
-#nprogress .bar {
-  background: #f5cc78;
-  position: fixed;
-  z-index: 1031;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 2px;
-}
-#nprogress .peg {
-  display: block;
-  position: absolute;
-  right: 0;
-  width: 100px;
-  height: 100%;
-  box-shadow: 0 0 10px #eba549, 0 0 5px #eba549;
-  opacity: 1.0;
-  transform: rotate(3deg) translate(0px, -4px);
-}
-`
+injectGlobal`${css}`
 
 const HeaderContainer = styled(Flex)`
   position: sticky;
@@ -99,18 +50,24 @@ const RefreshButton = styled((ps) => <FontAwesome name='refresh' {...ps}/>)`
   cursor: pointer;
 ` as any
 
-@observer
-export class Header extends Component<{}> {
+@inject('store') @observer
+export class Header extends Component<{
+  store?: Store
+}> {
 
   render() {
+    const {store} = this.props
+    const {routerStore} = store
     return (
       <HeaderContainer px={1}>
         {routerStore.current.name !== HomeRoute.id &&
-          <BackButton mr={1} onClick={() => window.history.back()}/>
+          <BackButton mr={1} onClick={() => {
+            window.history.back()
+          }}/>
         }
         <HeaderTitle>HN</HeaderTitle>
         <Box flex='1 1 auto'/>
-        <RefreshButton onClick={() => uiStore.getStories()}/>
+        <RefreshButton onClick={() => store.getStories.hardRefresh(300)}/>
       </HeaderContainer>
     )
   }
@@ -132,44 +89,52 @@ const BodyContainer = styled('div')`
 `
 
 @observer
-class App extends React.Component {
+export default class App extends React.Component<{
+  initialPath: string
+}> {
+  store = new Store()
 
-  renderHistoryEntry(entry: State, i: number, shown) {
-    return (
-      <div key={i} style={{
-        display: shown ? undefined : 'none',
-        width: '100%', height: '100%'
-        }}>
-        {routesMap.get(entry.name).comp(entry.params)}
-      </div>
-    )
+  componentWillMount() {
+    const {router} = this.store
+    router.start(this.props.initialPath)
   }
 
   renderBody() {
-    const result = []
-    for (let i = 0; i < history.length - 1; i++) {
-      result.push(this.renderHistoryEntry(routerStore.history[i], i, false))
-    }
-    result.push(this.renderHistoryEntry(routerStore.current, routerStore.history.length, true))
-    return result
+    const {routerStore, routesMap} = this.store
+    const cur = routerStore.current
+    if (cur == null) return null
+    return routesMap.get(cur.name).comp(cur.params)
   }
 
   render() {
     return (
-      <PageContainer>
-        {IS_DEV && false && <MobxDevTools/>}
-        <Helmet>
-          <meta name='GIT_HASH' content={GIT_HASH} />
-          <meta name='GIT_STATUS' content={GIT_STATUS} />
-          <meta name='BUILD_TIME' content={new Date(DATE).toISOString()} />
-        </Helmet>
-        <Header/>
-        <BodyContainer>
-          {this.renderBody()}
-        </BodyContainer>
-      </PageContainer>
+      <Provider store={this.store}>
+        <PageContainer>
+          {IS_DEV && false && <MobxDevTools/>}
+          <Helmet>
+            <meta name='GIT_HASH' content={GIT_HASH} />
+            <meta name='GIT_STATUS' content={GIT_STATUS} />
+            <meta name='BUILD_TIME' content={new Date(DATE).toISOString()} />
+          </Helmet>
+          <Header/>
+          <BodyContainer>
+            {this.renderBody()}
+          </BodyContainer>
+        </PageContainer>
+      </Provider>
     )
   }
 }
 
-ReactDOM.render(<App/>, document.getElementById('root'))
+if (!IS_DEV && canUseDOM) {
+  (function () {
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/service-worker.js')
+    }
+  })()
+}
+
+if (canUseDOM) {
+  const path = window.location.pathname + window.location.search
+  ReactDOM.render(<App initialPath={path}/>, document.getElementById('root'))
+}

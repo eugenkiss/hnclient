@@ -1,14 +1,14 @@
 import * as React from 'react'
 import {Component} from 'react'
-import {observer} from 'mobx-react'
-import {routerStore, uiStore} from '../deps'
+import {inject, observer} from 'mobx-react'
 import {REJECTED, whenAsync} from 'mobx-utils'
 import {Link} from './link'
 import {StoryRoute} from '../routes'
 import {Story} from '../models/story'
 import {Box, Flex} from './basic'
 import {space} from 'styled-system'
-import styled from 'react-emotion'
+import styled from 'styled-components'
+import {Store} from '../store'
 
 const Container = styled(Flex)`
   border-bottom: 1px solid rgba(0,0,0,0.05);
@@ -140,39 +140,43 @@ for (let i = 0; i < 30; i++) {
   skeletonStories.push(story)
 }
 
-@observer
-export class Home extends Component<{}> {
+@inject('store') @observer
+export class Home extends Component<{store?: Store}> {
   static ID = 'Home'
 
   saveUiCb
   restoreUiCb
 
   componentDidMount() {
+    const {store} = this.props
+    const {routerStore} = store
     this.saveUiCb = routerStore.addSaveUiCb(() => {
       return { id: Home.ID, data: window.pageYOffset }
     })
     this.restoreUiCb = routerStore.addRestoreUiCb(Home.ID, async (data: number) => {
-      await whenAsync(() => uiStore.lastGetStoriesValue != null)
+      await whenAsync(() => store.getStories.value != null)
       window.scrollTo(0, data)
     })
   }
 
   componentWillUnmount() {
+    const {routerStore} = this.props.store
     routerStore.delSaveUiCb(this.saveUiCb)
     routerStore.delRestoreUiCb(this.restoreUiCb)
   }
 
   renderBody() {
-    const req = uiStore.getStoriesReq
-    if (uiStore.lastGetStoriesValue == null) {
+    const {store} = this.props
+    const req = store.getStories
+    if (req.value == null) {
       switch (req.state) {
         case REJECTED: return <div>Failed to load stories!</div>
-        default: return skeletonStories.map((story, i) =>
+        default: return skeletonStories.map(story =>
           <StoryEntry key={story.id} story={story} skeleton={true}/>
         )
       }
     } else {
-      const stories = uiStore.lastGetStoriesValue
+      const stories = req.value
       return stories.map(story =>
         <StoryEntry key={story.id} story={story}/>
       )
