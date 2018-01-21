@@ -5,8 +5,7 @@ import * as express from 'express'
 import * as React from 'react'
 
 import {renderToString} from 'react-dom/server'
-import {ServerStyleSheet} from 'styled-components'
-import {css} from '../css'
+import {renderStylesToString} from 'emotion-server'
 import App from '../app'
 import {routesMap} from '../app/routes'
 
@@ -19,11 +18,6 @@ require('module-alias').addAliases({
   'react-dom': 'inferno-compat',
   'react-dom/server': 'inferno-server',
 })
-
-// I have no idea why styled component doesn't do this itself
-// There must be a better way than duplication...
-// https://github.com/styled-components/styled-components/issues/749
-const globalCss = `<style>${css}</style>`
 
 const PORT = process.env['PORT'] || 5002
 const ENV = process.env['ENV']
@@ -42,12 +36,9 @@ const template = fs.readFileSync(__dirname + '/../public/template.html', 'utf8')
   .replace('<!-- ::BUILD_TIME:: -->', DATE.toString())
 
 const htmlForPath = (path: string): string => {
-  const sheet = new ServerStyleSheet()
-  const html = renderToString(sheet.collectStyles(<App initialPath={path}/>))
-  const css = sheet.getStyleTags()
+  const html = renderStylesToString(renderToString(<App initialPath={path}/>))
   return template
     .replace('<!-- ::APP:: -->', html)
-    .replace('<!-- ::CSS:: -->', `${globalCss}${css}`)
 }
 
 const htmlMap = new Map<string, string>()

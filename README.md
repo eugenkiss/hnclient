@@ -9,7 +9,6 @@ Techs: inferno, react, sspr, typescript, mobx, router5
 
 TODO:
 session store for prefilling
-switch to glamorous
 back button bigger area
 
 - only necessary font-awesome -> SVG fontawesome 5
@@ -19,6 +18,7 @@ back button bigger area
 - upvote/downvote, user account, comment etc.
 - hnpwa requirements: new, jobs
 - pwa 100 score (favicons, 192, 512)
+- switch to glamorous?
 
 
 Concepts

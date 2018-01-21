@@ -7,7 +7,7 @@ import {StoryRoute} from '../routes'
 import {Story} from '../models/story'
 import {Box, Flex} from './basic'
 import {space} from 'styled-system'
-import styled from 'styled-components'
+import styled from 'react-emotion'
 import {Store} from '../store'
 
 const Container = styled(Flex)`
