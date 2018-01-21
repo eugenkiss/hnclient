@@ -50,4 +50,4 @@ Opportunities
         of HTML (embedded). Once JS is loaded uses instrumented fetch to get initial result
         from embedded JSON. See react static server TODO
   - Faster HN Api / Streaming API
-  - Service Worker config and workflow is PITA: 
+  - Service Worker config and workflow is PITA: TODO link from gaeron

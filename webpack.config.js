@@ -97,7 +97,7 @@ if (isBuild) {
     new webpack.NoEmitOnErrorsPlugin(),
     new webpack.optimize.AggressiveMergingPlugin(),
     new webpack.optimize.ModuleConcatenationPlugin(),
-    new UglifyJSPlugin({ uglifyOptions: { ecma: 5 } }),
+    new UglifyJSPlugin(),
   )
 } else {
   cfg.plugins.push(
