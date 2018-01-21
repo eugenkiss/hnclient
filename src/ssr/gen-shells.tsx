@@ -1,4 +1,4 @@
-import {exec} from 'child_process'
+import {execSync} from 'child_process'
 import * as http from 'http'
 import * as fs from 'fs'
 import * as express from 'express'
@@ -9,13 +9,6 @@ import {ServerStyleSheet} from 'styled-components'
 import {css} from '../css'
 import App from '../app'
 import {routesMap} from '../app/routes'
-
-const DATE = new Date().getTime()
-process.env.DATE = JSON.stringify(DATE)
-const GIT_HASH = exec('git rev-parse --short HEAD').toString().trim()
-process.env.GIT_HASH = JSON.stringify(GIT_HASH)
-const GIT_STATUS = exec('test -z "$(git status --porcelain)" || echo "dirty"').toString().trim()
-process.env.GIT_STATUS = JSON.stringify(GIT_STATUS)
 
 require('universal-url').shim()
 global['navigator'] = { userAgent: 'node.js' }
@@ -35,9 +28,18 @@ const globalCss = `<style>${css}</style>`
 const PORT = process.env['PORT'] || 5002
 const ENV = process.env['ENV']
 
-const template = fs.readFileSync(__dirname + '/../public/template.html', 'utf8')
 const jsDirCont = fs.readdirSync(__dirname + '/../../dist/js');
 const jsName = jsDirCont[0]
+
+const DATE = new Date().getTime()
+const GIT_HASH = execSync('git rev-parse --short HEAD').toString().trim()
+const GIT_STATUS = execSync('test -z "$(git status --porcelain)" || echo "dirty"').toString().trim()
+
+const template = fs.readFileSync(__dirname + '/../public/template.html', 'utf8')
+  .replace('<!-- ::JS:: -->', `<script src='/js/${jsName}'></script>`)
+  .replace('<!-- ::GIT_HASH:: -->', GIT_HASH)
+  .replace('<!-- ::GIT_STATUS:: -->', GIT_STATUS)
+  .replace('<!-- ::BUILD_TIME:: -->', DATE.toString())
 
 const htmlForPath = (path: string): string => {
   const sheet = new ServerStyleSheet()
@@ -46,7 +48,6 @@ const htmlForPath = (path: string): string => {
   return template
     .replace('<!-- ::APP:: -->', html)
     .replace('<!-- ::CSS:: -->', `${globalCss}${css}`)
-    .replace('<!-- ::JS:: -->', `<script src='/js/${jsName}'></script>`)
 }
 
 const htmlMap = new Map<string, string>()
@@ -59,8 +60,7 @@ for (const [key, route] of routesMap) {
 }
 
 // Fallback for PWA
-fs.writeFileSync(__dirname + `/../../dist/fallback.html`, template
-  .replace('<!-- ::JS:: -->', `<script src='/js/${jsName}'></script>`))
+fs.writeFileSync(__dirname + `/../../dist/fallback.html`, template)
 
 console.log()
 console.log('Firebase rewrites:')

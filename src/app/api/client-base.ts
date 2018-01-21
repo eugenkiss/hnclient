@@ -1,4 +1,3 @@
-import 'whatwg-fetch'
 import {ApiError} from './client'
 import {buildUrl, canUseDOM, sleep} from '../utils'
 

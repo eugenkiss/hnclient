@@ -3,13 +3,10 @@ import * as React from 'react'
 import {Component} from 'react'
 import * as ReactDOM from 'react-dom'
 import {inject, observer, Provider} from 'mobx-react'
-import MobxDevTools from 'mobx-react-devtools'
-import {Helmet} from 'react-helmet'
 import * as FontAwesome from 'react-fontawesome'
 import {space} from 'styled-system'
 import styled, {injectGlobal} from 'styled-components'
-import './utils/extensions'
-import {DATE, GIT_HASH, GIT_STATUS, IS_DEV} from './cfg'
+import {IS_DEV} from './cfg'
 import {HomeRoute} from './routes'
 import {Box, Flex} from './comps/basic'
 import {canUseDOM} from './utils'
@@ -88,6 +85,8 @@ const BodyContainer = styled('div')`
   background: #fcfcfc;
 `
 
+const MobxDevTools = IS_DEV ? require('mobx-react-devtools').default : null
+
 @observer
 export default class App extends React.Component<{
   initialPath: string
@@ -110,12 +109,7 @@ export default class App extends React.Component<{
     return (
       <Provider store={this.store}>
         <PageContainer>
-          {IS_DEV && false && <MobxDevTools/>}
-          <Helmet>
-            <meta name='GIT_HASH' content={GIT_HASH} />
-            <meta name='GIT_STATUS' content={GIT_STATUS} />
-            <meta name='BUILD_TIME' content={new Date(DATE).toISOString()} />
-          </Helmet>
+          {IS_DEV && <MobxDevTools/>}
           <Header/>
           <BodyContainer>
             {this.renderBody()}

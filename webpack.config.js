@@ -67,11 +67,6 @@ cfg.module = {
       include: root('src', 'app'),
       loader: 'awesome-typescript-loader',
     },
-    {
-      test: /mobx-react-devtools/,
-      loader: isDev ? 'noop-loader' : 'null-loader',
-      include: root('src', 'app'),
-    },
   ]
 }
 
@@ -98,10 +93,11 @@ cfg.plugins.push(
 
 if (isBuild) {
   cfg.plugins.push(
+    new webpack.IgnorePlugin(/mobx-react-devtools/),
     new webpack.NoEmitOnErrorsPlugin(),
     new webpack.optimize.AggressiveMergingPlugin(),
     new webpack.optimize.ModuleConcatenationPlugin(),
-    new UglifyJSPlugin(),
+    new UglifyJSPlugin({ uglifyOptions: { ecma: 5 } }),
   )
 } else {
   cfg.plugins.push(
