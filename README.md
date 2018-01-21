@@ -42,8 +42,6 @@ Constraints
 
 Opportunities
   - Reduce bundle size
-  - Faster CSS-in-JS
-      - Emotion's SSR didn't work for me. Empty critical CSS.
   - Starting HN API request earlier
       - If not constrained to Firebase could start initial API
         request server side, stream HTML and stream API result as JSON to end
