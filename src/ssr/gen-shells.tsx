@@ -2,6 +2,7 @@ import {execSync} from 'child_process'
 import * as http from 'http'
 import * as fs from 'fs'
 import * as express from 'express'
+import * as compression from 'compression'
 import * as React from 'react'
 
 import {renderToString} from 'react-dom/server'
@@ -30,7 +31,7 @@ const GIT_HASH = execSync('git rev-parse --short HEAD').toString().trim()
 const GIT_STATUS = execSync('test -z "$(git status --porcelain)" || echo "dirty"').toString().trim()
 
 const template = fs.readFileSync(__dirname + '/../public/template.html', 'utf8')
-  .replace('<!-- ::JS:: -->', `<script src='/js/${jsName}'></script>`)
+  .replace('<!-- ::JS:: -->', `<script defer src='/js/${jsName}'></script>`)
   .replace('<!-- ::GIT_HASH:: -->', GIT_HASH)
   .replace('<!-- ::GIT_STATUS:: -->', GIT_STATUS)
   .replace('<!-- ::BUILD_TIME:: -->', DATE.toString())
@@ -58,9 +59,9 @@ console.log('Firebase rewrites:')
 console.log(JSON.stringify(firebaseRewrites, null, 2))
 console.log()
 
-
 if (ENV === 'loc') {
   const app = express()
+  app.use(compression())
 
   for (const [key, route] of routesMap) {
     app.get(route.path, (req, res) => {
@@ -74,4 +75,6 @@ if (ENV === 'loc') {
     if (err) throw err
     console.log(`> Ready on http://localhost:${PORT}`)
   })
+} else {
+  process.exit()
 }

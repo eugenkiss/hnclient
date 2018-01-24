@@ -9,6 +9,7 @@ import {Box, Flex} from './basic'
 import {space} from 'styled-system'
 import styled from 'react-emotion'
 import {Store} from '../store'
+import {css} from 'emotion'
 
 const Container = styled(Flex)`
   border-bottom: 1px solid rgba(0,0,0,0.05);
@@ -21,82 +22,10 @@ const LinkAreaStory = styled('a')`
   }
 ` as any
 
-const Title = styled('div')`
-  font-size: 15px;
-  font-weight: bold;
-`
-
-const ScoreBox = styled('div')`
+const Source = styled(Box)`
   ${space};
-  padding: 3px;
-  min-width: 31px;
-  height: 22px;
-  background: rgba(0,0,0,0.05);
-  font-size: 12px;
-  display: flex;
-  flex: 0 0 auto;
-  justify-content: center;
-  align-items: center;
-  border-radius: 4px;
-  color: #666;
-` as any
-
-const Source = styled('div')`
-  ${space};
-  font-size: 12px;
   display: flex;
   color: #666;
-` as any
-
-const LinkAreaComments = styled(Link as any)`
-  ${space};
-  font-size: 14px;
-  width: 60px;
-  display: flex;
-  flex: 0 0 auto;
-  justify-content: center;
-  align-items: center;
-  &:visited {
-    color: #777777;
-  }
-` as any
-
-const CommentBox = styled('div')`
-  ${space};
-  padding: 2px;
-  width: 40px;
-  height: 30px;
-  border: 1px solid #ccc;
-  box-shadow: 1px 1px 0 #eee;
-  border-radius: 3px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  
-  /* http://www.cssarrowplease.com/ */
-  position: relative;
-  &:after, &:before {
-    right: 100%;
-    top: 50%;
-    border: solid transparent;
-    content: " ";
-    height: 0;
-    width: 0;
-    position: absolute;
-    pointer-events: none;
-  }
-  &:after {
-    border-color: rgba(255, 255, 255, 0);
-    border-right-color: #fff;
-    border-width: 4px;
-    margin-top: -4px;
-  }
-  &:before {
-    border-color: rgba(181, 181, 181, 0);
-    border-right-color: #b5b5b5;
-    border-width: 5px;
-    margin-top: -5px;
-  }
 ` as any
 
 @observer
@@ -114,18 +43,79 @@ export class StoryEntry extends Component<{
   render() {
     const { story } = this.props
     return (
-      <Container flex='1 1 auto' py={1} onClickCapture={this.handleContainerClick}>
-        <LinkAreaStory px={1} href={story.url} target='_blank'>
-          <Title>{story.title}</Title>
+      <Container flex='1 1 auto' p={1} onClickCapture={this.handleContainerClick}>
+        <LinkAreaStory pr={1} href={story.url} target='_blank'>
+          <Box f={2} fontWeight='600'>{story.title}</Box>
           <Flex mt={1} align='center'>
-            <ScoreBox mr={1}>{story.points}</ScoreBox>
-            <Source>{story.domain}</Source>
+            <Box mr={1} f={0} className={css`
+              padding: 3px;
+              min-width: 32px;
+              height: 24px;
+              background: rgba(0,0,0,0.05);
+              display: flex;
+              flex: 0 0 auto;
+              justify-content: center;
+              align-items: center;
+              border-radius: 4px;
+              color: #666;
+            `}>
+              {story.points}
+            </Box>
+            <Source f={0}>{story.domain}</Source>
           </Flex>
         </LinkAreaStory>
         <Box flex='1 1 auto'/>
-          <LinkAreaComments my={-1} link={StoryRoute.link(story.id)}>
-            <CommentBox>{story.commentsCount}</CommentBox>
-          </LinkAreaComments>
+        <Link link={StoryRoute.link(story.id)} className={css`
+          font-size: 14px;
+          width: 60px;
+          display: flex;
+          flex: 0 0 auto;
+          justify-content: center;
+          align-items: center;
+          &:visited {
+            color: #777777;
+          }
+        `}>
+          <Box f={2} mr={-1} fontWeight={300} className={css`
+            padding: 2px;
+            width: 45px;
+            height: 35px;
+            border: 1px solid #ccc;
+            box-shadow: 1px 1px 0 #eee;
+            border-radius: 3px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+
+            /* http://www.cssarrowplease.com/ */
+            position: relative;
+            &:after, &:before {
+              right: 100%;
+              top: 50%;
+              border: solid transparent;
+              content: " ";
+              height: 0;
+              width: 0;
+              position: absolute;
+              pointer-events: none;
+            }
+            &:after {
+              border-color: rgba(255, 255, 255, 0);
+              border-right-color: #fff;
+              border-width: 4px;
+              margin-top: -4px;
+            }
+            &:before {
+              border-color: rgba(181, 181, 181, 0);
+              border-right-color: #b5b5b5;
+              border-width: 5px;
+              margin-top: -5px;
+            }
+          `}>
+            {story.commentsCount}
+          </Box>
+        </Link>
+        <Box my={-1}/>
       </Container>
     )
   }

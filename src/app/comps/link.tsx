@@ -12,6 +12,7 @@ export class Link extends Component<{
   options?: {reload?: boolean, refresh?: boolean, replace?: boolean}
   onClick?: (e?: React.MouseEvent<{}>) => void
   unstyled?: boolean
+  [key: string]: any
 }> {
 
   render() {

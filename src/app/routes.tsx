@@ -1,6 +1,6 @@
 import * as React from 'react'
 import {Home} from './comps/home'
-import {Story} from './comps/story'
+import {StoryComp} from './comps/story'
 import {Route} from 'router5/create-router'
 import {Store} from './store'
 
@@ -35,7 +35,7 @@ export class StoryRoute implements HNRoute {
   static link = (id): LinkData => ({
     name: StoryRoute.id, params: {id: id}
   })
-  comp({id}) { return <Story id={id}/> }
+  comp({id}) { return <StoryComp id={id}/> }
 }
 rs.set(StoryRoute.id, new StoryRoute())
 

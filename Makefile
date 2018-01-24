@@ -44,20 +44,21 @@ $(out_dll_dev): node_modules webpack.dll.js
 
 build-dll-dev: $(out_dll_dev)
 
-gen-shells-dev: node_modules
-	ENV=loc \
-	PORT=$(or $(port),$(port_ssr)) \
-	$(ts-node) -O '{"module":"commonjs"}' src/ssr/gen-shells.tsx
-
 
 # Building #
 ############
+
+gen-shells: node_modules
+	ENV=$(or $(env),loc) \
+	PORT=$(or $(port),$(port_ssr)) \
+	$(ts-node) -O '{"module":"commonjs"}' src/ssr/gen-shells.tsx
 
 build: node_modules src
 	rm -rf ./$(out)
 	BUILD=true \
 	OUTPUT=$(out) \
 	$(webpack) --progress --profile
+	$(MAKE) gen-shells env=prd
 	$(sw-precache) --config=sw-precache-config.js
 
 

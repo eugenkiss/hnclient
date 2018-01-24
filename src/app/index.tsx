@@ -3,14 +3,18 @@ import * as React from 'react'
 import {Component} from 'react'
 import * as ReactDOM from 'react-dom'
 import {inject, observer, Provider} from 'mobx-react'
-import * as FontAwesome from 'react-fontawesome'
-import {space} from 'styled-system'
-import styled, {injectGlobal} from 'react-emotion'
+import * as FontAwesome from '@fortawesome/react-fontawesome'
+import {faChevronLeft, faEllipsisV, faSync} from '@fortawesome/fontawesome-free-solid'
+import {css} from 'emotion'
+import {injectGlobal} from 'react-emotion'
 import {IS_DEV} from './cfg'
 import {HomeRoute} from './routes'
 import {Box, Flex} from './comps/basic'
 import {canUseDOM} from './utils'
 import {Store} from './store'
+import {IconDefinition} from '@fortawesome/fontawesome-common-types';
+
+const MobxDevTools = IS_DEV ? require('mobx-react-devtools').default : null
 
 injectGlobal`
 html,body,#root {
@@ -58,76 +62,70 @@ a {
 }
 `
 
-const HeaderContainer = styled(Flex)`
-  position: sticky;
-  top: 0;
-  background: #ffa52a;
-  box-shadow: 0 2px 2px -1px rgba(0,0,0,0.4);
-  z-index: 9999;
-  font-size: 20px;
-  align-items: center;
-  color: #777777;
-  height: 48px;
-`
-
-const HeaderTitle = styled('span')`
-  font-weight: bold;
-  display: inline-block;
-  text-decoration: none;
-  color: #fff;
-  text-shadow: 0 0 1px rgba(0,0,0,0.2);
-`
-
-const BackButton = styled((ps) => <FontAwesome name='chevron-left' {...ps}/>)`
-  ${space};
-  margin-top: 1px;
-  cursor: pointer;
-` as any
-
-const RefreshButton = styled((ps) => <FontAwesome name='refresh' {...ps}/>)`
-  ${space};
-  cursor: pointer;
-` as any
+class HeaderButton extends Component<{
+  icon: IconDefinition
+  onClick: () => void
+}> {
+  render() {
+    const { icon, onClick } = this.props
+    return (
+      <Flex
+          onClick={onClick}
+          f={4}
+          align='center' justify='center'
+          className={css`
+          height: 100%;
+          width: 48px;
+          cursor: pointer;
+        `}>
+          <FontAwesome icon={icon}/>
+        </Flex>
+    )
+  }
+}
 
 @inject('store') @observer
 export class Header extends Component<{
   store?: Store
 }> {
-
   render() {
     const {store} = this.props
     const {routerStore} = store
     return (
-      <HeaderContainer px={1}>
+      <Flex className={css`
+        position: sticky;
+        top: 0;
+        background: linear-gradient(to bottom, #df5d1e 0%, #c15019 100%);
+        border-bottom: 1px solid #666;
+        z-index: 9999;
+        font-size: 20px;
+        align-items: center;
+        color: rgba(0,0,0,0.4);
+        height: 48px;
+      `}>
         {routerStore.current.name !== HomeRoute.id &&
-          <BackButton mr={1} onClick={() => {
-            window.history.back()
-          }}/>
+          <HeaderButton icon={faChevronLeft} onClick={() => window.history.back()}/>
         }
-        <HeaderTitle>HN</HeaderTitle>
         <Box flex='1 1 auto'/>
-        <RefreshButton onClick={() => store.getStories.hardRefresh(300)}/>
-      </HeaderContainer>
+        <Box f={4}
+          className={css`
+          font-weight: bold;
+          position: absolute;
+          left: 50%;
+          transform: translate(-50%, 0);
+          text-decoration: none;
+          color: #fff;
+          text-shadow: 0 0 1px rgba(0,0,0,0.2);
+        `}>
+          HN
+        </Box>
+        <Box flex='1 1 auto'/>
+        <HeaderButton icon={faSync} onClick={() => store.getStories.hardRefresh(300)}/>
+        <HeaderButton icon={faEllipsisV} onClick={() => alert('TODO')}/>
+      </Flex>
     )
   }
 }
-
-const PageContainer = styled('div')`
-  width: 85%;
-  margin: auto;
-  padding: 10px 0 0 0;
-  @media (max-width: 750px) {
-    padding: 0;
-    width: auto;
-  }
-`
-
-const BodyContainer = styled('div')`
-  color: #000;
-  background: #fcfcfc;
-`
-
-const MobxDevTools = IS_DEV ? require('mobx-react-devtools').default : null
 
 @observer
 export default class App extends React.Component<{
@@ -150,13 +148,24 @@ export default class App extends React.Component<{
   render() {
     return (
       <Provider store={this.store}>
-        <PageContainer>
-          {IS_DEV && <MobxDevTools/>}
+        <div className={css`
+          width: 85%;
+          margin: auto;
+          padding: 10px 0 0 0;
+          @media (max-width: 750px) {
+            padding: 0;
+            width: auto;
+          }
+        `}>
+          {IS_DEV && false && <MobxDevTools/>}
           <Header/>
-          <BodyContainer>
+          <div className={css`
+            color: #000;
+            background: #fcfcfc;
+          `}>
             {this.renderBody()}
-          </BodyContainer>
-        </PageContainer>
+          </div>
+        </div>
       </Provider>
     )
   }

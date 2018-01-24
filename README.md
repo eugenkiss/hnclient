@@ -2,23 +2,19 @@ WIP
 
 https://hnclient-1b7c9.firebaseapp.com/
 
-based on https://github.com/now-examples/next-news
-and https://github.com/manmal/hn-android/
+https://github.com/manmal/hn-android/
 
-Techs: inferno, react, sspr, typescript, mobx, router5
+Techs: mobx, typescript, inferno, router5, react, emotion, pwa, server side prerendering (SSPR) 
 
 TODO:
-session store for prefilling
 back button bigger area
 
-- only necessary font-awesome -> SVG fontawesome 5
 - comments
-- colors hn-android
 - pagination
-- upvote/downvote, user account, comment etc.
 - hnpwa requirements: new, jobs
 - pwa 100 score (favicons, 192, 512)
-- switch to glamorous?
+- check client-base.ts
+- upvote/downvote, user account, comment etc.
 
 
 Concepts
@@ -35,10 +31,16 @@ definitions
 
 Shoutout
   - Inferno is nice on mobile, considerably less lag / faster
+  - emotion pretty good
+  - router5 awesome
+  - mobx awesome anyhow, see blog post
 
 Constraints
   - Fast as possible without giving up DX/abstractions
   - Firebase
+  
+TODO
+  - Improve Makefile
 
 Opportunities
   - Reduce bundle size
@@ -49,3 +51,5 @@ Opportunities
         from embedded JSON. See react static server TODO
   - Faster HN Api / Streaming API
   - Service Worker config and workflow is PITA: TODO link from gaeron
+  - Abstract/extract code into reusable libraries?
+      - Routing, pregen, req, scroll restoration

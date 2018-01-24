@@ -7,6 +7,7 @@ import {
   flexDirection,
   flexWrap,
   fontSize,
+  fontWeight,
   justifyContent,
   space,
   width
@@ -15,7 +16,8 @@ import {
 export const Box = styled('div')`
 ${space} 
 ${width} 
-${fontSize} 
+${fontSize}
+${fontWeight}
 ${color} 
 ${flex}
 ` as any

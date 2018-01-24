@@ -65,7 +65,19 @@ cfg.module = {
     {
       test: /\.tsx?$/,
       include: root('src', 'app'),
-      loader: 'awesome-typescript-loader',
+      use: {
+        loader: 'awesome-typescript-loader',
+        options: {
+          useCache: true,
+          useBabel: true,
+          babelOptions: {
+              babelrc: false,
+              plugins: [
+                ["emotion", { "hoist":  true }],
+              ]
+          },
+        }
+      },
     },
   ]
 }
