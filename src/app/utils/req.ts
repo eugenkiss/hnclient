@@ -7,11 +7,13 @@ import {fulfilledReq, sleep} from '../utils'
 export class Requester<T> {
   private last: IObservableValue<T> = observable(null)
   @observable private req: IPromiseBasedObservable<T> = fulfilledReq
+  unstarted = true
 
   constructor(private promiser: () => Promise<T>) {}
 
   private whenDisposer = () => {}
   @action refresh(minDuration?: number): IPromiseBasedObservable<T> {
+    this.unstarted = false
     const promise = minDuration  == null ? this.promiser() :
       (async () => {
         const now = new Date().getTime()

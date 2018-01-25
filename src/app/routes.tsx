@@ -19,7 +19,7 @@ export class HomeRoute implements HNRoute {
   get name() { return HomeRoute.id }
   get path() { return '/' }
   globPath = '/'
-  onActivate(store) { store.getStories.refresh() }
+  onActivate(store) { if (store.getStories.unstarted) store.getStories.refresh() }
   // noinspection JSUnusedGlobalSymbols
   static link = (): LinkData => ({name: HomeRoute.id})
   comp() { return <Home/> }
