@@ -51,5 +51,7 @@ Opportunities
         from embedded JSON. See react static server TODO
   - Faster HN Api / Streaming API
   - Service Worker config and workflow is PITA: TODO link from gaeron
+      - https://github.com/facebook/create-react-app/issues/2554
+      - https://twitter.com/dan_abramov/status/954146978564395008
   - Abstract/extract code into reusable libraries?
       - Routing, pregen, req, scroll restoration

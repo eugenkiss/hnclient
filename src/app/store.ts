@@ -1,11 +1,11 @@
-import {autorun} from 'mobx'
-import {PENDING} from 'mobx-utils'
+import {autorun, observable} from 'mobx'
+import {IPromiseBasedObservable, PENDING} from 'mobx-utils'
 import * as NProgress from 'nprogress'
 import {ApiClient} from './api/client'
 import {makeRouter, RouterStore} from './router'
 import {Story} from './models/story'
-import {canUseDOM} from './utils'
-import {MapReq, Req} from './utils/req'
+import {canUseDOM, fulfilledReq} from './utils'
+import {MapReq, Requester} from './utils/req'
 import {Route} from "router5"
 import * as routes from './routes'
 import {Router} from 'router5/create-router'
@@ -42,7 +42,8 @@ export class Store {
     })
   }
 
-  getStories = new Req<Array<Story>>(() => this.api.getStories())
+  getStories = new Requester<Array<Story>>(() => this.api.getStories())
+  @observable getStoriesManualRefresh: IPromiseBasedObservable<Array<Story>> = fulfilledReq
 
   getStory = new MapReq<Number, Story>((id: number) => this.api.getStory(id))
 }

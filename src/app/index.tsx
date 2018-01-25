@@ -104,7 +104,10 @@ export class Header extends Component<{
         height: 48px;
       `}>
         {routerStore.current.name !== HomeRoute.id &&
-          <HeaderButton icon={faChevronLeft} onClick={() => window.history.back()}/>
+          <HeaderButton
+            icon={faChevronLeft}
+            onClick={() => window.history.back()}
+          />
         }
         <Box flex='1 1 auto'/>
         <Box f={4}
@@ -120,8 +123,14 @@ export class Header extends Component<{
           HN
         </Box>
         <Box flex='1 1 auto'/>
-        <HeaderButton icon={faSync} onClick={() => store.getStories.hardRefresh(300)}/>
-        <HeaderButton icon={faEllipsisV} onClick={() => alert('TODO')}/>
+        <HeaderButton
+          icon={faSync}
+          onClick={() => store.getStoriesManualRefresh = store.getStories.refresh(300)}
+        />
+        <HeaderButton
+          icon={faEllipsisV}
+          onClick={() => alert('TODO')}
+        />
       </Flex>
     )
   }

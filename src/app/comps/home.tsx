@@ -1,7 +1,7 @@
 import * as React from 'react'
 import {Component} from 'react'
 import {inject, observer} from 'mobx-react'
-import {REJECTED, whenAsync} from 'mobx-utils'
+import {PENDING, REJECTED, whenAsync} from 'mobx-utils'
 import {Link} from './link'
 import {StoryRoute} from '../routes'
 import {Story} from '../models/story'
@@ -174,10 +174,14 @@ export class Home extends Component<{store?: Store}> {
   }
 
   render() {
+    const {store} = this.props
     return (
-      <div>
+      <Box className={css`
+        transition: opacity 0.15s ease-in-out;
+        ${store.getStoriesManualRefresh.state === PENDING && 'opacity: 0.25;'}
+      `}>
         {this.renderBody()}
-      </div>
+      </Box>
     )
   }
 }

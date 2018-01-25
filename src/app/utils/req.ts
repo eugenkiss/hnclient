@@ -4,7 +4,7 @@ import {action, IObservableValue, observable, ObservableMap, when} from 'mobx'
 import {fulfilledReq, sleep} from '../utils'
 
 // PoC
-export class Req<T> {
+export class Requester<T> {
   private last: IObservableValue<T> = observable(null)
   @observable private req: IPromiseBasedObservable<T> = fulfilledReq
 
@@ -27,11 +27,6 @@ export class Req<T> {
       this.last.set(this.req.value)
     })
     return this.req
-  }
-
-  @action hardRefresh(minDuration?: number): IPromiseBasedObservable<T> {
-    this.last.set(null)
-    return this.refresh(minDuration)
   }
 
   get value(): T {
@@ -61,11 +56,6 @@ export class MapReq<I, T> {
       this.map.set(x.toString(), req.value)
     })
     return req
-  }
-
-  @action hardRefresh(x: I): IPromiseBasedObservable<T> {
-    this.map.set(x.toString(), null)
-    return this.refresh(x)
   }
 
   value(x: I): T {
