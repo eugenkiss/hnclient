@@ -37,7 +37,7 @@ dev: node_modules build-dll-dev
 	PORT=$(or $(port),$(port_dev)) \
 	$(webpack-dev-server) -d --progress --colors --open
 
-$(out_dll_dev): node_modules webpack.dll.js
+$(out_dll_dev): node_modules webpack.dll.js webpack.config.js
 	rm -rf ./$(out_dll_dev)
 	OUTPUT_DLL=$(out_dll_dev) \
 	$(webpack) --config webpack.dll.js --progress --profile
@@ -53,7 +53,7 @@ gen-shells: node_modules
 	PORT=$(or $(port),$(port_ssr)) \
 	$(ts-node) -O '{"module":"commonjs"}' src/ssr/gen-shells.tsx
 
-build: node_modules src
+build: node_modules src webpack.config.js
 	rm -rf ./$(out)
 	BUILD=true \
 	OUTPUT=$(out) \

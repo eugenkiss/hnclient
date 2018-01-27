@@ -3,12 +3,14 @@ import {Component} from 'react'
 import {computed, observable, when} from 'mobx'
 import {inject, observer} from 'mobx-react'
 import {REJECTED} from 'mobx-utils'
+import {serialize} from 'serializr'
 import {css} from 'emotion'
 import * as FontAwesome from '@fortawesome/react-fontawesome'
+import {faShareAlt} from '@fortawesome/fontawesome-free-solid'
+import {faMinusSquare, faPlusSquare} from '@fortawesome/fontawesome-free-regular'
 import {Store} from '../store'
 import {Comment, Story} from '../models/story'
 import {Box, Flex} from './basic'
-import {faShareAlt} from '@fortawesome/fontawesome-free-solid'
 
 type StringStory = {[P in keyof Story]: string}
 
@@ -26,16 +28,22 @@ const skeletonStory: StringStory = {
   comments: '…'
 }
 
-@inject('store') @observer
+@observer
 class CommentComp extends Component<{
   store?: Store
   comment: Comment
 }> {
   @observable collapsed = false
 
+  handleCollapseClick = (e) => {
+    this.collapsed = !this.collapsed
+    e.stopPropagation()
+  }
+
   render() {
     const { comment } = this.props
-    return ([
+    // TODO: Once Inferno supports Fragment, use it
+    return (<div>
       <Box
         key={comment.id}
         p={1}
@@ -51,15 +59,15 @@ class CommentComp extends Component<{
         `}>
           <Box
             mr={1}
-            onClick={() => this.collapsed = !this.collapsed}>
+            onClick={this.handleCollapseClick}>
             {this.collapsed ? (
-              <span>[+]</span>
+              <FontAwesome icon={faPlusSquare}/>
             ) : (
-              <span>[-]</span>
+              <FontAwesome icon={faMinusSquare}/>
             )}
           </Box>
           <Box mr={1} fontWeight='bold'>
-            <a href='#'>{comment.user}</a>
+            <span>{comment.user}</span>
           </Box>
           <span className={css`
           `}>
@@ -95,13 +103,11 @@ class CommentComp extends Component<{
           />
         }
       </Box>
-      ,
-      this.collapsed ? null : <CommentsComp comments={comment.comments}/>
-    ])
+      {this.collapsed ? null : <CommentsComp comments={comment.comments}/>}
+    </div>)
   }
 }
 
-@inject('store') @observer
 class CommentsComp extends Component<{
   store?: Store
   comments: Array<Comment>
@@ -109,9 +115,10 @@ class CommentsComp extends Component<{
   render() {
     const { comments } = this.props
     if (comments.length === 0) return null
-    return (
-      comments.map(c => <CommentComp comment={c}/>)
-    )
+    // TODO: Once Inferno supports Fragment, use it
+    return (<div>
+      {comments.map(c => <CommentComp key={c.id} comment={c}/>)}
+    </div>)
   }
 }
 
@@ -120,6 +127,11 @@ export class StoryComp extends Component<{
   store?: Store
   id: number
 }> {
+  toRenderCommentsLength = 1
+  handleIncreaseRenderCommentsLength = () => {
+    this.toRenderCommentsLength++
+    this.forceUpdate()
+  }
 
   disposers = []
 
@@ -171,10 +183,24 @@ export class StoryComp extends Component<{
       )
     } else {
       const story = req.value(id)
+      // Poor man's fibers to make transition faster when a lot of comments (latency)
+      const commentsLength = story.comments.length
+      const finished = this.toRenderCommentsLength >= commentsLength
+      const comments = finished
+        ? story.comments
+        : story.comments.slice(0, Math.min(this.toRenderCommentsLength, commentsLength))
+      if (!finished && this.toRenderCommentsLength === 1) {
+        const comment = Comment.fromJson(serialize(comments[0]))
+        comment.comments = []
+        comments[0] = comment
+      }
+      if (!finished) {
+        requestAnimationFrame(this.handleIncreaseRenderCommentsLength)
+      }
       return (
         <Box>
           {false && this.renderHeader(story.title)}
-          <CommentsComp comments={story.comments}/>
+          <CommentsComp comments={comments}/>
         </Box>
       )
     }

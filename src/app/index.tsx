@@ -76,21 +76,23 @@ a {
 class HeaderButton extends Component<{
   icon: IconDefinition
   onClick: () => void
+  marginLeft?: string
 }> {
   render() {
-    const { icon, onClick } = this.props
+    const { icon, onClick, marginLeft } = this.props
     return (
       <Flex
-          onClick={onClick}
-          f={4}
-          align='center' justify='center'
-          className={css`
-          height: 100%;
-          width: 48px;
-          cursor: pointer;
-        `}>
-          <FontAwesome icon={icon}/>
-        </Flex>
+        onClick={onClick}
+        f={4}
+        align='center' justify='center'
+        className={css`
+        height: 100%;
+        width: 48px;
+        cursor: pointer;
+        ${marginLeft == null ? '' : `margin-left: ${marginLeft}`};
+      `}>
+        <FontAwesome icon={icon}/>
+      </Flex>
     )
   }
 }
@@ -160,7 +162,7 @@ class OverflowMenu extends React.Component<{
           <OverflowMenuEntry title='User' icon={faUser} onClick={() => alert('TODO')}/>
           <OverflowMenuEntry title='New' icon={faClock} onClick={() => alert('TODO')}/>
           <OverflowMenuEntry title='Jobs' icon={faBriefcase} onClick={() => alert('TODO')}/>
-          <OverflowMenuEntry title='Upgrade' icon={faDownload} onClick={() => alert('TODO')}/>
+          <OverflowMenuEntry title='Update' icon={faDownload} onClick={() => alert('TODO')}/>
           <OverflowMenuEntry title='About' icon={faInfoCircle} onClick={() => alert('TODO')}/>
           <OverflowMenuEntry title='Open External' icon={faExternalLinkSquareAlt} onClick={() => alert('TODO')}/>
         </Box>
@@ -193,6 +195,7 @@ export class Header extends Component<{
         {routerStore.current.name !== HomeRoute.id &&
           <HeaderButton
             icon={faChevronLeft}
+            marginLeft={'-0.5rem'}
             onClick={() => store.history.back()}
           />
         }

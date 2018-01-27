@@ -1,19 +1,19 @@
 WIP
 
-https://hnclient-1b7c9.firebaseapp.com/
-https://app.hackerwebapp.com
+https://hn.eugenkiss.com
 
 https://github.com/manmal/hn-android/
+https://app.hackerwebapp.com
 
 Techs: mobx, typescript, inferno, router5, react, emotion, pwa, server side prerendering (SSPR), styled-system
 
-- pagination or just more
 - hnpwa requirements: new, jobs
 - pwa 100 score (favicons, 192, 512)
+- pagination or just more
 - check client-base.ts
 - Update button and disable refresh
 - Failed to load stories / story: retry
-- https://hn.eugenkiss.com
+- Skeleton loading comments
 - Extract style (color constants etc.)
 - upvote/downvote, user account, comment etc.
 - Create requester package? Make generic inpute type
