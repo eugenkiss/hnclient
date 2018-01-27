@@ -12,6 +12,7 @@ export interface HNRoute extends Route {
   globPath: string // For Firebase rewrite rules
   comp: (next?: any) => any
   onActivate?: (store: Store, next?: any, prev?: any) => void
+  onDeactivate?: (store: Store, next?: any, prev?: any) => void
 }
 
 export class HomeRoute implements HNRoute {
@@ -19,7 +20,12 @@ export class HomeRoute implements HNRoute {
   get name() { return HomeRoute.id }
   get path() { return '/' }
   globPath = '/'
-  onActivate(store) { if (store.getStories.unstarted) store.getStories.refresh() }
+  onActivate(store) {
+    if (store.getStories.unstarted) store.getStories.refresh()
+  }
+  onDeactivate(store) {
+    store.getStories.cancel()
+  }
   // noinspection JSUnusedGlobalSymbols
   static link = (): LinkData => ({name: HomeRoute.id})
   comp() { return <Home/> }
@@ -31,7 +37,13 @@ export class StoryRoute implements HNRoute {
   get name() { return StoryRoute.id }
   get path() { return '/story/:id' }
   globPath = '/story/*'
-  onActivate(store, {id}) { store.getStory.refresh(id) }
+  onActivate(store, {id}) {
+    store.window.scrollTo(null, 0)
+    store.getStory.refresh(id)
+  }
+  onDeactivate(store, {id}) {
+    store.getStory.cancel(id)
+  }
   static link = (id): LinkData => ({
     name: StoryRoute.id, params: {id: id}
   })

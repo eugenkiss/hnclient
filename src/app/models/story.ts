@@ -1,4 +1,27 @@
-import {alias, deserialize, identifier, primitive, serializable} from 'serializr'
+import {alias, deserialize, identifier, list, object, primitive, serializable} from 'serializr'
+
+
+export class Comment {
+  @serializable(identifier())
+  id: number
+  @serializable
+  level: number
+  @serializable
+  user: string
+  @serializable
+  time: number
+  @serializable(alias('time_ago', primitive()))
+  timeAgo: string
+  @serializable
+  content: string
+  @serializable(list(object(Comment)))
+  comments: Array<Comment>
+
+  // noinspection JSUnusedGlobalSymbols
+  static fromJson(data: any): Comment {
+    return deserialize(Comment, data)
+  }
+}
 
 export class Story {
   @serializable(identifier())
@@ -21,6 +44,8 @@ export class Story {
   url: string
   @serializable
   domain: string
+  @serializable(list(object(Comment)))
+  comments: Array<Comment>
 
   // noinspection JSUnusedGlobalSymbols
   static fromJson(data: any): Story {

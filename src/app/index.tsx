@@ -2,17 +2,28 @@ import 'tslib'
 import * as React from 'react'
 import {Component} from 'react'
 import * as ReactDOM from 'react-dom'
+import {IObservableValue, observable} from 'mobx'
 import {inject, observer, Provider} from 'mobx-react'
 import * as FontAwesome from '@fortawesome/react-fontawesome'
-import {faChevronLeft, faEllipsisV, faSync} from '@fortawesome/fontawesome-free-solid'
+import {
+  faBriefcase,
+  faChevronLeft,
+  faClock,
+  faDownload,
+  faEllipsisV,
+  faExternalLinkSquareAlt,
+  faInfoCircle,
+  faSync,
+  faUser
+} from '@fortawesome/fontawesome-free-solid'
+import {IconDefinition} from '@fortawesome/fontawesome-common-types';
 import {css} from 'emotion'
 import {injectGlobal} from 'react-emotion'
 import {IS_DEV} from './cfg'
 import {HomeRoute} from './routes'
-import {Box, Flex} from './comps/basic'
+import {Box, Flex, Overlay} from './comps/basic'
 import {canUseDOM} from './utils'
 import {Store} from './store'
-import {IconDefinition} from '@fortawesome/fontawesome-common-types';
 
 const MobxDevTools = IS_DEV ? require('mobx-react-devtools').default : null
 
@@ -84,15 +95,91 @@ class HeaderButton extends Component<{
   }
 }
 
+class OverflowMenuEntry extends React.Component<{
+  title: string
+  icon: IconDefinition
+  onClick: () => void
+}> {
+  render() {
+    const { title, icon, onClick } = this.props
+    return (
+      <Flex p={1} onClick={onClick} className={css`
+        &:hover {
+          background: rgba(0,0,0,0.1);
+        }
+      `}>
+        <Box className={css`
+          color: rgba(255, 255, 255, 0.6);
+          width: 30px;
+        `}>
+          <FontAwesome icon={icon}/>
+        </Box>
+        <span>{title}</span>
+      </Flex>
+    )
+  }
+}
+
+@inject('store') @observer
+class OverflowMenu extends React.Component<{
+  store?: Store
+  isOpen: IObservableValue<boolean>
+  onClick: (e: any) => void
+}> {
+
+  handleModal = (e) => {
+    this.props.onClick(e)
+    e.stopPropagation()
+  }
+
+  handleMenuItemClick = (e) => {
+    this.props.onClick(e)
+    e.stopPropagation()
+  }
+
+  render() {
+    const { isOpen } = this.props
+    if (!isOpen.get()) return null
+    return (
+      <Overlay isOpen={isOpen} onClick={this.handleModal}>
+        <Box f={3} onClick={this.handleMenuItemClick} className={css`
+          position: absolute;
+          min-width: 200px;
+          user-select: none;
+          cursor: pointer;
+          font-variant: all-petite-caps;
+          right: 4px;
+          top: 4px;
+          background: #df5d1e;
+          color: white;
+          box-shadow: 0px 2px 4px rgba(0,0,0,0.5);
+          & *:not(:last-child) {
+            border-bottom: 2px solid rgba(0,0,0,0);
+          }
+        `}>
+          <OverflowMenuEntry title='User' icon={faUser} onClick={() => alert('TODO')}/>
+          <OverflowMenuEntry title='New' icon={faClock} onClick={() => alert('TODO')}/>
+          <OverflowMenuEntry title='Jobs' icon={faBriefcase} onClick={() => alert('TODO')}/>
+          <OverflowMenuEntry title='Upgrade' icon={faDownload} onClick={() => alert('TODO')}/>
+          <OverflowMenuEntry title='About' icon={faInfoCircle} onClick={() => alert('TODO')}/>
+          <OverflowMenuEntry title='Open External' icon={faExternalLinkSquareAlt} onClick={() => alert('TODO')}/>
+        </Box>
+      </Overlay>
+    )
+  }
+}
+
 @inject('store') @observer
 export class Header extends Component<{
   store?: Store
 }> {
+  readonly isOverflowOpen = observable(false)
+
   render() {
     const {store} = this.props
     const {routerStore} = store
     return (
-      <Flex className={css`
+      <Flex align='center' className={css`
         position: sticky;
         top: 0;
         background: linear-gradient(to bottom, #df5d1e 0%, #c15019 100%);
@@ -106,30 +193,52 @@ export class Header extends Component<{
         {routerStore.current.name !== HomeRoute.id &&
           <HeaderButton
             icon={faChevronLeft}
-            onClick={() => window.history.back()}
+            onClick={() => store.history.back()}
           />
         }
-        <Box flex='1 1 auto'/>
-        <Box f={4}
-          className={css`
-          font-weight: bold;
-          position: absolute;
-          left: 50%;
-          transform: translate(-50%, 0);
-          text-decoration: none;
-          color: #fff;
-          text-shadow: 0 0 1px rgba(0,0,0,0.2);
-        `}>
-          HN
+        <Box flex='1' align='center'>
+          {routerStore.current.name !== HomeRoute.id ? (
+            <Box f={2} px={1}
+              className={css`
+              font-weight: bold;
+              overflow: hidden;
+              text-overflow: ellipsis;
+              display: -webkit-box;
+              -webkit-line-clamp: 2;
+              -webkit-box-orient: vertical;
+              text-decoration: none;
+              color: #fff;
+              text-shadow: 0 0 1px rgba(0,0,0,0.2);
+            `}>
+              {store.headerTitle}
+            </Box>
+          ) : (
+            <Box f={4} align='center'
+              className={css`
+              font-weight: bold;
+              text-transform: uppercase;
+              position: absolute;
+              top: 50%;
+              left: 50%;
+              transform: translate(-50%, -50%);
+              text-decoration: none;
+              color: #fff;
+            `}>
+              HN
+            </Box>
+          )}
         </Box>
-        <Box flex='1 1 auto'/>
         <HeaderButton
           icon={faSync}
           onClick={() => store.getStoriesManualRefresh = store.getStories.refresh(300)}
         />
         <HeaderButton
           icon={faEllipsisV}
-          onClick={() => alert('TODO')}
+          onClick={() => this.isOverflowOpen.set(true)}
+        />
+        <OverflowMenu
+          isOpen={this.isOverflowOpen}
+          onClick={() => this.isOverflowOpen.set(false)}
         />
       </Flex>
     )
@@ -171,6 +280,7 @@ export default class App extends React.Component<{
           <div className={css`
             color: #000;
             background: #fcfcfc;
+            overflow: hidden; // Important for some reason
           `}>
             {this.renderBody()}
           </div>

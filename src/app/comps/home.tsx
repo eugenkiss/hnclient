@@ -141,11 +141,11 @@ export class Home extends Component<{store?: Store}> {
     const {store} = this.props
     const {routerStore} = store
     this.saveUiCb = routerStore.addSaveUiCb(() => {
-      return { id: Home.ID, data: window.pageYOffset }
+      return { id: Home.ID, data: store.window.pageYOffset }
     })
     this.restoreUiCb = routerStore.addRestoreUiCb(Home.ID, async (data: number) => {
       await whenAsync(() => store.getStories.value != null)
-      window.scrollTo(0, data)
+      store.window.scrollTo(0, data)
     })
   }
 

@@ -10,11 +10,14 @@ TODO:
 back button bigger area
 
 - comments
-- pagination
+- Update button and disable refresh
+- pagination or just more
 - hnpwa requirements: new, jobs
 - pwa 100 score (favicons, 192, 512)
 - check client-base.ts
 - upvote/downvote, user account, comment etc.
+- Create requester package? Make generic inpute type
+- React Native
 
 
 Concepts
@@ -41,6 +44,8 @@ Constraints
   
 TODO
   - Improve Makefile
+  - Use react-dom-lite once ready instead of Inferno
+  - BFF proxy to simulate delay / user etc.
 
 Opportunities
   - Reduce bundle size

@@ -73,7 +73,11 @@ cfg.module = {
           babelOptions: {
               babelrc: false,
               plugins: [
-                ["emotion", { "hoist":  true }],
+                ["emotion", {
+                  "hoist":  true,
+                  "sourceMap": !isBuild,
+                  "autoLabel": !isBuild,
+                }],
               ]
           },
         }

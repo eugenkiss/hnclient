@@ -105,10 +105,17 @@ function makeViewRestorePlugin(routerStore: RouterStore): PluginFactory {
 // noinspection JSUnusedLocalSymbols
 const asyncMiddleware = (store: Store) =>
   (router: Router) =>
-    (toState: any, fromState: State, done: any) => {
-      const route = routesMap.get(toState.name)
-      if (route.onActivate != null) {
-        route.onActivate(store, toState.params, (fromState || {} as any).params || {})
+    (nextState: State, prevState: State, done: any) => {
+      prevState = prevState || {} as any
+      const prevParams = prevState.params || {}
+      const nextParams = nextState.params || {}
+      const prevRoute = routesMap.get(prevState.name) || {} as any
+      const nextRoute = routesMap.get(nextState.name)
+      if (prevRoute.onDeactivate != null) {
+        prevRoute.onDeactivate(store, prevParams, nextParams)
+      }
+      if (nextRoute.onActivate != null) {
+        nextRoute.onActivate(store, nextParams, prevParams)
       }
       done()
     }

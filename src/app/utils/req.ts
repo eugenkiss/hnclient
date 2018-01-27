@@ -1,6 +1,6 @@
 import {fromPromise, FULFILLED, IPromiseBasedObservable, PENDING} from 'mobx-utils'
 import {PromiseState} from 'mobx-utils/lib/from-promise'
-import {action, IObservableValue, observable, ObservableMap, when} from 'mobx'
+import {action, computed, IObservableValue, observable, ObservableMap, when} from 'mobx'
 import {fulfilledReq, sleep} from '../utils'
 
 // PoC
@@ -31,6 +31,10 @@ export class Requester<T> {
     return this.req
   }
 
+  @action cancel() {
+    if (this.req.state === PENDING) this.req = fulfilledReq
+  }
+
   get value(): T {
     return this.last.get()
   }
@@ -44,13 +48,18 @@ export class Requester<T> {
 export class MapReq<I, T> {
   private map: ObservableMap<T> = observable.map<T>()
   private reqMap: ObservableMap<IPromiseBasedObservable<T>> = observable.map()
-  @observable private lastReq: IPromiseBasedObservable<T> = fulfilledReq
+  @observable lastReqId: I = null
+  @computed private get lastReq(): IPromiseBasedObservable<T> {
+    return this.lastReqId == null
+      ? fulfilledReq
+      : this.reqMap.get(this.lastReqId.toString())
+  }
 
   constructor(private promiser: (x: I) => Promise<T>) {}
 
   @action refresh(x: I): IPromiseBasedObservable<T> {
     const req = fromPromise(this.promiser(x))
-    this.lastReq = req
+    this.lastReqId = x
     this.reqMap.set(x.toString(), req)
     when(() => this.reqMap.get(x.toString()).state !== PENDING, () => {
       const req = this.reqMap.get(x.toString())
@@ -58,6 +67,11 @@ export class MapReq<I, T> {
       this.map.set(x.toString(), req.value)
     })
     return req
+  }
+
+  @action cancel(x: I) {
+    const req = this.reqMap.get(x.toString()) || {} as any
+    if (req.state === PENDING) this.reqMap.set(x.toString(), fulfilledReq)
   }
 
   value(x: I): T {
