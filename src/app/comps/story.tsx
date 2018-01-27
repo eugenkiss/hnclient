@@ -1,12 +1,14 @@
 import * as React from 'react'
 import {Component} from 'react'
+import {computed, observable, when} from 'mobx'
 import {inject, observer} from 'mobx-react'
 import {REJECTED} from 'mobx-utils'
+import {css} from 'emotion'
+import * as FontAwesome from '@fortawesome/react-fontawesome'
 import {Store} from '../store'
 import {Comment, Story} from '../models/story'
 import {Box, Flex} from './basic'
-import {css} from 'emotion'
-import {computed, when} from 'mobx'
+import {faShareAlt} from '@fortawesome/fontawesome-free-solid'
 
 type StringStory = {[P in keyof Story]: string}
 
@@ -24,7 +26,94 @@ const skeletonStory: StringStory = {
   comments: '…'
 }
 
-// TODO: story to stringstory / presentstory
+@inject('store') @observer
+class CommentComp extends Component<{
+  store?: Store
+  comment: Comment
+}> {
+  @observable collapsed = false
+
+  render() {
+    const { comment } = this.props
+    return ([
+      <Box
+        key={comment.id}
+        p={1}
+        className={css`
+        margin-left: ${comment.level}rem;
+        background: white;
+        border-bottom: 1px solid #eee;
+      `}>
+        <Flex
+          f={1}
+          className={css`
+          color: #999;
+        `}>
+          <Box
+            mr={1}
+            onClick={() => this.collapsed = !this.collapsed}>
+            {this.collapsed ? (
+              <span>[+]</span>
+            ) : (
+              <span>[-]</span>
+            )}
+          </Box>
+          <Box mr={1} fontWeight='bold'>
+            <a href='#'>{comment.user}</a>
+          </Box>
+          <span className={css`
+          `}>
+            {comment.timeAgo}
+          </span>
+          <Box flex='1 1 auto'/>
+          <Box onClick={() => alert('TODO')}>
+            <FontAwesome icon={faShareAlt}/>
+          </Box>
+        </Flex>
+        {!this.collapsed &&
+          <Box
+            mt={1} f={2}
+            dangerouslySetInnerHTML={{__html: comment.content}}
+            className={css`
+            & a {
+              text-decoration: underline;
+              color: deepskyblue;
+            }
+            & a:visited {
+              color: skyblue;
+            }
+            & p {
+              margin-top: 0.5rem;
+              word-break: break-word;
+            }
+            & pre {
+              font-size: 0.85em;
+              white-space: pre-wrap;
+              margin-top: 0.5rem;
+            }
+          `}
+          />
+        }
+      </Box>
+      ,
+      this.collapsed ? null : <CommentsComp comments={comment.comments}/>
+    ])
+  }
+}
+
+@inject('store') @observer
+class CommentsComp extends Component<{
+  store?: Store
+  comments: Array<Comment>
+}> {
+  render() {
+    const { comments } = this.props
+    if (comments.length === 0) return null
+    return (
+      comments.map(c => <CommentComp comment={c}/>)
+    )
+  }
+}
 
 @inject('store') @observer
 export class StoryComp extends Component<{
@@ -58,64 +147,6 @@ export class StoryComp extends Component<{
     for (const disposer of this.disposers) disposer()
   }
 
-  renderComment(comment: Comment) {
-    return ([
-      <Box
-        px={1} pt={1} pb={1} key={comment.id}
-        className={css`
-        margin-left: ${comment.level}rem;
-        background: white;
-        border-bottom: 1px solid #eee;
-      `}>
-        <Flex
-          mb={1} f={1}
-          className={css`
-          color: #999;
-        `}>
-          <Box mr={1} fontWeight='bold'>
-            <a href='#'>{comment.user}</a>
-          </Box>
-          <span className={css`
-          `}>
-            {comment.timeAgo}
-          </span>
-        </Flex>
-        <Box
-          f={2}
-          dangerouslySetInnerHTML={{__html: comment.content}}
-          className={css`
-          & a {
-            text-decoration: underline;
-            color: deepskyblue;
-          }
-          & a:visited {
-            color: skyblue;
-          }
-          & p {
-            margin-bottom: 0.5rem;
-            word-break: break-word;
-          }
-          & pre {
-            font-size: 0.85em;
-            white-space: pre-wrap;
-            margin-bottom: 0.5rem;
-          }
-        `}
-        />
-
-      </Box>
-      ,
-      this.renderComments(comment.comments)
-    ])
-  }
-
-  renderComments(comments: Array<Comment>) {
-    if (comments.length === 0) return null
-    return (
-      comments.map(c => this.renderComment(c))
-    )
-  }
-
   renderHeader(title: string) {
     return (
       <div>
@@ -143,7 +174,7 @@ export class StoryComp extends Component<{
       return (
         <Box>
           {false && this.renderHeader(story.title)}
-          {this.renderComments(story.comments)}
+          <CommentsComp comments={story.comments}/>
         </Box>
       )
     }

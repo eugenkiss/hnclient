@@ -1,6 +1,7 @@
 WIP
 
 https://hnclient-1b7c9.firebaseapp.com/
+https://app.hackerwebapp.com
 
 https://github.com/manmal/hn-android/
 
@@ -49,6 +50,7 @@ TODO
       - http4k
       - https://github.com/bagongkia/react-ssr-with-java
       - https://github.com/kristoferbaxter/react-hn
+      - https://github.com/cheeaun/node-hnapi
 
 Opportunities
   - Reduce bundle size
