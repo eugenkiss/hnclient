@@ -114,7 +114,11 @@ export class StoryComp extends Component<{
 
   render() {
     return (
-      <Box p={1}>
+      <Box p={1} className={css`
+        overflow-y: auto;
+        overflow-x: hidden;
+        height: 100%;
+      `}>
         {this.renderBody()}
       </Box>
     )

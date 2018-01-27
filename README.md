@@ -4,12 +4,13 @@ https://hnclient-1b7c9.firebaseapp.com/
 
 https://github.com/manmal/hn-android/
 
-Techs: mobx, typescript, inferno, router5, react, emotion, pwa, server side prerendering (SSPR) 
+Techs: mobx, typescript, inferno, router5, react, emotion, pwa, server side prerendering (SSPR), styled-system
 
 TODO:
 back button bigger area
 
 - comments
+- Failed to load stories: retry
 - Update button and disable refresh
 - pagination or just more
 - hnpwa requirements: new, jobs

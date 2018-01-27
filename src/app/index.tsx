@@ -266,7 +266,9 @@ export default class App extends React.Component<{
   render() {
     return (
       <Provider store={this.store}>
-        <div className={css`
+        <Flex flexDirection='column' className={css`
+          overflow: hidden;
+          height: 100%;
           width: 85%;
           margin: auto;
           padding: 10px 0 0 0;
@@ -277,14 +279,15 @@ export default class App extends React.Component<{
         `}>
           {IS_DEV && false && <MobxDevTools/>}
           <Header/>
-          <div className={css`
+          <Box flex='1' className={css`
             color: #000;
             background: #fcfcfc;
-            overflow: hidden; // Important for some reason
+            height: 100%;
+            overflow: hidden;
           `}>
             {this.renderBody()}
-          </div>
-        </div>
+          </Box>
+        </Flex>
       </Provider>
     )
   }

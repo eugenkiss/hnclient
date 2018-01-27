@@ -1,15 +1,16 @@
 import * as React from 'react'
 import {Component} from 'react'
+import {observable} from 'mobx'
 import {inject, observer} from 'mobx-react'
 import {PENDING, REJECTED, whenAsync} from 'mobx-utils'
-import {Link} from './link'
-import {StoryRoute} from '../routes'
-import {Story} from '../models/story'
-import {Box, Flex} from './basic'
-import {space} from 'styled-system'
-import styled from 'react-emotion'
-import {Store} from '../store'
 import {css} from 'emotion'
+import styled from 'react-emotion'
+import {space} from 'styled-system'
+import {StoryRoute} from '../routes'
+import {Box, Flex} from './basic'
+import {Link} from './link'
+import {Story} from '../models/story'
+import {Store} from '../store'
 
 const Container = styled(Flex)`
   border-bottom: 1px solid rgba(0,0,0,0.05);
@@ -137,15 +138,17 @@ export class Home extends Component<{store?: Store}> {
   saveUiCb
   restoreUiCb
 
+  @observable containerNode = null
+
   componentDidMount() {
     const {store} = this.props
     const {routerStore} = store
     this.saveUiCb = routerStore.addSaveUiCb(() => {
-      return { id: Home.ID, data: store.window.pageYOffset }
+      return { id: Home.ID, data: this.containerNode.scrollTop }
     })
     this.restoreUiCb = routerStore.addRestoreUiCb(Home.ID, async (data: number) => {
-      await whenAsync(() => store.getStories.value != null)
-      store.window.scrollTo(0, data)
+      await whenAsync(() => store.getStories.value != null && this.containerNode != null)
+      this.containerNode.scrollTop = data
     })
   }
 
@@ -176,9 +179,11 @@ export class Home extends Component<{store?: Store}> {
   render() {
     const {store} = this.props
     return (
-      <Box className={css`
+      <Box innerRef={r => this.containerNode = r} className={css`
         transition: opacity 0.15s ease-in-out;
-        ${store.getStoriesManualRefresh.state === PENDING && 'opacity: 0.25;'}
+        ${store.getStoriesManualRefresh.state === PENDING && 'opacity: 0.25'};
+        overflow: auto;
+        height: 100%;
       `}>
         {this.renderBody()}
       </Box>
