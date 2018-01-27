@@ -6,16 +6,14 @@ https://github.com/manmal/hn-android/
 
 Techs: mobx, typescript, inferno, router5, react, emotion, pwa, server side prerendering (SSPR), styled-system
 
-TODO:
-back button bigger area
-
-- comments
-- Failed to load stories: retry
-- Update button and disable refresh
 - pagination or just more
 - hnpwa requirements: new, jobs
 - pwa 100 score (favicons, 192, 512)
 - check client-base.ts
+- Update button and disable refresh
+- Failed to load stories / story: retry
+- https://hn.eugenkiss.com
+- Extract style (color constants etc.)
 - upvote/downvote, user account, comment etc.
 - Create requester package? Make generic inpute type
 - React Native
@@ -41,15 +39,21 @@ Shoutout
 
 Constraints
   - Fast as possible without giving up DX/abstractions
-  - Firebase
+  - Firebase (for now)
   
 TODO
   - Improve Makefile
   - Use react-dom-lite once ready instead of Inferno
-  - BFF proxy to simulate delay / user etc.
+  - BFF proxy to simulate delay / user etc. in dev mode
+  - Real SSR with hosted API?
+      - http4k
+      - https://github.com/bagongkia/react-ssr-with-java
+      - https://github.com/kristoferbaxter/react-hn
 
 Opportunities
   - Reduce bundle size
+      - Code splitting
+  - Real SSR
   - Starting HN API request earlier
       - If not constrained to Firebase could start initial API
         request server side, stream HTML and stream API result as JSON to end

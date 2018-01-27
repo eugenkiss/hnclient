@@ -198,7 +198,7 @@ export class Header extends Component<{
         }
         <Box flex='1' align='center'>
           {routerStore.current.name !== HomeRoute.id ? (
-            <Box f={2} px={1}
+            <Box f={2}
               className={css`
               font-weight: bold;
               overflow: hidden;

@@ -4,7 +4,7 @@ import {inject, observer} from 'mobx-react'
 import {REJECTED} from 'mobx-utils'
 import {Store} from '../store'
 import {Comment, Story} from '../models/story'
-import {Box} from './basic'
+import {Box, Flex} from './basic'
 import {css} from 'emotion'
 import {computed, when} from 'mobx'
 
@@ -59,17 +59,54 @@ export class StoryComp extends Component<{
   }
 
   renderComment(comment: Comment) {
-    return (
+    return ([
       <Box
-        key={comment.id}
+        px={1} pt={1} pb={1} key={comment.id}
         className={css`
-        margin-left: ${comment.level * 5}px;
-        border: 1px solid grey;
+        margin-left: ${comment.level}rem;
+        background: white;
+        border-bottom: 1px solid #eee;
       `}>
-        <Box dangerouslySetInnerHTML={{__html: comment.content}}/>
-        {this.renderComments(comment.comments)}
+        <Flex
+          mb={1} f={1}
+          className={css`
+          color: #999;
+        `}>
+          <Box mr={1} fontWeight='bold'>
+            <a href='#'>{comment.user}</a>
+          </Box>
+          <span className={css`
+          `}>
+            {comment.timeAgo}
+          </span>
+        </Flex>
+        <Box
+          f={2}
+          dangerouslySetInnerHTML={{__html: comment.content}}
+          className={css`
+          & a {
+            text-decoration: underline;
+            color: deepskyblue;
+          }
+          & a:visited {
+            color: skyblue;
+          }
+          & p {
+            margin-bottom: 0.5rem;
+            word-break: break-word;
+          }
+          & pre {
+            font-size: 0.85em;
+            white-space: pre-wrap;
+            margin-bottom: 0.5rem;
+          }
+        `}
+        />
+
       </Box>
-    )
+      ,
+      this.renderComments(comment.comments)
+    ])
   }
 
   renderComments(comments: Array<Comment>) {
@@ -93,7 +130,7 @@ export class StoryComp extends Component<{
     if (req.value(id) == null) {
       return (
         <Box>
-          {this.renderHeader(this.story != null ? this.story.title : skeletonStory.title)}
+          {false && this.renderHeader(this.story != null ? this.story.title : skeletonStory.title)}
           {req.state(id) === REJECTED ? (
             <div>Failed to load story!</div>
           ) : (
@@ -105,7 +142,7 @@ export class StoryComp extends Component<{
       const story = req.value(id)
       return (
         <Box>
-          {this.renderHeader(story.title)}
+          {false && this.renderHeader(story.title)}
           {this.renderComments(story.comments)}
         </Box>
       )
@@ -114,10 +151,11 @@ export class StoryComp extends Component<{
 
   render() {
     return (
-      <Box p={1} className={css`
+      <Box className={css`
         overflow-y: auto;
         overflow-x: hidden;
         height: 100%;
+        background: #eee;
       `}>
         {this.renderBody()}
       </Box>
