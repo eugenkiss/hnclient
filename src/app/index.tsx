@@ -11,6 +11,7 @@ import {
   faClock,
   faDownload,
   faEllipsisV,
+  faHome,
   faInfoCircle,
   faSyncAlt,
   faUser
@@ -166,10 +167,26 @@ class OverflowMenu extends React.Component<{
           }
         `}>
           {false && <OverflowMenuEntry title='Profile' icon={faUser} onClick={() => alert('TODO')}/>}
-          <OverflowMenuEntry title='New' icon={faClock} onClick={() => alert('TODO')}/>
-          <OverflowMenuEntry title='Jobs' icon={faBriefcase} onClick={() => alert('TODO')}/>
-          <OverflowMenuEntry title='Update' icon={faDownload} onClick={this.handleUpdate}/>
-          <OverflowMenuEntry title='About' icon={faInfoCircle} onClick={() => store.navigate(AboutRoute.link())}/>
+          <OverflowMenuEntry
+            title='Frontpage' icon={faHome}
+            onClick={() => store.navigate(HomeRoute.link())}
+          />
+          <OverflowMenuEntry
+            title='New' icon={faClock}
+            onClick={() => alert('TODO')}
+          />
+          <OverflowMenuEntry
+            title='Jobs' icon={faBriefcase}
+            onClick={() => alert('TODO')}
+          />
+          <OverflowMenuEntry
+            title='Update' icon={faDownload}
+            onClick={this.handleUpdate}
+          />
+          <OverflowMenuEntry
+            title='About' icon={faInfoCircle}
+            onClick={() => store.navigate(AboutRoute.link())}
+          />
         </Box>
       </Overlay>
     )

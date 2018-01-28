@@ -10,6 +10,10 @@
         {
           "source": "/story/*",
           "destination": "/story.html"
+        },
+        {
+          "source": "/about",
+          "destination": "/about.html"
         }
       ]
     ,

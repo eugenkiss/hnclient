@@ -65,7 +65,6 @@ class CommentComp extends Component<{
         <Box
           flex={`0 0 ${comment.level === 0 ? '0' : '1'}rem`}
           className={css`
-          background: #eee;
         `}/>
         <Box flex='1'>
           <Box
@@ -73,7 +72,6 @@ class CommentComp extends Component<{
             p={1}
             className={css`
             background: white;
-            border-bottom: 1px solid #eee;
           `}>
             <Flex
               f={1}
@@ -142,6 +140,11 @@ class CommentComp extends Component<{
               </Box>
             }
           </Box>
+            {/*<Box*/}
+              {/*ml={1}*/}
+              {/*className={css`*/}
+              {/*border-bottom: 1px solid #eee;*/}
+            {/*`}/>*/}
           {this.collapsedChildren || this.minimized ? null :
             <CommentsComp
               comments={comment.comments}
@@ -204,7 +207,7 @@ class Header extends Component<{
     return (
       <Flex
         flex='1 1 auto'
-        p={1} pb={1} pt={1}
+        p={1} pb={2} pt={1}
         onClickCapture={this.handleContainerClick}
         className={css`
         border-bottom: 1px solid rgba(0,0,0,0.05);
@@ -248,7 +251,7 @@ class Header extends Component<{
         </Box>
         <Box flex='1 1 auto' pr={1}/>
         <A
-          f={1} p={1} m={-1}
+          f={1} p={1} m={-1} pb={2} mb={-2}
           color='#999'
           href={story.externalLink}
           target='_blank'

@@ -6,7 +6,7 @@ import {PENDING, REJECTED, whenAsync} from 'mobx-utils'
 import {css} from 'emotion'
 import * as FontAwesome from '@fortawesome/react-fontawesome'
 import {StoryRoute} from '../routes'
-import {A, Box, Flex} from './basic'
+import {A, Box, Flex, Span} from './basic'
 import {Link} from './link'
 import {Story} from '../models/story'
 import {Store} from '../store'
@@ -29,10 +29,9 @@ export class StoryEntry extends Component<{
     return (
       <Flex
         flex='1 1 auto'
-        p={1}
+        p={1} pb={2}
         onClickCapture={this.handleContainerClick}
         className={css`
-        border-bottom: 1px solid rgba(0,0,0,0.05);
       `}>
         <Box pr={1}>
           <A
@@ -45,8 +44,6 @@ export class StoryEntry extends Component<{
           `}>
             <Box f={2}>
               {story.title}
-              {'\u00A0'}
-
             </Box>
           </A>
           <Flex mt={1} f={1} align='center' color='#999'>
@@ -59,7 +56,7 @@ export class StoryEntry extends Component<{
         </Box>
         <Box flex='1 1 auto' pr={1}/>
         <Link
-          f={1} p={1} m={-1}
+          f={1} p={1} m={-1} pb={2} mb={-2}
           link={StoryRoute.link(story.id)}
           className={css`
           width: 48px;
@@ -75,7 +72,7 @@ export class StoryEntry extends Component<{
           }
         `}>
           <FontAwesome icon={faComments} size='lg'/>
-          {story.commentsCount}
+          <Span mt={'0.2rem'}>{story.commentsCount != null ? story.commentsCount : '…'}</Span>
         </Link>
       </Flex>
     )

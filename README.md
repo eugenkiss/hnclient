@@ -10,7 +10,12 @@ Techs: mobx, typescript, inferno, router5, react, emotion, pwa, server side prer
 - Use official API
 - hnpwa requirements: new, jobs
 - pwa 100 score (favicons, 192, 512)
+
+- pull to refresh
+- empty comments -> no comments message
 - pagination or just more
+- vertical comment lines (indent)
+- story cache db?
 - Improve README
 - check client-base.ts
 - Failed to load stories / story: retry
@@ -18,6 +23,7 @@ Techs: mobx, typescript, inferno, router5, react, emotion, pwa, server side prer
 - upvote/downvote, user account, comment etc.
 - Create requester package? Make generic inpute type
 - React Native
+- Steal some ideas from reddit is fun
 
 
 Concepts
@@ -43,11 +49,10 @@ Constraints
   - Firebase (for now)
   
 TODO
-  - How to mark links such that they open "inline" in Chrome on Android?
-    Or how is this determined? At least links to news.ycombinator.com
-    don't open inline. I think because they aren't mobile optimized?
-  - Custom pull to refresh
+  - How to make new.ycombinator.com open with a top-left X in Chrome on Android?
+    I think it doesn't work for them because hn isn't mobile optimized?
   - Improve Makefile
+  - Would MobX State Tree help somehow? In retaining scroll position for example?
   - Use react-dom-lite once ready instead of Inferno
   - BFF proxy to simulate delay / user etc. in dev mode
   - Real SSR with hosted API?
