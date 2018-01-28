@@ -207,7 +207,7 @@ export class Header extends Component<{
           {routerStore.current.name === StoryRoute.id ? (
             <Box f={2}
               className={css`
-              font-weight: bold;
+              font-weight: 400;
               overflow: hidden;
               text-overflow: ellipsis;
               display: -webkit-box;
@@ -222,7 +222,7 @@ export class Header extends Component<{
           ) : (
             <Box f={4} align='center'
               className={css`
-              font-weight: bold;
+              font-weight: 400;
               text-transform: uppercase;
               position: absolute;
               top: 50%;

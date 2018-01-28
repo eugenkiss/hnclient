@@ -43,33 +43,35 @@ export class StoryEntry extends Component<{
               color: #777777;
             }
           `}>
-            <Box f={2} fontWeight='600'>
+            <Box f={2}>
               {story.title}
               {'\u00A0'}
               <Span f={1} color='#999' fontWeight='normal'>({story.domain})</Span>
             </Box>
           </A>
           <Flex mt={1} f={1} align='center' color='#999'>
-            {story.points != null ? story.points : '…'}
+            {story.points != null ? story.points : '…'} points
           </Flex>
         </Box>
-        <Box flex='1 1 auto'/>
+        <Box flex='1 1 auto' pr={1}/>
         <Link
-          f={2} p={1} m={-1}
+          f={1} p={1} m={-1}
           link={StoryRoute.link(story.id)}
           className={css`
-          width: 70px;
+          width: 50px;
+          border-left: 1px solid #eee;
+          background: rgba(0,0,0,.01);
           display: flex;
           flex: 0 0 auto;
-          justify-content: flex-end;
+          flex-direction: column;
+          justify-content: center;
           align-items: center;
           &:visited {
             color: #777777;
           }
         `}>
+          <FontAwesome icon={faComments} size='lg'/>
           {story.commentsCount}
-          {'\u00A0'}
-          <FontAwesome icon={faComments}/>
         </Link>
       </Flex>
     )

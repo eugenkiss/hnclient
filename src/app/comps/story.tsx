@@ -218,7 +218,7 @@ class Header extends Component<{
               color: #777777;
             }
           `}>
-            <Box f={2} fontWeight='600'>
+            <Box f={2}>
               {story.title}
               {'\u00A0'}
               <Span f={1} color='#999' fontWeight='normal'>({story.domain})</Span>
@@ -246,20 +246,23 @@ class Header extends Component<{
             <FontAwesome icon={faComments}/>
           </Flex>
         </Box>
-        <Box flex='1 1 auto'/>
+        <Box flex='1 1 auto' pr={1}/>
         <A
+          f={1} p={1} m={-1}
           color='#999'
           href={story.externalLink}
           target='_blank'
           className={css`
-          font-size: 1.5rem;
-          width: 40px;
+          width: 50px;
+          border-left: 1px solid #eee;
+          background: rgba(0,0,0,.01);
           display: flex;
           flex: 0 0 auto;
-          justify-content: flex-end;
+          flex-direction: column;
+          justify-content: center;
           align-items: center;
         `}>
-          <FontAwesome icon={faShare}/>
+          <FontAwesome icon={faShare} size='lg'/>
         </A>
       </Flex>
     )
