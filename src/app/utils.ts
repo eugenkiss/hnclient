@@ -42,3 +42,11 @@ export function sleep(time) {
     setTimeout(resolve, time)
   })
 }
+
+export function makeExternalItemLink(itemId: string) {
+  return `https://news.ycombinator.com/item?id=${itemId}`
+}
+
+export function makeExternalUserLink(userId: string) {
+  return `https://news.ycombinator.com/item?id=${userId}`
+}

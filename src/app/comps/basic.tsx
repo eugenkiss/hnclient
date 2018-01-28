@@ -50,6 +50,15 @@ ${color}
 ${flex}
 ` as any
 
+export const Span = styled('span')`
+${space} 
+${width} 
+${fontSize}
+${fontWeight}
+${color} 
+${flex}
+` as any
+
 export const Portal = ReactPortal.Portal
 
 @observer

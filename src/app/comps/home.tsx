@@ -4,38 +4,21 @@ import {observable} from 'mobx'
 import {inject, observer} from 'mobx-react'
 import {PENDING, REJECTED, whenAsync} from 'mobx-utils'
 import {css} from 'emotion'
-import styled from 'react-emotion'
-import {space} from 'styled-system'
+import * as FontAwesome from '@fortawesome/react-fontawesome'
 import {StoryRoute} from '../routes'
-import {Box, Flex} from './basic'
+import {A, Box, Flex, Span} from './basic'
 import {Link} from './link'
 import {Story} from '../models/story'
 import {Store} from '../store'
-
-const Container = styled(Flex)`
-  border-bottom: 1px solid rgba(0,0,0,0.05);
-`
-
-const LinkAreaStory = styled('a')`
-  ${space};
-  &:visited {
-    color: #777777;
-  }
-` as any
-
-const Source = styled(Box)`
-  ${space};
-  display: flex;
-  color: #666;
-` as any
+import {faComments} from '@fortawesome/fontawesome-free-solid'
 
 @observer
 export class StoryEntry extends Component<{
   story: Story
-  skeleton?: boolean
+  readOnly?: boolean
 }> {
   handleContainerClick = (e) => {
-    if (!this.props.skeleton) return
+    if (!this.props.readOnly) return
     e.stopPropagation()
     e.nativeEvent.stopImmediatePropagation()
     e.preventDefault()
@@ -44,80 +27,50 @@ export class StoryEntry extends Component<{
   render() {
     const { story } = this.props
     return (
-      <Container flex='1 1 auto' p={1} onClickCapture={this.handleContainerClick}>
-        <LinkAreaStory pr={1} href={story.url} target='_blank'>
-          <Box f={2} fontWeight='600'>{story.title}</Box>
-          <Flex mt={1} align='center'>
-            <Box mr={1} f={0} className={css`
-              padding: 3px;
-              min-width: 32px;
-              height: 24px;
-              background: rgba(0,0,0,0.05);
-              display: flex;
-              flex: 0 0 auto;
-              justify-content: center;
-              align-items: center;
-              border-radius: 4px;
-              color: #666;
-            `}>
-              {story.points}
+      <Flex
+        flex='1 1 auto'
+        p={1}
+        onClickCapture={this.handleContainerClick}
+        className={css`
+        border-bottom: 1px solid rgba(0,0,0,0.05);
+      `}>
+        <Box pr={1}>
+          <A
+            href={story.url}
+            className={css`
+            &:visited {
+              color: #777777;
+            }
+          `}>
+            <Box f={2} fontWeight='600'>
+              {story.title}
+              {'\u00A0'}
+              <Span f={1} color='#999' fontWeight='normal'>({story.domain})</Span>
             </Box>
-            <Source f={0}>{story.domain}</Source>
+          </A>
+          <Flex mt={1} f={1} align='center' color='#999'>
+            {story.points}
           </Flex>
-        </LinkAreaStory>
+        </Box>
         <Box flex='1 1 auto'/>
-        <Link link={StoryRoute.link(story.id)} className={css`
-          font-size: 14px;
-          width: 60px;
+        <Link
+          f={2} p={1} m={-1}
+          link={StoryRoute.link(story.id)}
+          className={css`
+          width: 70px;
           display: flex;
           flex: 0 0 auto;
-          justify-content: center;
+          justify-content: flex-end;
           align-items: center;
           &:visited {
             color: #777777;
           }
         `}>
-          <Box f={2} mr={-1} fontWeight={300} className={css`
-            padding: 2px;
-            width: 45px;
-            height: 35px;
-            border: 1px solid #ccc;
-            box-shadow: 1px 1px 0 #eee;
-            border-radius: 3px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-
-            /* http://www.cssarrowplease.com/ */
-            position: relative;
-            &:after, &:before {
-              right: 100%;
-              top: 50%;
-              border: solid transparent;
-              content: " ";
-              height: 0;
-              width: 0;
-              position: absolute;
-              pointer-events: none;
-            }
-            &:after {
-              border-color: rgba(255, 255, 255, 0);
-              border-right-color: #fff;
-              border-width: 4px;
-              margin-top: -4px;
-            }
-            &:before {
-              border-color: rgba(181, 181, 181, 0);
-              border-right-color: #b5b5b5;
-              border-width: 5px;
-              margin-top: -5px;
-            }
-          `}>
-            {story.commentsCount}
-          </Box>
+          {story.commentsCount}
+          {'\u00A0'}
+          <FontAwesome icon={faComments}/>
         </Link>
-        <Box my={-1}/>
-      </Container>
+      </Flex>
     )
   }
 }
@@ -165,7 +118,7 @@ export class Home extends Component<{store?: Store}> {
       switch (req.state) {
         case REJECTED: return <div>Failed to load stories!</div>
         default: return skeletonStories.map(story =>
-          <StoryEntry key={story.id} story={story} skeleton={true}/>
+          <StoryEntry key={story.id} story={story} readOnly={true}/>
         )
       }
     } else {

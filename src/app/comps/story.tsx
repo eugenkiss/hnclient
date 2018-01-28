@@ -5,12 +5,17 @@ import {inject, observer} from 'mobx-react'
 import {REJECTED} from 'mobx-utils'
 import {css} from 'emotion'
 import * as FontAwesome from '@fortawesome/react-fontawesome'
-import {faCompress, faExpand, faSpinner} from '@fortawesome/fontawesome-free-solid'
+import {
+  faArrowAltCircleUp,
+  faComments,
+  faCompress,
+  faExpand,
+  faShare,
+  faSpinner
+} from '@fortawesome/fontawesome-free-solid'
 import {Store} from '../store'
-import {Comment, Story} from '../models/story'
-import {A, Box, Flex} from './basic'
-
-type StringStory = {[P in keyof Story]: string}
+import {Comment, Story, StringStory} from '../models/story'
+import {A, Box, Flex, Span} from './basic'
 
 const skeletonStory: StringStory = {
   id: '…',
@@ -23,7 +28,10 @@ const skeletonStory: StringStory = {
   type: '…',
   url: 'http://…',
   domain: '………',
-  comments: '…'
+  comments: '',
+  externalUserLink: '',
+  externalLink: '',
+  asStringStory: '',
 }
 
 @observer
@@ -179,6 +187,83 @@ class CommentsComp extends Component<{
   }
 }
 
+@observer
+class Header extends Component<{
+  story: Story | StringStory
+  readOnly?: boolean
+}> {
+  handleContainerClick = (e) => {
+    if (!this.props.readOnly) return
+    e.stopPropagation()
+    e.nativeEvent.stopImmediatePropagation()
+    e.preventDefault()
+  }
+
+  render() {
+    const { story } = this.props
+    return (
+      <Flex
+        flex='1 1 auto'
+        p={1} pb={1} pt={1}
+        onClickCapture={this.handleContainerClick}
+        className={css`
+        border-bottom: 1px solid rgba(0,0,0,0.05);
+      `}>
+        <Box pr={1}>
+          <A
+            href={story.url}
+            className={css`
+            &:visited {
+              color: #777777;
+            }
+          `}>
+            <Box f={2} fontWeight='600'>
+              {story.title}
+              {'\u00A0'}
+              <Span f={1} color='#999' fontWeight='normal'>({story.domain})</Span>
+            </Box>
+          </A>
+          <Flex mt={1} f={1} align='center' color='#999'>
+            {story.points}
+            {'\u00A0'}
+            <FontAwesome icon={faArrowAltCircleUp}/>
+            {'\u00A0'}
+            |
+            {'\u00A0'}
+            by
+            {'\u00A0'}
+            <A fontWeight='bold' href={story.externalUserLink}>
+              {story.user}
+            </A>
+            {'\u00A0'}
+            {story.timeAgo}
+            {'\u00A0'}
+            |
+            {'\u00A0'}
+            {story.commentsCount}
+            {'\u00A0'}
+            <FontAwesome icon={faComments}/>
+          </Flex>
+        </Box>
+        <Box flex='1 1 auto'/>
+        <A
+          color='#999'
+          href={story.externalLink}
+          className={css`
+          font-size: 1.5rem;
+          width: 40px;
+          display: flex;
+          flex: 0 0 auto;
+          justify-content: flex-end;
+          align-items: center;
+        `}>
+          <FontAwesome icon={faShare}/>
+        </A>
+      </Flex>
+    )
+  }
+}
+
 @inject('store') @observer
 export class StoryComp extends Component<{
   store?: Store
@@ -231,33 +316,34 @@ export class StoryComp extends Component<{
     for (const disposer of this.disposers) disposer()
   }
 
-  renderHeader(title: string) {
-    return (
-      <div>
-        {title}
-      </div>
-    )
-  }
-
   renderBody() {
     const { store, id } = this.props
     const req = store.getStory
     if (req.value(id) == null) {
       return (
         <Flex
-          justify='center'
-          align='center'
-          f={4}
+          flexDirection='column'
           className={css`
             height: 100%;
-            color: #666;
-        `}>
-          {false && this.renderHeader(this.story != null ? this.story.title : skeletonStory.title)}
-          {req.state(id) === REJECTED ? (
-            <div>Failed to load story!</div>
-          ) : (
-            <FontAwesome icon={faSpinner} pulse/>
-          )}
+          `}>
+          <Header
+            story={this.story != null ? this.story : skeletonStory}
+            readOnly={this.story == null}
+          />
+          <Flex
+            flex='1'
+            justify='center'
+            align='center'
+            f={4}
+            className={css`
+              color: #666;
+          `}>
+            {req.state(id) === REJECTED ? (
+              <div>Failed to load story!</div>
+            ) : (
+              <FontAwesome icon={faSpinner} pulse/>
+            )}
+          </Flex>
         </Flex>
       )
     } else {
@@ -271,7 +357,7 @@ export class StoryComp extends Component<{
 
       return (
         <Box>
-          {false && this.renderHeader(story.title)}
+          <Header story={story}/>
           <CommentsComp
             comments={story.comments}
             renderedCommentCount={this.renderedCommentCounter.get()}

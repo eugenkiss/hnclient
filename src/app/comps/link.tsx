@@ -3,6 +3,7 @@ import {Component} from 'react'
 import {inject} from 'mobx-react'
 import {LinkData} from '../routes'
 import {Store} from '../store'
+import {A} from './basic'
 
 @inject('store')
 export class Link extends Component<{
@@ -21,9 +22,9 @@ export class Link extends Component<{
     const href = router.buildPath(link.name, link.params as any)
 
     return (
-      <a href={href} onClick={this.onClick} target={target} {...rest}>
+      <A href={href} onClick={this.onClick} target={target} {...rest}>
         {this.props.children}
-      </a>
+      </A>
     )
   }
 

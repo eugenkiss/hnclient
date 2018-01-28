@@ -1,4 +1,5 @@
 import {alias, deserialize, identifier, list, object, primitive, serializable} from 'serializr'
+import {makeExternalItemLink, makeExternalUserLink} from '../utils'
 
 
 export class Comment {
@@ -18,11 +19,11 @@ export class Comment {
   comments: Array<Comment>
 
   get externalUserLink() {
-    return `https://news.ycombinator.com/user?id=${this.user}`
+    return makeExternalUserLink(this.user)
   }
 
   get externalLink() {
-    return `https://news.ycombinator.com/item?id=${this.id}`
+    return makeExternalItemLink(this.id.toString())
   }
 
   // noinspection JSUnusedGlobalSymbols
@@ -55,8 +56,37 @@ export class Story {
   @serializable(list(object(Comment)))
   comments: Array<Comment>
 
+  get externalUserLink() {
+    return makeExternalUserLink(this.user)
+  }
+
+  get externalLink() {
+    return makeExternalItemLink(this.id.toString())
+  }
+
+  asStringStory(): StringStory {
+    return {
+      id: this.id.toString(),
+      title: this.title,
+      points: this.points.toString(),
+      user: this.user,
+      time: this.time.toString(),
+      timeAgo: this.timeAgo,
+      commentsCount: this.commentsCount.toString(),
+      type: this.type,
+      url: this.url,
+      domain: this.domain,
+      comments: '',
+      externalUserLink: this.externalUserLink,
+      externalLink: this.externalLink,
+      asStringStory: '',
+    }
+  }
+
   // noinspection JSUnusedGlobalSymbols
   static fromJson(data: any): Story {
     return deserialize(Story, data)
   }
 }
+
+export type StringStory = {[P in keyof Story]: string}

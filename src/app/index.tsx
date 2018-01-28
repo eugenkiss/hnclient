@@ -12,7 +12,7 @@ import {
   faDownload,
   faEllipsisV,
   faInfoCircle,
-  faSync,
+  faSyncAlt,
   faUser
 } from '@fortawesome/fontawesome-free-solid'
 import {IconDefinition} from '@fortawesome/fontawesome-common-types';
@@ -140,6 +140,10 @@ class OverflowMenu extends React.Component<{
     e.stopPropagation()
   }
 
+  handleUpdate = () => {
+    window.location.reload(true)
+  }
+
   render() {
     const { store, isOpen } = this.props
     if (!isOpen.get()) return null
@@ -163,7 +167,7 @@ class OverflowMenu extends React.Component<{
           {false && <OverflowMenuEntry title='Profile' icon={faUser} onClick={() => alert('TODO')}/>}
           <OverflowMenuEntry title='New' icon={faClock} onClick={() => alert('TODO')}/>
           <OverflowMenuEntry title='Jobs' icon={faBriefcase} onClick={() => alert('TODO')}/>
-          <OverflowMenuEntry title='Update' icon={faDownload} onClick={() => alert('TODO')}/>
+          <OverflowMenuEntry title='Update' icon={faDownload} onClick={this.handleUpdate}/>
           <OverflowMenuEntry title='About' icon={faInfoCircle} onClick={() => store.navigate(AboutRoute.link())}/>
         </Box>
       </Overlay>
@@ -184,8 +188,7 @@ export class Header extends Component<{
       <Flex align='center' className={css`
         position: sticky;
         top: 0;
-        background: linear-gradient(to bottom, #df5d1e 0%, #c15019 100%);
-        border-bottom: 1px solid #666;
+        background: linear-gradient(to bottom, rgb(255, 102, 0) 0%, rgb(225,100,0) 100%);
         z-index: 9999;
         font-size: 20px;
         align-items: center;
@@ -233,7 +236,7 @@ export class Header extends Component<{
         </Box>
         {store.refreshAction != null &&
           <HeaderButton
-            icon={faSync}
+            icon={faSyncAlt}
             onClick={store.refreshAction}
           />
         }
@@ -286,7 +289,7 @@ export default class App extends React.Component<{
           <Header/>
           <Box flex='1' className={css`
             color: #000;
-            background: #fcfcfc;
+            background: #ffffff;
             height: 100%;
             overflow: hidden;
           `}>
