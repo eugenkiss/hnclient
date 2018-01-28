@@ -214,6 +214,7 @@ class Header extends Component<{
             href={story.url}
             target='_self'
             className={css`
+            font-weight: 600;
             &:visited {
               color: #777777;
             }
