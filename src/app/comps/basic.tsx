@@ -41,7 +41,7 @@ ${flexDirection}
 ${alignSelf}
 ` as any
 
-export const A = styled(props => <a rel='noopener' {...props}/>)`
+export const A = styled(props => <a target='_blank' rel='noopener' {...props}/>)`
 ${space} 
 ${width} 
 ${fontSize}
