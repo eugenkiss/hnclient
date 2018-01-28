@@ -48,5 +48,5 @@ export function makeExternalItemLink(itemId: string) {
 }
 
 export function makeExternalUserLink(userId: string) {
-  return `https://news.ycombinator.com/item?id=${userId}`
+  return `https://news.ycombinator.com/user?id=${userId}`
 }

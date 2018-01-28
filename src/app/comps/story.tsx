@@ -212,6 +212,7 @@ class Header extends Component<{
         <Box pr={1}>
           <A
             href={story.url}
+            target='_self'
             className={css`
             &:visited {
               color: #777777;
@@ -232,7 +233,7 @@ class Header extends Component<{
             {'\u00A0'}
             by
             {'\u00A0'}
-            <A fontWeight='bold' href={story.externalUserLink}>
+            <A fontWeight='bold' href={story.externalUserLink} target='_blank'>
               {story.user}
             </A>
             {'\u00A0'}
@@ -249,6 +250,7 @@ class Header extends Component<{
         <A
           color='#999'
           href={story.externalLink}
+          target='_blank'
           className={css`
           font-size: 1.5rem;
           width: 40px;
@@ -326,10 +328,12 @@ export class StoryComp extends Component<{
           className={css`
             height: 100%;
           `}>
-          <Header
-            story={this.story != null ? this.story : skeletonStory}
-            readOnly={this.story == null}
-          />
+          <Box flex='0'>
+            <Header
+              story={this.story != null ? this.story : skeletonStory}
+              readOnly={this.story == null}
+            />
+          </Box>
           <Flex
             flex='1'
             justify='center'

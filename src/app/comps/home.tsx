@@ -37,6 +37,7 @@ export class StoryEntry extends Component<{
         <Box pr={1}>
           <A
             href={story.url}
+            target='_self'
             className={css`
             &:visited {
               color: #777777;
@@ -49,7 +50,7 @@ export class StoryEntry extends Component<{
             </Box>
           </A>
           <Flex mt={1} f={1} align='center' color='#999'>
-            {story.points}
+            {story.points != null ? story.points : '…'}
           </Flex>
         </Box>
         <Box flex='1 1 auto'/>

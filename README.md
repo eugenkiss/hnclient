@@ -7,7 +7,6 @@ https://app.hackerwebapp.com
 
 Techs: mobx, typescript, inferno, router5, react, emotion, pwa, server side prerendering (SSPR), styled-system
 
-- disable refresh
 - hnpwa requirements: new, jobs
 - pwa 100 score (favicons, 192, 512)
 - pagination or just more
@@ -43,6 +42,10 @@ Constraints
   - Firebase (for now)
   
 TODO
+  - How to mark links such that they open "inline" in Chrome on Android?
+    Or how is this determined? At least links to news.ycombinator.com
+    don't open inline. I think because they aren't mobile optimized?
+  - Custom pull to refresh
   - Improve Makefile
   - Use react-dom-lite once ready instead of Inferno
   - BFF proxy to simulate delay / user etc. in dev mode
