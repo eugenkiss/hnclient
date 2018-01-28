@@ -59,7 +59,7 @@ export class StoryEntry extends Component<{
           f={1} p={1} m={-1}
           link={StoryRoute.link(story.id)}
           className={css`
-          width: 50px;
+          width: 48px;
           border-left: 1px solid #eee;
           background: rgba(0,0,0,.01);
           display: flex;

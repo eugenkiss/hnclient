@@ -254,7 +254,7 @@ class Header extends Component<{
           href={story.externalLink}
           target='_blank'
           className={css`
-          width: 50px;
+          width: 48px;
           border-left: 1px solid #eee;
           background: rgba(0,0,0,.01);
           display: flex;
