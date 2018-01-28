@@ -31,12 +31,13 @@ const skeletonStory: StringStory = {
   comments: '',
   externalUserLink: '',
   externalLink: '',
-  asStringStory: '',
-}
+  //asStringStory: '',
+} as any
 
 @observer
 class CommentComp extends Component<{
   store?: Store
+  level: number
   renderedCommentCount: number
   renderedCommentCounter: Counter
   comment: Comment
@@ -55,7 +56,8 @@ class CommentComp extends Component<{
   }
 
   render() {
-    const { comment, renderedCommentCounter } = this.props
+    const { level, comment, renderedCommentCounter } = this.props
+    const comments = comment.comments == null ? [] : comment.comments
     if (renderedCommentCounter.get() <= 0) return null
     renderedCommentCounter.dec()
     // TODO: Once Inferno supports Fragment, use it
@@ -63,8 +65,9 @@ class CommentComp extends Component<{
       <Flex flex='1' className={css`
       `}>
         <Box
-          flex={`0 0 ${comment.level === 0 ? '0' : '1'}rem`}
+          flex={`0 0 ${level === 0 ? '0' : '0.9'}rem`}
           className={css`
+          border-right: ${level === 0 ? 'none' : '1px solid #eee'};
         `}/>
         <Box flex='1'>
           <Box
@@ -124,7 +127,7 @@ class CommentComp extends Component<{
               `}
               />
             }
-            {comment.comments.length > 0 && !this.minimized &&
+            {comments.length > 0 && !this.minimized &&
               <Box
                 mt={1} mx={-1} px={1} mb={-1} pb={1}
                 f={1}
@@ -147,7 +150,8 @@ class CommentComp extends Component<{
             {/*`}/>*/}
           {this.collapsedChildren || this.minimized ? null :
             <CommentsComp
-              comments={comment.comments}
+              level={level + 1}
+              comments={comments}
               renderedCommentCount={renderedCommentCounter.get()}
               renderedCommentCounter={renderedCommentCounter}
             />
@@ -171,17 +175,20 @@ class Counter {
 
 class CommentsComp extends Component<{
   store?: Store
+  level: number
   renderedCommentCount: number
   renderedCommentCounter: Counter
   comments: Array<Comment>
 }> {
   render() {
-    const { comments, renderedCommentCounter } = this.props
+    const { level, comments, renderedCommentCounter } = this.props
+    if (comments == null) return null
     // TODO: Once Inferno supports Fragment, use it
     return (<div>
       {comments.map(c =>
         <CommentComp
           key={c.id}
+          level={level}
           comment={c}
           renderedCommentCount={renderedCommentCounter.get()}
           renderedCommentCounter={renderedCommentCounter}
@@ -369,13 +376,21 @@ export class StoryComp extends Component<{
         <Box>
           <Header story={story}/>
           <CommentsComp
+            level={0}
             comments={story.comments}
             renderedCommentCount={this.renderedCommentCounter.get()}
             renderedCommentCounter={this.renderedCommentCounter}
           />
-          <Box className={css`
+          <Box mt={1} className={css`
             height: 100vh;
             width: 100%;
+            background: repeating-linear-gradient(
+              -45deg,
+              #fafafa,
+              #fafafa 5px,
+              #fff 5px,
+              #fff 10px
+            );
           `}/>
         </Box>
       )

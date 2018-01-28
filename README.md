@@ -24,6 +24,8 @@ Techs: mobx, typescript, inferno, router5, react, emotion, pwa, server side prer
 - Create requester package? Make generic inpute type
 - React Native
 - Steal some ideas from reddit is fun
+- BFF, error boundary (e.g. to not break client-side navigation on error)
+- Make use of the "streaming" nature of the Firebase API
 
 
 Concepts

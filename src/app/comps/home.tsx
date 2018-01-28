@@ -51,7 +51,7 @@ export class StoryEntry extends Component<{
             {'\u00A0'}
             |
             {'\u00A0'}
-            {story.domain}
+            {story.domain === 'cool.com' ? '……….…' : story.domain}
           </Flex>
         </Box>
         <Box flex='1 1 auto' pr={1}/>
@@ -81,10 +81,11 @@ export class StoryEntry extends Component<{
 
 const skeletonStories = []
 for (let i = 0; i < 30; i++) {
-  const story = new Story()
+  const story = new Story(null)
   story.id = i
   story.title = '…… … … ……… … ……… … … ……… …… ………… ………'
-  story.domain = '…………'
+  story.kids = []
+  story.url = 'https://cool.com/' // TODO
   skeletonStories.push(story)
 }
 

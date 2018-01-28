@@ -1,7 +1,7 @@
 import {fromPromise, FULFILLED, IPromiseBasedObservable, PENDING} from 'mobx-utils'
 import {PromiseState} from 'mobx-utils/lib/from-promise'
 import {action, computed, IObservableValue, observable, ObservableMap, when} from 'mobx'
-import {fulfilledReq, sleep} from '../utils'
+import {failedReq, fulfilledReq, sleep} from '../utils'
 
 // PoC
 export class Requester<T> {
@@ -32,7 +32,7 @@ export class Requester<T> {
   }
 
   @action cancel() {
-    if (this.req.state === PENDING) this.req = fulfilledReq
+    if (this.req.state === PENDING) this.req = failedReq
   }
 
   get value(): T {
@@ -71,7 +71,7 @@ export class MapReq<I, T> {
 
   @action cancel(x: I) {
     const req = this.reqMap.get(x.toString()) || {} as any
-    if (req.state === PENDING) this.reqMap.set(x.toString(), fulfilledReq)
+    if (req.state === PENDING) this.reqMap.set(x.toString(), failedReq)
   }
 
   value(x: I): T {

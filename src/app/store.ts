@@ -46,7 +46,7 @@ export class Store extends BaseStore {
   getStories = new Requester<Array<Story>>(() => this.api.getStories())
   @observable getStoriesManualRefresh: IPromiseBasedObservable<Array<Story>> = fulfilledReq
 
-  getStory = new MapReq<Number, Story>((id: number) => this.api.getStory(id))
+  getStory = new MapReq<Number, Story>((id: number) => this.api.getStoryWithComments(id))
 
   refreshAction = null
 

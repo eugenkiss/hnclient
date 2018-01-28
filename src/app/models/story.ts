@@ -1,22 +1,44 @@
-import {alias, deserialize, identifier, list, object, primitive, serializable} from 'serializr'
+import {alias, createModelSchema, getDefaultModelSchema, identifier, list, primitive, serializable} from 'serializr'
 import {makeExternalItemLink, makeExternalUserLink} from '../utils'
+import {computed} from 'mobx'
+import * as ms from 'ms'
+import {now} from 'mobx-utils'
+import {ApiClient} from '../api/client'
 
+const timeUnitMap = {
+  s: 'seconds',
+  ms: 'milliseconds',
+  m: 'minutes',
+  h: 'hours',
+  d: 'days',
+}
+
+const clock = now(1000 * 60)
 
 export class Comment {
+  // noinspection JSUnusedLocalSymbols
+  constructor(private api: ApiClient) {}
+
   @serializable(identifier())
   id: number
   @serializable
-  level: number
-  @serializable
+  parent: number
+  @serializable(alias('by', primitive()))
   user: string
   @serializable
   time: number
-  @serializable(alias('time_ago', primitive()))
-  timeAgo: string
-  @serializable
+  @serializable(alias('text', primitive()))
   content: string
-  @serializable(list(object(Comment)))
+  @serializable(list(primitive()))
+  kids: Array<number>
+  @serializable(alias('descendants', primitive()))
+  commentsCount: number
+
   comments: Array<Comment>
+
+  @computed get timeAgo(): string {
+    return ms(clock - this.time * 1000).replace(/[a-z]+/, str => ` ${timeUnitMap[str]} ago`)
+  }
 
   get externalUserLink() {
     return makeExternalUserLink(this.user)
@@ -25,36 +47,47 @@ export class Comment {
   get externalLink() {
     return makeExternalItemLink(this.id.toString())
   }
-
-  // noinspection JSUnusedGlobalSymbols
-  static fromJson(data: any): Comment {
-    return deserialize(Comment, data)
-  }
 }
 
+// TODO: Probably not needed
+createModelSchema(Comment, getDefaultModelSchema(Comment).props, ctx => {
+  const comment = new Comment(ctx.args.api)
+  if (comment.kids == null) comment.kids = []
+  return comment
+})
+
 export class Story {
+  // noinspection JSUnusedLocalSymbols
+  constructor(private api: ApiClient) {}
+
   @serializable(identifier())
   id: number
   @serializable
   title: string
-  @serializable
+  @serializable(alias('score', primitive()))
   points: number
-  @serializable
+  @serializable(alias('by', primitive()))
   user: string
   @serializable
   time: number
-  @serializable(alias('time_ago', primitive()))
-  timeAgo: string
-  @serializable(alias('comments_count', primitive()))
+  @serializable(list(primitive()))
+  kids: Array<number>
+  @serializable(alias('descendants', primitive()))
   commentsCount: number
   @serializable
   type: string
   @serializable
   url: string
-  @serializable
-  domain: string
-  @serializable(list(object(Comment)))
+
   comments: Array<Comment>
+
+  @computed get domain(): string {
+    return new URL(this.url).host
+  }
+
+  @computed get timeAgo(): string {
+    return ms(clock - this.time * 1000).replace(/[a-z]+/, str => ` ${timeUnitMap[str]} ago`)
+  }
 
   get externalUserLink() {
     return makeExternalUserLink(this.user)
@@ -63,30 +96,13 @@ export class Story {
   get externalLink() {
     return makeExternalItemLink(this.id.toString())
   }
-
-  asStringStory(): StringStory {
-    return {
-      id: this.id.toString(),
-      title: this.title,
-      points: this.points.toString(),
-      user: this.user,
-      time: this.time.toString(),
-      timeAgo: this.timeAgo,
-      commentsCount: this.commentsCount.toString(),
-      type: this.type,
-      url: this.url,
-      domain: this.domain,
-      comments: '',
-      externalUserLink: this.externalUserLink,
-      externalLink: this.externalLink,
-      asStringStory: '',
-    }
-  }
-
-  // noinspection JSUnusedGlobalSymbols
-  static fromJson(data: any): Story {
-    return deserialize(Story, data)
-  }
 }
+
+// TODO: Probably not needed
+createModelSchema(Story, getDefaultModelSchema(Story).props, ctx => {
+  const story = new Story(ctx.args.api)
+  if (story.kids == null) story.kids = []
+  return story
+})
 
 export type StringStory = {[P in keyof Story]: string}

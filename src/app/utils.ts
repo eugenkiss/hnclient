@@ -17,8 +17,8 @@ export const failedReq: IPromiseBasedObservable<any> = {
 
 export function buildUrl(baseUrl: string, endpoint: string = '', params: object = {}) {
   const url = new URL(baseUrl)
-  const parsedQuery = new URLSearchParams(querystring.stringify(params))
-  for (const key of Object.keys(params)) {
+  const parsedQuery = new URLSearchParams(querystring.stringify(params || {}))
+  for (const key of Object.keys(params || {})) {
     url.searchParams.set(key, parsedQuery.get(key))
   }
   url.pathname = joinPathnames(url.pathname, endpoint)
