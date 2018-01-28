@@ -75,15 +75,16 @@ class CommentComp extends Component<{
               <A href={comment.externalUserLink} mr={1} fontWeight='bold'>
                 {comment.user}
               </A>
-              <A href={comment.externalLink} className={css`
+              <A href={comment.externalLink} mr={1} className={css`
               `}>
                 {comment.timeAgo}
               </A>
-              <Box flex='1 1 auto'/>
               <Box
-                mr={1}
+                p={1} m={-1}
+                flex='1 1 auto'
                 onClick={this.handleMinimzeClick}
                 className={css`
+                text-align: right;
                 color: #ddd;
               `}>
                 {this.minimized ? (
@@ -119,7 +120,8 @@ class CommentComp extends Component<{
             }
             {comment.comments.length > 0 && !this.minimized &&
               <Box
-                mt={1} f={1}
+                mt={1} mx={-1} px={1} mb={-1} pb={1}
+                f={1}
                 onClick={this.handleCollapseClick}
                 className={css`
                 color: #ddd;

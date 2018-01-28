@@ -7,13 +7,13 @@ https://app.hackerwebapp.com
 
 Techs: mobx, typescript, inferno, router5, react, emotion, pwa, server side prerendering (SSPR), styled-system
 
+- Update button and disable refresh
 - hnpwa requirements: new, jobs
 - pwa 100 score (favicons, 192, 512)
 - pagination or just more
+- Improve README
 - check client-base.ts
-- Update button and disable refresh
 - Failed to load stories / story: retry
-- Skeleton loading comments
 - Extract style (color constants etc.)
 - upvote/downvote, user account, comment etc.
 - Create requester package? Make generic inpute type
@@ -51,7 +51,7 @@ TODO
       - https://github.com/bagongkia/react-ssr-with-java
       - https://github.com/kristoferbaxter/react-hn
       - https://github.com/cheeaun/node-hnapi
-  - Animations/transitions. E.g. spinner fade out
+  - Animations/transitions. E.g. spinner fade out, overflow menu
 
 Opportunities
   - Reduce bundle size
