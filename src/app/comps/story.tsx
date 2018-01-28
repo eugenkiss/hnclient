@@ -5,7 +5,7 @@ import {inject, observer} from 'mobx-react'
 import {REJECTED} from 'mobx-utils'
 import {css} from 'emotion'
 import * as FontAwesome from '@fortawesome/react-fontawesome'
-import {faShareAlt} from '@fortawesome/fontawesome-free-solid'
+import {faShareAlt, faSpinner} from '@fortawesome/fontawesome-free-solid'
 import {faMinusSquare, faPlusSquare} from '@fortawesome/fontawesome-free-regular'
 import {Store} from '../store'
 import {Comment, Story} from '../models/story'
@@ -134,7 +134,6 @@ class Counter {
   }
   get() { return this.x }
   set(x: number) { if (this.frozen) return; this.x = x}
-  inc() { if (this.frozen) return; this.x++ }
   dec() { if (this.frozen) return; this.x-- }
 }
 
@@ -224,14 +223,21 @@ export class StoryComp extends Component<{
     const req = store.getStory
     if (req.value(id) == null) {
       return (
-        <Box>
+        <Flex
+          justify='center'
+          align='center'
+          f={4}
+          className={css`
+            height: 100%;
+            color: #666;
+        `}>
           {false && this.renderHeader(this.story != null ? this.story.title : skeletonStory.title)}
           {req.state(id) === REJECTED ? (
             <div>Failed to load story!</div>
           ) : (
-            <div>Loading story…</div>
+            <FontAwesome icon={faSpinner} pulse/>
           )}
-        </Box>
+        </Flex>
       )
     } else {
       const story = req.value(id)
