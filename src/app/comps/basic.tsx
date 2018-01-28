@@ -41,6 +41,15 @@ ${flexDirection}
 ${alignSelf}
 ` as any
 
+export const A = styled('a')`
+${space} 
+${width} 
+${fontSize}
+${fontWeight}
+${color} 
+${flex}
+` as any
+
 export const Portal = ReactPortal.Portal
 
 @observer

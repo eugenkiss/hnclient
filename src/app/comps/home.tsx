@@ -126,8 +126,8 @@ const skeletonStories = []
 for (let i = 0; i < 30; i++) {
   const story = new Story()
   story.id = i
-  story.title = '…'
-  story.domain = '…'
+  story.title = '…… … … ……… … ……… … … ……… …… ………… ………'
+  story.domain = '…………'
   skeletonStories.push(story)
 }
 

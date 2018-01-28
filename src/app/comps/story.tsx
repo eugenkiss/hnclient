@@ -5,11 +5,10 @@ import {inject, observer} from 'mobx-react'
 import {REJECTED} from 'mobx-utils'
 import {css} from 'emotion'
 import * as FontAwesome from '@fortawesome/react-fontawesome'
-import {faShareAlt, faSpinner} from '@fortawesome/fontawesome-free-solid'
-import {faMinusSquare, faPlusSquare} from '@fortawesome/fontawesome-free-regular'
+import {faCompress, faExpand, faSpinner} from '@fortawesome/fontawesome-free-solid'
 import {Store} from '../store'
 import {Comment, Story} from '../models/story'
-import {Box, Flex} from './basic'
+import {A, Box, Flex} from './basic'
 
 type StringStory = {[P in keyof Story]: string}
 
@@ -34,10 +33,16 @@ class CommentComp extends Component<{
   renderedCommentCounter: Counter
   comment: Comment
 }> {
-  @observable collapsed = false
+  @observable minimized = false
+  @observable collapsedChildren = false
+
+  handleMinimzeClick = (e) => {
+    this.minimized = !this.minimized
+    e.stopPropagation()
+  }
 
   handleCollapseClick = (e) => {
-    this.collapsed = !this.collapsed
+    this.collapsedChildren = !this.collapsedChildren
     e.stopPropagation()
   }
 
@@ -67,28 +72,28 @@ class CommentComp extends Component<{
               className={css`
               color: #999;
             `}>
-              <Box
-                mr={1}
-                onClick={this.handleCollapseClick}>
-                {this.collapsed ? (
-                  <FontAwesome icon={faPlusSquare}/>
-                ) : (
-                  <FontAwesome icon={faMinusSquare}/>
-                )}
-              </Box>
-              <Box mr={1} fontWeight='bold'>
-                <span>{comment.user}</span>
-              </Box>
-              <span className={css`
+              <A href={comment.externalUserLink} target='_blank' mr={1} fontWeight='bold'>
+                {comment.user}
+              </A>
+              <A href={comment.externalLink} target='_blank' className={css`
               `}>
                 {comment.timeAgo}
-              </span>
+              </A>
               <Box flex='1 1 auto'/>
-              <Box onClick={() => alert('TODO')}>
-                <FontAwesome icon={faShareAlt}/>
+              <Box
+                mr={1}
+                onClick={this.handleMinimzeClick}
+                className={css`
+                color: #ddd;
+              `}>
+                {this.minimized ? (
+                  <FontAwesome icon={faExpand}/>
+                ) : (
+                  <FontAwesome icon={faCompress}/>
+                )}
               </Box>
             </Flex>
-            {!this.collapsed &&
+            {!this.minimized &&
               <Box
                 mt={1} f={2}
                 dangerouslySetInnerHTML={{__html: comment.content}}
@@ -112,8 +117,22 @@ class CommentComp extends Component<{
               `}
               />
             }
+            {comment.comments.length > 0 && !this.minimized &&
+              <Box
+                mt={1} f={1}
+                onClick={this.handleCollapseClick}
+                className={css`
+                color: #ddd;
+              `}>
+                {this.collapsedChildren ? (
+                  <FontAwesome icon={faExpand}/>
+                ) : (
+                  <FontAwesome icon={faCompress}/>
+                )}
+              </Box>
+            }
           </Box>
-          {this.collapsed ? null :
+          {this.collapsedChildren || this.minimized ? null :
             <CommentsComp
               comments={comment.comments}
               renderedCommentCount={renderedCommentCounter.get()}

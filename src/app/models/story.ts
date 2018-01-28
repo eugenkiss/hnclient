@@ -17,6 +17,14 @@ export class Comment {
   @serializable(list(object(Comment)))
   comments: Array<Comment>
 
+  get externalUserLink() {
+    return `https://news.ycombinator.com/user?id=${this.user}`
+  }
+
+  get externalLink() {
+    return `https://news.ycombinator.com/item?id=${this.id}`
+  }
+
   // noinspection JSUnusedGlobalSymbols
   static fromJson(data: any): Comment {
     return deserialize(Comment, data)
