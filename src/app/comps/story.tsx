@@ -277,6 +277,10 @@ export class StoryComp extends Component<{
             renderedCommentCount={this.renderedCommentCounter.get()}
             renderedCommentCounter={this.renderedCommentCounter}
           />
+          <Box className={css`
+            height: 100vh;
+            width: 100%;
+          `}/>
         </Box>
       )
     }
