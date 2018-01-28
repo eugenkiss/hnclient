@@ -212,7 +212,6 @@ class Header extends Component<{
         <Box pr={1}>
           <A
             href={story.url}
-            target='_self'
             className={css`
             font-weight: 600;
             &:visited {
