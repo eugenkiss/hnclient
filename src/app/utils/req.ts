@@ -14,7 +14,7 @@ export class Requester<T> {
   private whenDisposer = () => {}
   @action refresh(minDuration?: number): IPromiseBasedObservable<T> {
     this.unstarted = false
-    const promise = minDuration  == null ? this.promiser() :
+    const promise = minDuration == null ? this.promiser() :
       (async () => {
         const now = new Date().getTime()
         const result = await this.promiser()

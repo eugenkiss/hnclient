@@ -51,6 +51,7 @@ TODO
       - https://github.com/bagongkia/react-ssr-with-java
       - https://github.com/kristoferbaxter/react-hn
       - https://github.com/cheeaun/node-hnapi
+  - Animations/transitions. E.g. spinner fade out
 
 Opportunities
   - Reduce bundle size

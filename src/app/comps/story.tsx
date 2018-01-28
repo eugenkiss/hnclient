@@ -14,15 +14,15 @@ type StringStory = {[P in keyof Story]: string}
 
 const skeletonStory: StringStory = {
   id: '…',
-  title: '………',
+  title: '…… … … ……… … ……… … … ……… …… ………… ………',
   points: '…',
-  user: '…',
+  user: '……',
   time: '…',
-  timeAgo: '…',
+  timeAgo: '… …… …',
   commentsCount: '…',
   type: '…',
   url: 'http://…',
-  domain: '…',
+  domain: '………',
   comments: '…'
 }
 
@@ -72,10 +72,10 @@ class CommentComp extends Component<{
               className={css`
               color: #999;
             `}>
-              <A href={comment.externalUserLink} target='_blank' mr={1} fontWeight='bold'>
+              <A href={comment.externalUserLink} mr={1} fontWeight='bold'>
                 {comment.user}
               </A>
-              <A href={comment.externalLink} target='_blank' className={css`
+              <A href={comment.externalLink} className={css`
               `}>
                 {comment.timeAgo}
               </A>
@@ -218,7 +218,7 @@ export class StoryComp extends Component<{
     this.renderedCommentCounter.set(this.toRenderCommentsLength)
 
     const { store } = this.props
-    store.headerTitle = '…'
+    store.headerTitle = skeletonStory.title
     this.disposers.push(when(() => this.story != null, () => {
       store.headerTitle = this.story.title
     }))
