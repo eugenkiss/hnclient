@@ -7,6 +7,7 @@ https://app.hackerwebapp.com
 
 Techs: mobx, typescript, inferno, router5, react, emotion, pwa, server side prerendering (SSPR), styled-system
 
+- Use official API
 - hnpwa requirements: new, jobs
 - pwa 100 score (favicons, 192, 512)
 - pagination or just more

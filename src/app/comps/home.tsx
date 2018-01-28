@@ -6,7 +6,7 @@ import {PENDING, REJECTED, whenAsync} from 'mobx-utils'
 import {css} from 'emotion'
 import * as FontAwesome from '@fortawesome/react-fontawesome'
 import {StoryRoute} from '../routes'
-import {A, Box, Flex, Span} from './basic'
+import {A, Box, Flex} from './basic'
 import {Link} from './link'
 import {Story} from '../models/story'
 import {Store} from '../store'
@@ -46,11 +46,15 @@ export class StoryEntry extends Component<{
             <Box f={2}>
               {story.title}
               {'\u00A0'}
-              <Span f={1} color='#999' fontWeight='normal'>({story.domain})</Span>
+
             </Box>
           </A>
           <Flex mt={1} f={1} align='center' color='#999'>
             {story.points != null ? story.points : '…'} points
+            {'\u00A0'}
+            |
+            {'\u00A0'}
+            {story.domain}
           </Flex>
         </Box>
         <Box flex='1 1 auto' pr={1}/>
