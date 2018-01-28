@@ -3,7 +3,6 @@ import {Component} from 'react'
 import {computed, observable, when} from 'mobx'
 import {inject, observer} from 'mobx-react'
 import {REJECTED} from 'mobx-utils'
-import {serialize} from 'serializr'
 import {css} from 'emotion'
 import * as FontAwesome from '@fortawesome/react-fontawesome'
 import {faShareAlt} from '@fortawesome/fontawesome-free-solid'
@@ -31,6 +30,8 @@ const skeletonStory: StringStory = {
 @observer
 class CommentComp extends Component<{
   store?: Store
+  renderedCommentCount: number
+  renderedCommentCounter: Counter
   comment: Comment
 }> {
   @observable collapsed = false
@@ -41,83 +42,119 @@ class CommentComp extends Component<{
   }
 
   render() {
-    const { comment } = this.props
+    const { comment, renderedCommentCounter } = this.props
+    if (renderedCommentCounter.get() <= 0) return null
+    renderedCommentCounter.dec()
     // TODO: Once Inferno supports Fragment, use it
     return (<div>
-      <Box
-        key={comment.id}
-        p={1}
-        className={css`
-        margin-left: ${comment.level}rem;
-        background: white;
-        border-bottom: 1px solid #eee;
+      <Flex flex='1' className={css`
       `}>
-        <Flex
-          f={1}
+        <Box
+          flex={`0 0 ${comment.level === 0 ? '0' : '1'}rem`}
           className={css`
-          color: #999;
-        `}>
+          background: #eee;
+        `}/>
+        <Box flex='1'>
           <Box
-            mr={1}
-            onClick={this.handleCollapseClick}>
-            {this.collapsed ? (
-              <FontAwesome icon={faPlusSquare}/>
-            ) : (
-              <FontAwesome icon={faMinusSquare}/>
-            )}
-          </Box>
-          <Box mr={1} fontWeight='bold'>
-            <span>{comment.user}</span>
-          </Box>
-          <span className={css`
-          `}>
-            {comment.timeAgo}
-          </span>
-          <Box flex='1 1 auto'/>
-          <Box onClick={() => alert('TODO')}>
-            <FontAwesome icon={faShareAlt}/>
-          </Box>
-        </Flex>
-        {!this.collapsed &&
-          <Box
-            mt={1} f={2}
-            dangerouslySetInnerHTML={{__html: comment.content}}
+            key={comment.id}
+            p={1}
             className={css`
-            & a {
-              text-decoration: underline;
-              color: deepskyblue;
+            background: white;
+            border-bottom: 1px solid #eee;
+          `}>
+            <Flex
+              f={1}
+              className={css`
+              color: #999;
+            `}>
+              <Box
+                mr={1}
+                onClick={this.handleCollapseClick}>
+                {this.collapsed ? (
+                  <FontAwesome icon={faPlusSquare}/>
+                ) : (
+                  <FontAwesome icon={faMinusSquare}/>
+                )}
+              </Box>
+              <Box mr={1} fontWeight='bold'>
+                <span>{comment.user}</span>
+              </Box>
+              <span className={css`
+              `}>
+                {comment.timeAgo}
+              </span>
+              <Box flex='1 1 auto'/>
+              <Box onClick={() => alert('TODO')}>
+                <FontAwesome icon={faShareAlt}/>
+              </Box>
+            </Flex>
+            {!this.collapsed &&
+              <Box
+                mt={1} f={2}
+                dangerouslySetInnerHTML={{__html: comment.content}}
+                className={css`
+                & a {
+                  text-decoration: underline;
+                  color: deepskyblue;
+                }
+                & a:visited {
+                  color: skyblue;
+                }
+                & p {
+                  margin-top: 0.5rem;
+                  word-break: break-word;
+                }
+                & pre {
+                  font-size: 0.85em;
+                  white-space: pre-wrap;
+                  margin-top: 0.5rem;
+                }
+              `}
+              />
             }
-            & a:visited {
-              color: skyblue;
-            }
-            & p {
-              margin-top: 0.5rem;
-              word-break: break-word;
-            }
-            & pre {
-              font-size: 0.85em;
-              white-space: pre-wrap;
-              margin-top: 0.5rem;
-            }
-          `}
-          />
-        }
-      </Box>
-      {this.collapsed ? null : <CommentsComp comments={comment.comments}/>}
+          </Box>
+          {this.collapsed ? null :
+            <CommentsComp
+              comments={comment.comments}
+              renderedCommentCount={renderedCommentCounter.get()}
+              renderedCommentCounter={renderedCommentCounter}
+            />
+          }
+        </Box>
+      </Flex>
     </div>)
   }
 }
 
+class Counter {
+  private x = 0
+  frozen = false
+  constructor(x: number) {
+    this.x = x
+  }
+  get() { return this.x }
+  set(x: number) { if (this.frozen) return; this.x = x}
+  inc() { if (this.frozen) return; this.x++ }
+  dec() { if (this.frozen) return; this.x-- }
+}
+
 class CommentsComp extends Component<{
   store?: Store
+  renderedCommentCount: number
+  renderedCommentCounter: Counter
   comments: Array<Comment>
 }> {
   render() {
-    const { comments } = this.props
-    if (comments.length === 0) return null
+    const { comments, renderedCommentCounter } = this.props
     // TODO: Once Inferno supports Fragment, use it
     return (<div>
-      {comments.map(c => <CommentComp key={c.id} comment={c}/>)}
+      {comments.map(c =>
+        <CommentComp
+          key={c.id}
+          comment={c}
+          renderedCommentCount={renderedCommentCounter.get()}
+          renderedCommentCounter={renderedCommentCounter}
+        />)}
     </div>)
   }
 }
@@ -127,10 +164,19 @@ export class StoryComp extends Component<{
   store?: Store
   id: number
 }> {
-  toRenderCommentsLength = 1
+  // Poor man's React Fibers to decrease transition time to this component (latency, faster initial render)
+  mounted = true
+  toRenderCommentsLength = 4
+  renderedCommentCounter = new Counter(this.toRenderCommentsLength)
   handleIncreaseRenderCommentsLength = () => {
-    this.toRenderCommentsLength++
-    this.forceUpdate()
+    if (!this.mounted) return
+    // https://stackoverflow.com/a/34999925/283607
+    requestAnimationFrame(() => {
+      if (!this.mounted) return
+      this.toRenderCommentsLength += this.toRenderCommentsLength
+      this.renderedCommentCounter.set(this.toRenderCommentsLength)
+      this.forceUpdate()
+    })
   }
 
   disposers = []
@@ -148,6 +194,11 @@ export class StoryComp extends Component<{
   }
 
   componentDidMount() {
+    this.mounted = true
+    this.toRenderCommentsLength = 4
+    this.renderedCommentCounter.frozen = false
+    this.renderedCommentCounter.set(this.toRenderCommentsLength)
+
     const { store } = this.props
     store.headerTitle = '…'
     this.disposers.push(when(() => this.story != null, () => {
@@ -156,6 +207,7 @@ export class StoryComp extends Component<{
   }
 
   componentWillUnmount() {
+    this.mounted = false
     for (const disposer of this.disposers) disposer()
   }
 
@@ -183,24 +235,21 @@ export class StoryComp extends Component<{
       )
     } else {
       const story = req.value(id)
-      // Poor man's fibers to make transition faster when a lot of comments (latency)
-      const commentsLength = story.comments.length
-      const finished = this.toRenderCommentsLength >= commentsLength
-      const comments = finished
-        ? story.comments
-        : story.comments.slice(0, Math.min(this.toRenderCommentsLength, commentsLength))
-      if (!finished && this.toRenderCommentsLength === 1) {
-        const comment = Comment.fromJson(serialize(comments[0]))
-        comment.comments = []
-        comments[0] = comment
+
+      if (this.toRenderCommentsLength < story.commentsCount) {
+        setTimeout(this.handleIncreaseRenderCommentsLength)
+      } else {
+        this.renderedCommentCounter.frozen = true
       }
-      if (!finished) {
-        requestAnimationFrame(this.handleIncreaseRenderCommentsLength)
-      }
+
       return (
         <Box>
           {false && this.renderHeader(story.title)}
-          <CommentsComp comments={comments}/>
+          <CommentsComp
+            comments={story.comments}
+            renderedCommentCount={this.renderedCommentCounter.get()}
+            renderedCommentCounter={this.renderedCommentCounter}
+          />
         </Box>
       )
     }
@@ -212,7 +261,8 @@ export class StoryComp extends Component<{
         overflow-y: auto;
         overflow-x: hidden;
         height: 100%;
-        background: #eee;
+        width: 100%;
+        background: white;
       `}>
         {this.renderBody()}
       </Box>
