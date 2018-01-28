@@ -1,10 +1,10 @@
 import {autorun, observable} from 'mobx'
 import {IPromiseBasedObservable, PENDING} from 'mobx-utils'
 import * as NProgress from 'nprogress'
-import {Route} from "router5"
-import {Router} from 'router5/create-router'
+import {DoneFn, NavigationOptions, Route, Router} from 'router5'
 import {makeRouter, RouterStore} from './router'
 import * as routes from './routes'
+import {LinkData} from './routes'
 import {canUseDOM, fulfilledReq} from './utils'
 import {BaseStore} from './utils/base-store'
 import {MapReq, Requester} from './utils/req'
@@ -47,6 +47,13 @@ export class Store extends BaseStore {
   @observable getStoriesManualRefresh: IPromiseBasedObservable<Array<Story>> = fulfilledReq
 
   getStory = new MapReq<Number, Story>((id: number) => this.api.getStory(id))
+
+  refreshAction = null
+
+  navigate = (linkData: LinkData, options?: NavigationOptions, done?: DoneFn) => {
+    const {name, params} = linkData
+    this.router.navigate(name, params, options, done)
+  }
 
   startProgress = () => {
     if (!canUseDOM) return

@@ -11,7 +11,6 @@ import {
   faClock,
   faDownload,
   faEllipsisV,
-  faExternalLinkSquareAlt,
   faInfoCircle,
   faSync,
   faUser
@@ -20,7 +19,7 @@ import {IconDefinition} from '@fortawesome/fontawesome-common-types';
 import {css} from 'emotion'
 import {injectGlobal} from 'react-emotion'
 import {IS_DEV} from './cfg'
-import {HomeRoute} from './routes'
+import {AboutRoute, HomeRoute, StoryRoute} from './routes'
 import {Box, Flex, Overlay} from './comps/basic'
 import {canUseDOM} from './utils'
 import {Store} from './store'
@@ -97,7 +96,9 @@ class HeaderButton extends Component<{
   }
 }
 
+@inject('store')
 class OverflowMenuEntry extends React.Component<{
+  store?: Store
   title: string
   icon: IconDefinition
   onClick: () => void
@@ -140,7 +141,7 @@ class OverflowMenu extends React.Component<{
   }
 
   render() {
-    const { isOpen } = this.props
+    const { store, isOpen } = this.props
     if (!isOpen.get()) return null
     return (
       <Overlay isOpen={isOpen} onClick={this.handleModal}>
@@ -159,12 +160,11 @@ class OverflowMenu extends React.Component<{
             border-bottom: 2px solid rgba(0,0,0,0);
           }
         `}>
-          <OverflowMenuEntry title='User' icon={faUser} onClick={() => alert('TODO')}/>
+          {false && <OverflowMenuEntry title='Profile' icon={faUser} onClick={() => alert('TODO')}/>}
           <OverflowMenuEntry title='New' icon={faClock} onClick={() => alert('TODO')}/>
           <OverflowMenuEntry title='Jobs' icon={faBriefcase} onClick={() => alert('TODO')}/>
           <OverflowMenuEntry title='Update' icon={faDownload} onClick={() => alert('TODO')}/>
-          <OverflowMenuEntry title='About' icon={faInfoCircle} onClick={() => alert('TODO')}/>
-          <OverflowMenuEntry title='Open External' icon={faExternalLinkSquareAlt} onClick={() => alert('TODO')}/>
+          <OverflowMenuEntry title='About' icon={faInfoCircle} onClick={() => store.navigate(AboutRoute.link())}/>
         </Box>
       </Overlay>
     )
@@ -200,7 +200,7 @@ export class Header extends Component<{
           />
         }
         <Box flex='1' align='center'>
-          {routerStore.current.name !== HomeRoute.id ? (
+          {routerStore.current.name === StoryRoute.id ? (
             <Box f={2}
               className={css`
               font-weight: bold;
@@ -227,14 +227,16 @@ export class Header extends Component<{
               text-decoration: none;
               color: #fff;
             `}>
-              HN
+              {store.headerTitle}
             </Box>
           )}
         </Box>
-        <HeaderButton
-          icon={faSync}
-          onClick={() => store.getStoriesManualRefresh = store.getStories.refresh(300)}
-        />
+        {store.refreshAction != null &&
+          <HeaderButton
+            icon={faSync}
+            onClick={store.refreshAction}
+          />
+        }
         <HeaderButton
           icon={faEllipsisV}
           onClick={() => this.isOverflowOpen.set(true)}
