@@ -4,34 +4,29 @@ https://hn.eugenkiss.com
 
 https://github.com/manmal/hn-android/
 https://app.hackerwebapp.com
+hnpwa
 
 Techs: mobx, typescript, inferno, router5, react, emotion, pwa, server side prerendering (SSPR), styled-system
 
+- http://localhost:5001/story/16261136
 - Use official API
+  https://github.com/HackerNews/API/
 - hnpwa requirements: new, jobs
 - pwa 100 score (favicons, 192, 512)
 
 - pull to refresh
 - empty comments -> no comments message
 - pagination or just more
-- vertical comment lines (indent)
-- story cache db?
+- time ago is wrong
+- overflow issues in comments
 - Improve README
-- check client-base.ts
-- Failed to load stories / story: retry
 - Extract style (color constants etc.)
-- upvote/downvote, user account, comment etc.
 - Create requester package? Make generic inpute type
-- React Native
-- Steal some ideas from reddit is fun
-- BFF, error boundary (e.g. to not break client-side navigation on error)
-- Make use of the "streaming" nature of the Firebase API
 
 
 Concepts
-  - Shell pregen finite list
-of rendered HTML files and respective server.js based on routing
-definitions
+  - Shell pregen finite list of rendered HTML files and 
+    respective server.js based on routing definitions
   - Store, link to mobx
   - Routing TODO: Routing article (my reddit comment)
   - Req own thing (PoC)
@@ -50,32 +45,35 @@ Constraints
   - Fast as possible without giving up DX/abstractions
   - Firebase (for now)
   
-TODO
-  - How to make new.ycombinator.com open with a top-left X in Chrome on Android?
-    I think it doesn't work for them because hn isn't mobile optimized?
+TODO (later if ever)
   - Improve Makefile
   - Would MobX State Tree help somehow? In retaining scroll position for example?
   - Use react-dom-lite once ready instead of Inferno
   - BFF proxy to simulate delay / user etc. in dev mode
+      - Failed to load stories: retry button
   - Real SSR with hosted API?
       - http4k
       - https://github.com/bagongkia/react-ssr-with-java
       - https://github.com/kristoferbaxter/react-hn
       - https://github.com/cheeaun/node-hnapi
   - Animations/transitions. E.g. spinner fade out, overflow menu
-
-Opportunities
+  - Use this API approach: https://github.com/manmal/hn-android/tree/master/app/src/main/java/com/manuelmaly/hn
+      - upvote/downvote, user account, comment etc.
+  - React Native version
+  - Steal some UI ideas from reddit is fun
   - Reduce bundle size
       - Code splitting
-  - Real SSR
-  - Starting HN API request earlier
-      - If not constrained to Firebase could start initial API
-        request server side, stream HTML and stream API result as JSON to end
-        of HTML (embedded). Once JS is loaded uses instrumented fetch to get initial result
-        from embedded JSON. See react static server TODO
-  - Faster HN Api / Streaming API
+  - Abstract/extract code into reusable libraries?
+      - Routing, pregen, req, scroll restoration
+  - Error boundary (e.g. to not break client-side navigation on error)
+  - How to make new.ycombinator.com open with a top-left X in Chrome on Android?
+    I think it doesn't work for them because hn isn't mobile optimized?
+  - Reactive item database. To solve E.g. you go to story, comment count is updated,
+    you go back to overview, but overview shows old comment count
+
+Observations
+  - Official HN Firebase API is bad. It's admitted and has a reason.
   - Service Worker config and workflow is PITA: TODO link from gaeron
       - https://github.com/facebook/create-react-app/issues/2554
       - https://twitter.com/dan_abramov/status/954146978564395008
-  - Abstract/extract code into reusable libraries?
-      - Routing, pregen, req, scroll restoration
+  - Browser history navigation seriously too limited for apps

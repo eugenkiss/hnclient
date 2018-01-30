@@ -1,8 +1,8 @@
 import {alias, createModelSchema, getDefaultModelSchema, identifier, list, primitive, serializable} from 'serializr'
-import {makeExternalItemLink, makeExternalUserLink} from '../utils'
 import {computed} from 'mobx'
-import * as ms from 'ms'
 import {now} from 'mobx-utils'
+import * as ms from 'ms'
+import {makeExternalItemLink, makeExternalUserLink} from '../utils'
 import {ApiClient} from '../api/client'
 
 const timeUnitMap = {
@@ -82,7 +82,12 @@ export class Story {
   comments: Array<Comment>
 
   @computed get domain(): string {
-    return new URL(this.url).host
+    try {
+      const host = new URL(this.url).host
+      return host.startsWith('www.') ? host.slice('www.'.length) : host
+    } catch (e) {
+      return ''
+    }
   }
 
   @computed get timeAgo(): string {

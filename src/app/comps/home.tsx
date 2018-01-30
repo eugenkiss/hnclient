@@ -46,7 +46,7 @@ export class StoryEntry extends Component<{
               {story.title}
             </Box>
           </A>
-          <Flex mt={1} f={1} align='center' color='#999'>
+          <Flex mt={1} f={0} align='center' color='#999'>
             {story.points != null ? story.points : '…'} points
             {'\u00A0'}
             |
