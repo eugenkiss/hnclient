@@ -31,13 +31,11 @@ export class Comment {
   content: string
   @serializable(list(primitive()))
   kids: Array<number>
-  @serializable(alias('descendants', primitive()))
-  commentsCount: number
 
   comments: Array<Comment>
 
   @computed get timeAgo(): string {
-    return ms(clock - this.time * 1000).replace(/[a-z]+/, str => ` ${timeUnitMap[str]} ago`)
+    return ms(/*new Date().getTime()*/ clock - this.time * 1000).replace(/[a-z]+/, str => ` ${timeUnitMap[str]} ago`)
   }
 
   get externalUserLink() {
@@ -70,6 +68,8 @@ export class Story {
   user: string
   @serializable
   time: number
+  @serializable(alias('text', primitive()))
+  content: string
   @serializable(list(primitive()))
   kids: Array<number>
   @serializable(alias('descendants', primitive()))
@@ -86,7 +86,7 @@ export class Story {
       const host = new URL(this.url).host
       return host.startsWith('www.') ? host.slice('www.'.length) : host
     } catch (e) {
-      return ''
+      return null
     }
   }
 

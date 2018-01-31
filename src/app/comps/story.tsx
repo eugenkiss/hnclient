@@ -214,69 +214,98 @@ class Header extends Component<{
   render() {
     const { story } = this.props
     return (
-      <Flex
-        flex='1 1 auto'
+      <Box
         p={1} pb={2} pt={1}
         onClickCapture={this.handleContainerClick}
         className={css`
         border-bottom: 1px solid rgba(0,0,0,0.05);
       `}>
-        <Box pr={1}>
-          <A
-            href={story.url}
-            className={css`
-            font-weight: 600;
-            &:visited {
-              color: #777777;
-            }
-          `}>
-            <Box f={2}>
-              {story.title}
-              {'\u00A0'}
-              <Span f={1} color='#999' fontWeight='normal'>({story.domain})</Span>
-            </Box>
-          </A>
-          <Flex mt={1} f={1} align='center' color='#999'>
-            {story.points}
-            {'\u00A0'}
-            <FontAwesome icon={faArrowAltCircleUp}/>
-            {'\u00A0'}
-            |
-            {'\u00A0'}
-            by
-            {'\u00A0'}
-            <A fontWeight='bold' href={story.externalUserLink} target='_blank'>
-              {story.user}
+        <Flex
+          flex='1 1 auto'
+          >
+          <Box pr={1}>
+            <A
+              href={story.url}
+              className={css`
+              font-weight: 600;
+              &:visited {
+                color: #777777;
+              }
+            `}>
+              <Box f={2}>
+                {story.title}
+                {'\u00A0'}
+                {story.domain != null &&
+                  <Span f={1} color='#999' fontWeight='normal'>({story.domain})</Span>
+                }
+              </Box>
             </A>
-            {'\u00A0'}
-            {story.timeAgo}
-            {'\u00A0'}
-            |
-            {'\u00A0'}
-            {story.commentsCount}
-            {'\u00A0'}
-            <FontAwesome icon={faComments}/>
-          </Flex>
-        </Box>
-        <Box flex='1 1 auto' pr={1}/>
-        <A
-          f={1} p={1} m={-1} pb={2} mb={-2}
-          color='#999'
-          href={story.externalLink}
-          target='_blank'
-          className={css`
-          width: 48px;
-          border-left: 1px solid #eee;
-          background: rgba(0,0,0,.01);
-          display: flex;
-          flex: 0 0 auto;
-          flex-direction: column;
-          justify-content: center;
-          align-items: center;
-        `}>
-          <FontAwesome icon={faShare} size='lg'/>
-        </A>
-      </Flex>
+            <Flex mt={1} f={0} align='center' color='#999'>
+              {story.points}
+              {'\u00A0'}
+              <FontAwesome icon={faArrowAltCircleUp}/>
+              {'\u00A0'}
+              |
+              {'\u00A0'}
+              by
+              {'\u00A0'}
+              <A fontWeight='bold' href={story.externalUserLink} target='_blank'>
+                {story.user}
+              </A>
+              {'\u00A0'}
+              {story.timeAgo}
+              {'\u00A0'}
+              |
+              {'\u00A0'}
+              {story.commentsCount}
+              {'\u00A0'}
+              <FontAwesome icon={faComments}/>
+            </Flex>
+          </Box>
+          <Box flex='1 1 auto' pr={1}/>
+          <A
+            f={1} p={1} m={-1} pb={2} mb={-2}
+            color='#999'
+            href={story.externalLink}
+            target='_blank'
+            className={css`
+            width: 48px;
+            border-left: 1px solid #eee;
+            background: rgba(0,0,0,.01);
+            display: flex;
+            flex: 0 0 auto;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+          `}>
+            <FontAwesome icon={faShare} size='lg'/>
+          </A>
+        </Flex>
+        {story.content != null &&
+          <Box
+            mt={1} f={2}
+            dangerouslySetInnerHTML={{__html: story.content}}
+            className={css`
+            & a {
+              text-decoration: underline;
+              color: deepskyblue;
+            }
+            & a:visited {
+              color: skyblue;
+            }
+            & p {
+              margin-top: 0.5rem;
+              word-break: break-word;
+            }
+            & pre {
+              font-size: 0.85em;
+              white-space: pre-wrap;
+              margin-top: 0.5rem;
+            }
+          `}
+          />
+        }
+      </Box>
     )
   }
 }

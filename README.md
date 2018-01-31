@@ -8,14 +8,13 @@ hnpwa
 
 Techs: mobx, typescript, inferno, router5, react, emotion, pwa, server side prerendering (SSPR), styled-system
 
-- set alt/title attributes of links for better sharing emails
-- depending on type change path (e.g. /story /job /ask)
 - http://localhost:5001/story/16263040
-- http://localhost:5001/story/16261136
+- set alt/title attributes of links for better sharing emails
 - Use official API
   https://github.com/HackerNews/API/
 - hnpwa requirements: new, jobs
 - pwa 100 score (favicons, 192, 512)
+- depending on type change path (e.g. /story /job /ask)
 
 - pull to refresh
 - empty comments -> no comments message
