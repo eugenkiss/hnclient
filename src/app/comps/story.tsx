@@ -10,7 +10,7 @@ import {
   faComments,
   faCompress,
   faExpand,
-  faShare,
+  faExternalLinkSquareAlt,
   faSpinner
 } from '@fortawesome/fontawesome-free-solid'
 import {Store} from '../store'
@@ -70,7 +70,7 @@ class CommentComp extends Component<{
           border-right: ${level === 0 ? 'none' : '1px solid #eee'};
         `}/>
         <Box flex='1' className={css`
-          overflow: auto; // Important!
+          overflow: hidden; // Important!
         `}>
           <Box
             key={comment.id}
@@ -110,21 +110,23 @@ class CommentComp extends Component<{
                 mt={1} f={2}
                 dangerouslySetInnerHTML={{__html: comment.content}}
                 className={css`
+                &>* {
+                  margin-top: 0.5rem;
+                }
                 & a {
                   text-decoration: underline;
                   color: deepskyblue;
+                  word-break: break-all;
                 }
                 & a:visited {
                   color: skyblue;
                 }
                 & p {
-                  margin-top: 0.5rem;
                   word-break: break-word;
                 }
                 & pre {
                   font-size: 0.85em;
                   white-space: pre-wrap;
-                  margin-top: 0.5rem;
                 }
               `}
               />
@@ -254,17 +256,21 @@ class Header extends Component<{
               </A>
               {'\u00A0'}
               {story.timeAgo}
-              {'\u00A0'}
-              |
-              {'\u00A0'}
-              {story.commentsCount}
-              {'\u00A0'}
-              <FontAwesome icon={faComments}/>
+              {story.commentsCount > 0 &&
+                <Span>
+                  {'\u00A0'}
+                  |
+                  {'\u00A0'}
+                  {story.commentsCount}
+                  {'\u00A0'}
+                  <FontAwesome icon={faComments}/>
+                </Span>
+              }
             </Flex>
           </Box>
           <Box flex='1 1 auto' pr={1}/>
           <A
-            f={1} p={1} m={-1} pb={2} mb={-2}
+            f={3} p={1} m={-1} pb={2} mb={-2}
             color='#999'
             href={story.externalLink}
             target='_blank'
@@ -278,7 +284,7 @@ class Header extends Component<{
             justify-content: center;
             align-items: center;
           `}>
-            <FontAwesome icon={faShare} size='lg'/>
+            <FontAwesome icon={faExternalLinkSquareAlt} size='lg'/>
           </A>
         </Flex>
         {story.content != null &&

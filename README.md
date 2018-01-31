@@ -22,7 +22,7 @@ Techs: mobx, typescript, inferno, router5, react, emotion, pwa, server side prer
 - Improve README
 - Extract style (color constants etc.)
 - Create requester package? Make generic inpute type
-
+- handle deleted comments
 
 Concepts
   - Shell pregen finite list of rendered HTML files and 
@@ -58,18 +58,19 @@ TODO (later if ever)
       - https://github.com/cheeaun/node-hnapi
   - Animations/transitions. E.g. spinner fade out, overflow menu
   - Use this API approach: https://github.com/manmal/hn-android/tree/master/app/src/main/java/com/manuelmaly/hn
-      - upvote/downvote, user account, comment etc.
+      - upvote/downvote, flag, user account, comment etc.
   - React Native version
-  - Steal some UI ideas from reddit is fun
+  - Steal some UI ideas from reddit is fun (e.g. selected/active comment)
   - Reduce bundle size
       - Code splitting
   - Abstract/extract code into reusable libraries?
       - Routing, pregen, req, scroll restoration
   - Error boundary (e.g. to not break client-side navigation on error)
-  - How to make new.ycombinator.com open with a top-left X in Chrome on Android?
+  - How to make news.ycombinator.com open with a top-left X in Chrome on Android?
     I think it doesn't work for them because hn isn't mobile optimized?
   - Reactive item database. To solve E.g. you go to story, comment count is updated,
     you go back to overview, but overview shows old comment count
+  - User detail page, single comment page
 
 Observations
   - Official HN Firebase API is bad. It's admitted and has a reason.
