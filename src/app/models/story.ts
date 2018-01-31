@@ -35,7 +35,8 @@ export class Comment {
   comments: Array<Comment>
 
   @computed get timeAgo(): string {
-    return ms(/*new Date().getTime()*/ clock - this.time * 1000).replace(/[a-z]+/, str => ` ${timeUnitMap[str]} ago`)
+    // For some reason the time is sometimes negative on Moto G4 Chrome
+    return ms(Math.max(0, clock - this.time * 1000)).replace(/[a-z]+/, str => ` ${timeUnitMap[str]} ago`)
   }
 
   get externalUserLink() {

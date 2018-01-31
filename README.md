@@ -23,6 +23,8 @@ Techs: mobx, typescript, inferno, router5, react, emotion, pwa, server side prer
 - Extract style (color constants etc.)
 - Create requester package? Make generic inpute type
 - handle deleted comments
+- remember scroll position for comments (scroll, go to about, go back)
+- Show top/new/show/ask/jobs in header instead of in overflow menu?
 
 Concepts
   - Shell pregen finite list of rendered HTML files and 
@@ -71,6 +73,7 @@ TODO (later if ever)
   - Reactive item database. To solve E.g. you go to story, comment count is updated,
     you go back to overview, but overview shows old comment count
   - User detail page, single comment page
+  - Search
 
 Observations
   - Official HN Firebase API is bad. It's admitted and has a reason.
