@@ -69,7 +69,9 @@ class CommentComp extends Component<{
           className={css`
           border-right: ${level === 0 ? 'none' : '1px solid #eee'};
         `}/>
-        <Box flex='1'>
+        <Box flex='1' className={css`
+          overflow: auto; // Important!
+        `}>
           <Box
             key={comment.id}
             p={1}
