@@ -17,10 +17,8 @@ Techs: mobx, typescript, inferno, router5, react, emotion, pwa, server side prer
 - depending on type change path (e.g. /story /job /ask)
 
 - pull to refresh
-- empty comments -> no comments message
 - pagination or just more
 - time ago is wrong
-- overflow issues in comments
 - Improve README
 - Extract style (color constants etc.)
 - Create requester package? Make generic inpute type
