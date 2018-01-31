@@ -10,21 +10,20 @@ Techs: mobx, typescript, inferno, router5, react, emotion, pwa, server side prer
 
 - http://localhost:5001/story/16263040
 - set alt/title attributes of links for better sharing emails
-- Use official API
-  https://github.com/HackerNews/API/
 - hnpwa requirements: new, jobs
+  https://github.com/HackerNews/API/
 - pwa 100 score (favicons, 192, 512)
-- depending on type change path (e.g. /story /job /ask)
 
 - pull to refresh
 - pagination or just more
-- time ago is wrong
 - Improve README
-- Extract style (color constants etc.)
 - Create requester package? Make generic inpute type
+
 - handle deleted comments
 - remember scroll position for comments (scroll, go to about, go back)
 - Show top/new/show/ask/jobs in header instead of in overflow menu?
+- On click for comment so that all anchors have target _blank?
+- Extract style (color constants etc.)
 
 Concepts
   - Shell pregen finite list of rendered HTML files and 
@@ -74,6 +73,7 @@ TODO (later if ever)
     you go back to overview, but overview shows old comment count
   - User detail page, single comment page
   - Search
+  - depending on type change path (e.g. /story /job /ask)
 
 Observations
   - Official HN Firebase API is bad. It's admitted and has a reason.
