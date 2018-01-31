@@ -404,26 +404,44 @@ export class StoryComp extends Component<{
       }
 
       return (
-        <Box>
+        <Flex
+          flexDirection='column'
+          className={css`
+          height: 100%;
+        `}>
           <Header story={story}/>
-          <CommentsComp
-            level={0}
-            comments={story.comments}
-            renderedCommentCount={this.renderedCommentCounter.get()}
-            renderedCommentCounter={this.renderedCommentCounter}
-          />
-          <Box mt={1} className={css`
-            height: 100vh;
-            width: 100%;
-            background: repeating-linear-gradient(
-              -45deg,
-              #fafafa,
-              #fafafa 5px,
-              #fff 5px,
-              #fff 10px
-            );
-          `}/>
-        </Box>
+          {story.commentsCount > 0 ? (
+            <Box>
+              <CommentsComp
+                level={0}
+                comments={story.comments}
+                renderedCommentCount={this.renderedCommentCounter.get()}
+                renderedCommentCounter={this.renderedCommentCounter}
+              />
+              <Box mt={1} className={css`
+              height: 100vh;
+              width: 100%;
+              background: repeating-linear-gradient(
+                -45deg,
+                #fafafa,
+                #fafafa 5px,
+                #fff 5px,
+                #fff 10px
+              );
+            `}/>
+            </Box>
+          ) : (
+            <Flex
+              flex='1 1 auto' p={1} f={1}
+              justify='center'
+              align='center'
+              className={css`
+                text-align: center;
+              `}>
+              No comments
+            </Flex>
+          )}
+        </Flex>
       )
     }
   }

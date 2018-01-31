@@ -20,7 +20,7 @@ import {css} from 'emotion'
 
 export const Box = styled('div')`
 ${space} 
-${width} 
+${width}
 ${fontSize}
 ${fontWeight}
 ${color} 
