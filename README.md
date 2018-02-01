@@ -10,19 +10,21 @@ Techs: mobx, typescript, inferno, router5, react, emotion, pwa, server side prer
 
 - http://localhost:5001/story/16263040
 - set alt/title attributes of links for better sharing emails
+- TypeScript 2.7
 - hnpwa requirements: new, jobs
   https://github.com/HackerNews/API/
 - pwa 100 score (favicons, 192, 512)
 
 - pull to refresh
+- If last refresh > 1h, show it in toast bar
+- On click for comment so that all anchors have target _blank?
+- remember scroll position for comments (scroll, go to about, go back)
 - pagination or just more
 - Improve README
 - Create requester package? Make generic inpute type
 
 - handle deleted comments
-- remember scroll position for comments (scroll, go to about, go back)
 - Show top/new/show/ask/jobs in header instead of in overflow menu?
-- On click for comment so that all anchors have target _blank?
 - Extract style (color constants etc.)
 
 Concepts
@@ -47,6 +49,7 @@ Constraints on Programmatic Design
   - Firebase (for now)
   
 TODO (later if ever)
+  - compare to https://medium.com/@NareshBhatia/introducing-mobx-state-router-dae4cb9386fb
   - Improve Makefile
   - Would MobX State Tree help somehow? In retaining scroll position for example?
   - Use react-dom-lite once ready instead of Inferno
@@ -61,7 +64,8 @@ TODO (later if ever)
   - Use this API approach: https://github.com/manmal/hn-android/tree/master/app/src/main/java/com/manuelmaly/hn
       - upvote/downvote, flag, user account, comment etc.
   - React Native version
-  - Steal some UI ideas from reddit is fun (e.g. selected/active comment)
+  - Steal some UI ideas from reddit is fun 
+    e.g. selected/active comment, top/hot/... tabs underneath toolbar
   - Reduce bundle size
       - Code splitting
   - Abstract/extract code into reusable libraries?
@@ -74,6 +78,7 @@ TODO (later if ever)
   - User detail page, single comment page
   - Search
   - depending on type change path (e.g. /story /job /ask)
+  - auto-hiding toolbar
 
 Observations
   - Official HN Firebase API is bad. It's admitted and has a reason.
