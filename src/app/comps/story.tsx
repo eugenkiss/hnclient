@@ -177,6 +177,7 @@ class Counter {
   dec() { if (this.frozen) return; this.x-- }
 }
 
+@observer
 class CommentsComp extends Component<{
   store?: Store
   level: number
