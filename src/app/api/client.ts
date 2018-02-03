@@ -1,6 +1,6 @@
 import {deserialize} from 'serializr'
 import {BaseApiClient, BaseApiError} from './client-base'
-import {Comment, Story} from '../models/story'
+import {Comment, StoriesKind, Story} from '../models/models'
 
 export class ApiError extends BaseApiError {}
 
@@ -34,12 +34,12 @@ export class ApiClient extends BaseApiClient {
     return story
   }
 
-  getStories = async (): Promise<Array<Story>> => {
+  getStories = async (kind: StoriesKind): Promise<Array<Story>> => {
     const page = 1
     const max = 30
     const start = max * (page - 1)
     const end = start + max - 1
-    const { json } = await this.GET<number[]>('/topstories.json')
+    const { json } = await this.GET<number[]>(`/${kind}stories.json`)
     return await Promise.all(json.slice(start, end).map(async id => {
       return await this.getStory(id)
     }))

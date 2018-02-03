@@ -3,28 +3,14 @@ WIP
 https://hn.eugenkiss.com
 
 https://github.com/manmal/hn-android/
-https://app.hackerwebapp.com
-hnpwa
+https://hnpwa.com/
 
 Techs: mobx, typescript, inferno, router5, react, emotion, pwa, server side prerendering (SSPR), styled-system
 
-- hnpwa requirements: new, jobs
-  https://github.com/HackerNews/API/
 - pwa 100 score (favicons, 192, 512)
-
-- pull to refresh: 
-  https://github.com/yusukeshibata/react-pullrefresh/issues/28
-  https://github.com/infernojs/inferno/issues/1001
-- If last refresh > 1h, show it in toast bar
-- remember scroll position for comments (scroll, go to about, go back)
-- pagination or just more
-- (de)serialisation in requester
 - Improve README
-- Create requester package? Make generic inpute type
-
-- handle deleted comments
-- Show top/new/show/ask/jobs in header instead of in overflow menu?
-- Extract style (color constants etc.)
+- Merge and Tag 1.0
+- Submit to https://github.com/tastejs/hacker-news-pwas
 
 Concepts
   - Shell pregen finite list of rendered HTML files and 
@@ -38,7 +24,7 @@ Concepts
   - Critical CSS
 
 Shoutout
-  - Inferno is nice on mobile, considerably less lag / faster
+  - Inferno is nice on mobile, considerably less lag
   - emotion pretty good
   - router5 awesome
   - mobx awesome anyhow, see blog post
@@ -47,7 +33,31 @@ Constraints on Programmatic Design
   - Fast as possible without giving up DX/abstractions
   - Firebase (for now)
   
-TODO (later if ever)
+Observations
+  - Official HN Firebase API is admitted bad: https://github.com/HackerNews/API/#design
+  - Service Worker config and workflow is PITA: TODO link from gaeron
+      - https://github.com/facebook/create-react-app/issues/2554
+      - https://twitter.com/dan_abramov/status/954146978564395008
+  - Browser history navigation seriously too limited for apps
+  - Native development gives you a lot for free by sacrificing part of your freedom/customizability
+  - Why doesn't the Chrome browser use tha a's title attribute as share title
+    when sharing a link?
+  - Even though inferno-compat is quite good it's still a PITA for edge
+    cases.
+    
+TODO
+- pull to refresh: 
+  https://github.com/yusukeshibata/react-pullrefresh/issues/28
+  https://github.com/infernojs/inferno/issues/1001
+- If last refresh > 1h, show it in toast bar
+- remember scroll position for comments (scroll, go to about, go back)
+- pagination or just more
+- (de)serialisation in requester
+- Create requester package? Make generic inpute type
+- handle deleted comments
+- Extract style (color constants etc.)
+  
+TODO Longterm (if ever)
   - compare to https://medium.com/@NareshBhatia/introducing-mobx-state-router-dae4cb9386fb
   - Improve Makefile
   - Would MobX State Tree help somehow? In retaining scroll position for example?
@@ -78,15 +88,4 @@ TODO (later if ever)
   - Search
   - depending on type change path (e.g. /story /job /ask)
   - auto-hiding toolbar
-
-Observations
-  - Official HN Firebase API is bad. It's admitted and has a reason.
-  - Service Worker config and workflow is PITA: TODO link from gaeron
-      - https://github.com/facebook/create-react-app/issues/2554
-      - https://twitter.com/dan_abramov/status/954146978564395008
-  - Browser history navigation seriously too limited for apps
-  - Native development gives you a lot for free by sacrificing part of your freedom/customizability
-  - Why doesn't the Chrome browser use tha a's title attribute as share title
-    when sharing a link?
-  - Even though inferno-compat is quite good it's still a PITA for edge
-    cases.
+  - Theming (dark mode)

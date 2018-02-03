@@ -5,12 +5,12 @@ import {inject, observer} from 'mobx-react'
 import {PENDING, REJECTED, whenAsync} from 'mobx-utils'
 import {css} from 'emotion'
 import * as FontAwesome from '@fortawesome/react-fontawesome'
+import {faComments} from '@fortawesome/fontawesome-free-solid'
 import {StoryRoute} from '../routes'
 import {A, Box, Flex, Span} from './basic'
 import {Link} from './link'
-import {Story} from '../models/story'
+import {Story} from '../models/models'
 import {Store} from '../store'
-import {faComments} from '@fortawesome/fontawesome-free-solid'
 
 @observer
 export class StoryEntry extends Component<{

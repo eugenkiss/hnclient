@@ -120,3 +120,12 @@ createModelSchema(Story, getDefaultModelSchema(Story).props, ctx => {
 })
 
 export type StringStory = {[P in keyof Story]: string}
+
+export enum StoriesKind {
+  Top = 'top',
+  New = 'new',
+  Best = 'best',
+  Ask = 'ask',
+  Show = 'show',
+  Job = 'job',
+}

@@ -14,7 +14,7 @@ import {
   faSpinner
 } from '@fortawesome/fontawesome-free-solid'
 import {Store} from '../store'
-import {Comment, Story, StringStory} from '../models/story'
+import {Comment, Story, StringStory} from '../models/models'
 import {A, Box, Flex, Span} from './basic'
 
 @observer

@@ -9,7 +9,7 @@ import {canUseDOM, fulfilledReq} from './utils'
 import {BaseStore} from './utils/base-store'
 import {MapReq, Requester} from './utils/req'
 import {ApiClient} from './api/client'
-import {Story} from './models/story'
+import {StoriesKind, Story} from './models/models'
 
 export class Store extends BaseStore {
   api = new ApiClient('https://hacker-news.firebaseio.com/v0')
@@ -25,7 +25,7 @@ export class Store extends BaseStore {
 
     if ('scrollRestoration' in this.history) { this.history.scrollRestoration = 'manual' }
 
-    this.routerStore.restoreUiStates()
+    //this.routerStore.restoreUiStates()
     // this.window.addEventListener('unload', () => {
     //   this.routerStore.persistUiStates()
     // })
@@ -43,7 +43,8 @@ export class Store extends BaseStore {
 
   @observable headerTitle = null
 
-  getStories = new Requester<Array<Story>>(() => this.api.getStories())
+  getStories = new Requester<Array<Story>>(() => this.api.getStories(this.selectedStoriesKind))
+  @observable selectedStoriesKind = StoriesKind.Top
   @observable getStoriesManualRefresh: IPromiseBasedObservable<Array<Story>> = fulfilledReq
 
   getStory = new MapReq<Number, Story>((id: number) => this.api.getStoryWithComments(id))

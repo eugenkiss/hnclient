@@ -6,13 +6,16 @@ import {IObservableValue, observable} from 'mobx'
 import {inject, observer, Provider} from 'mobx-react'
 import * as FontAwesome from '@fortawesome/react-fontawesome'
 import {
+  faArrowAltCircleUp,
   faBriefcase,
   faChevronLeft,
   faClock,
   faDownload,
   faEllipsisV,
-  faHome,
+  faEye,
+  faFire,
   faInfoCircle,
+  faQuestionCircle,
   faSyncAlt,
   faUser
 } from '@fortawesome/fontawesome-free-solid'
@@ -24,6 +27,7 @@ import {AboutRoute, HomeRoute, StoryRoute} from './routes'
 import {Box, Flex, Overlay} from './comps/basic'
 import {canUseDOM} from './utils'
 import {Store} from './store'
+import {StoriesKind} from './models/models'
 
 const MobxDevTools = IS_DEV ? require('mobx-react-devtools').default : null
 
@@ -108,18 +112,25 @@ class OverflowMenuEntry extends React.Component<{
   render() {
     const { title, icon, onClick } = this.props
     return (
-      <Flex p={1} onClick={onClick} className={css`
+      <Flex
+        p={1}
+        onClick={onClick}
+        align='center'
+        className={css`
         &:hover {
           background: rgba(0,0,0,0.1);
         }
       `}>
-        <Box className={css`
+        <Flex
+          justify='center'
+          mr={1}
+          className={css`
           color: rgba(255, 255, 255, 0.6);
-          width: 30px;
+          width: 20px;
         `}>
           <FontAwesome icon={icon}/>
-        </Box>
-        <span>{title}</span>
+        </Flex>
+        {title}
       </Flex>
     )
   }
@@ -146,6 +157,10 @@ class OverflowMenu extends React.Component<{
     window.location.reload(true)
   }
 
+  handleSwitchStories = (kind?: StoriesKind) => () => {
+    this.props.store.navigate(HomeRoute.link(kind), {replace: true})
+  }
+
   render() {
     const { store, isOpen } = this.props
     if (!isOpen.get()) return null
@@ -153,7 +168,7 @@ class OverflowMenu extends React.Component<{
       <Overlay isOpen={isOpen} onClick={this.handleModal}>
         <Box f={3} onClick={this.handleMenuItemClick} className={css`
           position: absolute;
-          min-width: 200px;
+          min-width: 150px;
           user-select: none;
           cursor: pointer;
           font-variant: all-petite-caps;
@@ -168,16 +183,28 @@ class OverflowMenu extends React.Component<{
         `}>
           {false && <OverflowMenuEntry title='Profile' icon={faUser} onClick={() => alert('TODO')}/>}
           <OverflowMenuEntry
-            title='Top' icon={faHome}
-            onClick={() => store.navigate(HomeRoute.link())}
+            title='Hot' icon={faFire}
+            onClick={this.handleSwitchStories()}
           />
           <OverflowMenuEntry
             title='New' icon={faClock}
-            onClick={() => alert('TODO')}
+            onClick={this.handleSwitchStories(StoriesKind.New)}
+          />
+          <OverflowMenuEntry
+            title='Best' icon={faArrowAltCircleUp}
+            onClick={this.handleSwitchStories(StoriesKind.Best)}
+          />
+          <OverflowMenuEntry
+            title='Show' icon={faEye}
+            onClick={this.handleSwitchStories(StoriesKind.Show)}
+          />
+          <OverflowMenuEntry
+            title='Ask' icon={faQuestionCircle}
+            onClick={this.handleSwitchStories(StoriesKind.Ask)}
           />
           <OverflowMenuEntry
             title='Jobs' icon={faBriefcase}
-            onClick={() => alert('TODO')}
+            onClick={this.handleSwitchStories(StoriesKind.Job)}
           />
           <OverflowMenuEntry
             title='Update' icon={faDownload}

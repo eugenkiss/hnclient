@@ -4,6 +4,9 @@ import {Store} from './store'
 import {Home} from './comps/home'
 import {StoryComp} from './comps/story'
 import {About} from './comps/about'
+import {StoriesKind} from './models/models'
+import {Span} from './comps/basic'
+import {css} from 'emotion'
 
 const rs: Map<string, HNRoute> = new Map()
 
@@ -19,19 +22,45 @@ export interface HNRoute extends Route {
 export class HomeRoute implements HNRoute {
   static id = 'home'
   get name() { return HomeRoute.id }
-  get path() { return '/' }
+  get path() { return '/?:kind' }
   globPath = '/'
-  onActivate(store) {
-    store.headerTitle = 'HN'
+  onActivate(store, {kind}) {
+    kind = kind == null ? StoriesKind.Top : kind
+    const subTitle = kind === StoriesKind.Top ? null : kind
+    store.headerTitle =
+      <Span
+        key='HN'
+        className={css`
+        position: relative;
+      `}>
+        HN
+        <Span
+          key='Subtitle'
+          f={0}
+          className={css`
+          text-transform: lowercase;
+          margin-left: 0.1rem;
+          position: absolute;
+          bottom: 0.095rem;
+        `}>
+          {subTitle}
+        </Span>
+      </Span>
     store.refreshAction = () => store.getStoriesManualRefresh = store.getStories.refresh(300)
-    if (store.getStories.unstarted) store.getStories.refresh()
+    if (store.getStories.unstarted || kind !== store.selectedStoriesKind) {
+      store.selectedStoriesKind = kind
+      const req = store.getStories.refresh()
+      if (!store.getStories.unstarted) store.getStoriesManualRefresh = req
+    }
   }
   onDeactivate(store) {
     store.refreshAction = null
     store.getStories.cancel()
   }
   // noinspection JSUnusedGlobalSymbols
-  static link = (): LinkData => ({name: HomeRoute.id})
+  static link = (kind?: StoriesKind): LinkData => ({
+    name: HomeRoute.id, params: {kind: kind}
+  })
   comp() { return <Home/> }
 }
 rs.set(HomeRoute.id, new HomeRoute())
