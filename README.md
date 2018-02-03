@@ -15,11 +15,12 @@ Techs: mobx, typescript, inferno, router5, react, emotion, pwa, server side prer
   https://github.com/HackerNews/API/
 - pwa 100 score (favicons, 192, 512)
 
-- pull to refresh
+- pull to refresh: https://github.com/yusukeshibata/react-pullrefresh/issues/28
 - If last refresh > 1h, show it in toast bar
 - On click for comment so that all anchors have target _blank?
 - remember scroll position for comments (scroll, go to about, go back)
 - pagination or just more
+- (de)serialisation in requester
 - Improve README
 - Create requester package? Make generic inpute type
 
@@ -86,3 +87,4 @@ Observations
       - https://github.com/facebook/create-react-app/issues/2554
       - https://twitter.com/dan_abramov/status/954146978564395008
   - Browser history navigation seriously too limited for apps
+  - Native development gives you a lot for free by sacrificing part of your freedom/customizability

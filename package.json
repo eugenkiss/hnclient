@@ -44,6 +44,7 @@
     "react-dom": "^16.2.0",
     "react-emotion": "^9.0.0-2",
     "react-portal": "^4.1.2",
+    "react-pullrefresh": "^2.0.0-alpha.2",
     "router5": "^5.7.2",
     "serializr": "^1.1.14",
     "styled-system": "^1.1.1"

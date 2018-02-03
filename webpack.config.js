@@ -31,14 +31,18 @@ if (isBuild) {
   cfg.devtool = 'cheap-module-eval-source-map'
 }
 
+// PITA!!!
+const hostName = require('os').hostname().toLowerCase()
+const hostNameLocal = `${hostName}.local`
+const hostLocal = `${hostNameLocal}:${PORT}`
+
 cfg.entry = {
-  main: './app/index',
-  //vendor: ['firebase']
+  main: './app/index'
 }
 
 cfg.output = {
   path: root(OUTPUT),
-  publicPath: isBuild ? '/' : `http://localhost:${PORT}/`,
+  publicPath: '/',
   filename: isBuild ? 'js/[name].[hash].js' : 'js/[name].js',
   chunkFilename: isBuild ? '[id].[hash].chunk.js' : '[id].chunk.js',
 }
@@ -143,6 +147,15 @@ cfg.devServer = {
   stats: {
     warnings: false,
   },
+
+  // PITA!!!
+  public: hostLocal,
+  useLocalIp: true,
+  host: '0.0.0.0',
+  allowedHosts: [
+    hostName,
+    hostNameLocal,
+  ],
 }
 
 module.exports = cfg

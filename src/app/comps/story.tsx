@@ -4,6 +4,7 @@ import {computed, observable, when} from 'mobx'
 import {inject, observer} from 'mobx-react'
 import {REJECTED} from 'mobx-utils'
 import {css} from 'emotion'
+import PullRefresh from 'react-pullrefresh'
 import * as FontAwesome from '@fortawesome/react-fontawesome'
 import {
   faArrowAltCircleUp,
@@ -454,6 +455,7 @@ export class StoryComp extends Component<{
   }
 
   render() {
+    const { store } = this.props
     return (
       <Box className={css`
         overflow-y: auto;
@@ -462,7 +464,13 @@ export class StoryComp extends Component<{
         width: 100%;
         background: white;
       `}>
-        {this.renderBody()}
+        <PullRefresh
+          onRefresh={async () => {
+            await store.refreshAction()
+          }}
+          >
+          {this.renderBody()}
+        </PullRefresh>
       </Box>
     )
   }

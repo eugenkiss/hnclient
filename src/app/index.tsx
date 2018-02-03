@@ -204,7 +204,7 @@ export class Header extends Component<{
     const {routerStore} = store
     return (
       <Flex align='center' className={css`
-        position: sticky;
+        position: relative;
         top: 0;
         background: linear-gradient(to bottom, rgb(255, 102, 0) 0%, rgb(225,100,0) 100%);
         z-index: 9999;
@@ -306,9 +306,9 @@ export default class App extends React.Component<{
           {IS_DEV && false && <MobxDevTools/>}
           <Header/>
           <Box flex='1' className={css`
+            position: relative; // For pull to refresh
             color: #000;
             background: #ffffff;
-            height: 100%;
             overflow: hidden;
           `}>
             {this.renderBody()}
