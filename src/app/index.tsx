@@ -168,7 +168,7 @@ class OverflowMenu extends React.Component<{
         `}>
           {false && <OverflowMenuEntry title='Profile' icon={faUser} onClick={() => alert('TODO')}/>}
           <OverflowMenuEntry
-            title='Frontpage' icon={faHome}
+            title='Top' icon={faHome}
             onClick={() => store.navigate(HomeRoute.link())}
           />
           <OverflowMenuEntry

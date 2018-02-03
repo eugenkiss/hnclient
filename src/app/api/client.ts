@@ -7,7 +7,7 @@ export class ApiError extends BaseApiError {}
 export class ApiClient extends BaseApiClient {
 
   getItem = async (id: number) => {
-    return this.GET<any>(`/item/${id}.json`, null, 'https://hacker-news.firebaseio.com/v0')
+    return this.GET<any>(`/item/${id}.json`)
   }
 
   getStory = async (id: number): Promise<Story> => {
@@ -39,7 +39,7 @@ export class ApiClient extends BaseApiClient {
     const max = 30
     const start = max * (page - 1)
     const end = start + max - 1
-    const { json } = await this.GET<number[]>('/topstories.json', null, 'https://hacker-news.firebaseio.com/v0')
+    const { json } = await this.GET<number[]>('/topstories.json')
     return await Promise.all(json.slice(start, end).map(async id => {
       return await this.getStory(id)
     }))

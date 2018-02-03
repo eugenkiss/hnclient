@@ -12,7 +12,7 @@ import {ApiClient} from './api/client'
 import {Story} from './models/story'
 
 export class Store extends BaseStore {
-  api = new ApiClient('https://api.hackerwebapp.com')
+  api = new ApiClient('https://hacker-news.firebaseio.com/v0')
   routerStore = new RouterStore()
   routesMap = routes.routesMap
   router: Router = null
