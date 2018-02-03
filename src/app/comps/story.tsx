@@ -17,26 +17,42 @@ import {Store} from '../store'
 import {Comment, Story, StringStory} from '../models/story'
 import {A, Box, Flex, Span} from './basic'
 
-const contentCss = css`
-  &>* {
-    margin-top: 0.5rem;
+@observer
+class ContentComp extends Component<{
+  content: string
+  [key: string]: any
+}> {
+  render() {
+    const { content, ...rest } = this.props
+    return (
+      <Box {...rest}>
+        <base target='_blank'/>
+        <Box
+          dangerouslySetInnerHTML={{__html: content}}
+          className={css`
+          &>* {
+            margin-top: 0.5rem;
+          }
+          & a {
+            text-decoration: underline;
+            color: deepskyblue;
+            word-break: break-all;
+          }
+          & a:visited {
+            color: skyblue;
+          }
+          & p {
+            word-break: break-word;
+          }
+          & pre {
+            font-size: 0.85em;
+            white-space: pre-wrap;
+          }
+        `}/>
+      </Box>
+    )
   }
-  & a {
-    text-decoration: underline;
-    color: deepskyblue;
-    word-break: break-all;
-  }
-  & a:visited {
-    color: skyblue;
-  }
-  & p {
-    word-break: break-word;
-  }
-  & pre {
-    font-size: 0.85em;
-    white-space: pre-wrap;
-  }
-`
+}
 
 const skeletonStory: StringStory = {
   id: '…',
@@ -127,10 +143,9 @@ class CommentComp extends Component<{
               </Box>
             </Flex>
             {!this.minimized &&
-              <Box
+              <ContentComp
                 mt={1} f={2}
-                dangerouslySetInnerHTML={{__html: comment.content}}
-                className={contentCss}
+                content={comment.content}
               />
             }
             {comments.length > 0 && !this.minimized &&
@@ -294,12 +309,11 @@ class Header extends Component<{
       </Box>
       ,
       story.content != null &&
-        <Box key={2}
+        <ContentComp key={2}
           p={1} pb={2} pt={1}
           f={2}
-          dangerouslySetInnerHTML={{__html: story.content}}
+          content={story.content}
           className={css`
-          ${contentCss};
           border-bottom: 1px solid rgba(0,0,0,0.05);
         `}/>
     ])
