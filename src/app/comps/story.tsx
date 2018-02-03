@@ -131,7 +131,7 @@ class CommentComp extends Component<{
               <A
                 mr={1}
                 href={comment.externalLink}
-                title={`HN 💬 ${comment.user}: ${comment.content.slice(0, Math.min(100, comment.content.length))}`}
+                title={`HN 💬 ${comment.user}: ${comment.excerpt}`}
                 className={css`
               `}>
                 {comment.timeAgo}

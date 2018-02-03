@@ -39,6 +39,14 @@ export class Comment {
     return ms(Math.max(0, clock - this.time * 1000)).replace(/[a-z]+/, str => ` ${timeUnitMap[str]} ago`)
   }
 
+  @computed get excerpt(): string {
+    if (this.content == null) return ''
+    const max = 100
+    const len = this.content.length
+    const trueExcerpt = len < max
+    return this.content.slice(0, Math.min(100, this.content.length)) + (trueExcerpt ? '…' : '')
+  }
+
   get externalUserLink() {
     return makeExternalUserLink(this.user)
   }
