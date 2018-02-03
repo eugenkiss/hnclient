@@ -36,6 +36,7 @@ export class StoryEntry extends Component<{
         <Box pr={1}>
           <A
             href={story.url}
+            title={story.title}
             className={css`
             font-weight: 600;
             &:visited {
@@ -58,6 +59,7 @@ export class StoryEntry extends Component<{
         <Link
           f={1} p={1} m={-1} pb={2} mb={-2}
           link={StoryRoute.link(story.id)}
+          title={`HN: ${story.title}`}
           className={css`
           width: 48px;
           border-left: 1px solid #eee;

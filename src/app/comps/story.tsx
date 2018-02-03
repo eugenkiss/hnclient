@@ -120,10 +120,19 @@ class CommentComp extends Component<{
               className={css`
               color: #999;
             `}>
-              <A href={comment.externalUserLink} mr={1} fontWeight='bold'>
+              <A
+                mr={1}
+                fontWeight='bold'
+                href={comment.externalUserLink}
+                title={`HN User: ${comment.user}`}
+                >
                 {comment.user}
               </A>
-              <A href={comment.externalLink} mr={1} className={css`
+              <A
+                mr={1}
+                href={comment.externalLink}
+                title={`HN 💬 ${comment.user}: ${comment.content.slice(0, Math.min(100, comment.content.length))}`}
+                className={css`
               `}>
                 {comment.timeAgo}
               </A>
@@ -246,6 +255,7 @@ class Header extends Component<{
           <Box pr={1}>
             <A
               href={story.url}
+              title={story.title}
               className={css`
               font-weight: 600;
               &:visited {
@@ -269,7 +279,12 @@ class Header extends Component<{
               {'\u00A0'}
               by
               {'\u00A0'}
-              <A fontWeight='bold' href={story.externalUserLink} target='_blank'>
+              <A
+                fontWeight='bold'
+                target='_blank'
+                title={`HN User: ${story.user}`}
+                href={story.externalUserLink}
+                >
                 {story.user}
               </A>
               {'\u00A0'}
@@ -291,6 +306,7 @@ class Header extends Component<{
             f={3} p={1} m={-1} pb={2} mb={-2}
             color='#999'
             href={story.externalLink}
+            title={story.title}
             target='_blank'
             className={css`
             width: 48px;

@@ -8,7 +8,6 @@ hnpwa
 
 Techs: mobx, typescript, inferno, router5, react, emotion, pwa, server side prerendering (SSPR), styled-system
 
-- set alt/title attributes of links for better sharing emails
 - hnpwa requirements: new, jobs
   https://github.com/HackerNews/API/
 - pwa 100 score (favicons, 192, 512)
@@ -87,3 +86,5 @@ Observations
       - https://twitter.com/dan_abramov/status/954146978564395008
   - Browser history navigation seriously too limited for apps
   - Native development gives you a lot for free by sacrificing part of your freedom/customizability
+  - Why doesn't the Chrome browser use tha a's title attribute as share title
+    when sharing a link?
