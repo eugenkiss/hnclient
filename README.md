@@ -8,9 +8,7 @@ hnpwa
 
 Techs: mobx, typescript, inferno, router5, react, emotion, pwa, server side prerendering (SSPR), styled-system
 
-- http://localhost:5001/story/16263040
 - set alt/title attributes of links for better sharing emails
-- TypeScript 2.7
 - hnpwa requirements: new, jobs
   https://github.com/HackerNews/API/
 - pwa 100 score (favicons, 192, 512)

@@ -17,6 +17,27 @@ import {Store} from '../store'
 import {Comment, Story, StringStory} from '../models/story'
 import {A, Box, Flex, Span} from './basic'
 
+const contentCss = css`
+  &>* {
+    margin-top: 0.5rem;
+  }
+  & a {
+    text-decoration: underline;
+    color: deepskyblue;
+    word-break: break-all;
+  }
+  & a:visited {
+    color: skyblue;
+  }
+  & p {
+    word-break: break-word;
+  }
+  & pre {
+    font-size: 0.85em;
+    white-space: pre-wrap;
+  }
+`
+
 const skeletonStory: StringStory = {
   id: '…',
   title: '…… … … ……… … ……… … … ……… …… ………… ………',
@@ -109,26 +130,7 @@ class CommentComp extends Component<{
               <Box
                 mt={1} f={2}
                 dangerouslySetInnerHTML={{__html: comment.content}}
-                className={css`
-                &>* {
-                  margin-top: 0.5rem;
-                }
-                & a {
-                  text-decoration: underline;
-                  color: deepskyblue;
-                  word-break: break-all;
-                }
-                & a:visited {
-                  color: skyblue;
-                }
-                & p {
-                  word-break: break-word;
-                }
-                & pre {
-                  font-size: 0.85em;
-                  white-space: pre-wrap;
-                }
-              `}
+                className={contentCss}
               />
             }
             {comments.length > 0 && !this.minimized &&
@@ -216,8 +218,8 @@ class Header extends Component<{
 
   render() {
     const { story } = this.props
-    return (
-      <Box
+    return ([
+      <Box key={1}
         p={1} pb={2} pt={1}
         onClickCapture={this.handleContainerClick}
         className={css`
@@ -288,32 +290,19 @@ class Header extends Component<{
             <FontAwesome icon={faExternalLinkSquareAlt} size='lg'/>
           </A>
         </Flex>
-        {story.content != null &&
-          <Box
-            mt={1} f={2}
-            dangerouslySetInnerHTML={{__html: story.content}}
-            className={css`
-            & a {
-              text-decoration: underline;
-              color: deepskyblue;
-            }
-            & a:visited {
-              color: skyblue;
-            }
-            & p {
-              margin-top: 0.5rem;
-              word-break: break-word;
-            }
-            & pre {
-              font-size: 0.85em;
-              white-space: pre-wrap;
-              margin-top: 0.5rem;
-            }
-          `}
-          />
-        }
+
       </Box>
-    )
+      ,
+      story.content != null &&
+        <Box key={2}
+          p={1} pb={2} pt={1}
+          f={2}
+          dangerouslySetInnerHTML={{__html: story.content}}
+          className={css`
+          ${contentCss};
+          border-bottom: 1px solid rgba(0,0,0,0.05);
+        `}/>
+    ])
   }
 }
 
