@@ -26,9 +26,9 @@ export class Store extends BaseStore {
     if ('scrollRestoration' in this.history) { this.history.scrollRestoration = 'manual' }
 
     this.routerStore.restoreUiStates()
-    this.window.addEventListener('unload', () => {
-      this.routerStore.persistUiStates()
-    })
+    // this.window.addEventListener('unload', () => {
+    //   this.routerStore.persistUiStates()
+    // })
 
     autorun(() => {
       if ( this.getStories.state === PENDING

@@ -5,7 +5,6 @@ import {inject, observer} from 'mobx-react'
 import {PENDING, REJECTED, whenAsync} from 'mobx-utils'
 import {css} from 'emotion'
 import * as FontAwesome from '@fortawesome/react-fontawesome'
-import PullRefresh from 'react-pullrefresh'
 import {StoryRoute} from '../routes'
 import {A, Box, Flex, Span} from './basic'
 import {Link} from './link'
@@ -139,26 +138,15 @@ export class Home extends Component<{store?: Store}> {
     const {store} = this.props
     return (
         <Box
+          innerRef={r => this.containerNode = r}
           className={css`
           position: relative;
+          transition: opacity 0.15s ease-in-out;
+          ${store.getStoriesManualRefresh.state === PENDING && 'opacity: 0.25'};
           overflow: auto;
           height: 100%;
         `}>
-          <PullRefresh
-            innerRef={r => this.containerNode = r}
-            onRefresh={async () => {
-              await store.refreshAction()
-            }}
-            >
-            <Box
-              className={css`
-              transition: opacity 0.15s ease-in-out;
-              ${store.getStoriesManualRefresh.state === PENDING && 'opacity: 0.25'};
-              height: 100%;
-            `}>
-              {this.renderBody()}
-            </Box>
-          </PullRefresh>
+          {this.renderBody()}
         </Box>
     )
   }

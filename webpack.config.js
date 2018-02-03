@@ -117,7 +117,7 @@ if (isBuild) {
     new webpack.NoEmitOnErrorsPlugin(),
     new webpack.optimize.AggressiveMergingPlugin(),
     new webpack.optimize.ModuleConcatenationPlugin(),
-    new UglifyJSPlugin(),
+    new UglifyJSPlugin({ sourceMap: true }),
   )
 } else {
   cfg.plugins.push(

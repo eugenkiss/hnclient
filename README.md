@@ -15,7 +15,9 @@ Techs: mobx, typescript, inferno, router5, react, emotion, pwa, server side prer
   https://github.com/HackerNews/API/
 - pwa 100 score (favicons, 192, 512)
 
-- pull to refresh: https://github.com/yusukeshibata/react-pullrefresh/issues/28
+- pull to refresh: 
+  https://github.com/yusukeshibata/react-pullrefresh/issues/28
+  https://github.com/infernojs/inferno/issues/1001
 - If last refresh > 1h, show it in toast bar
 - On click for comment so that all anchors have target _blank?
 - remember scroll position for comments (scroll, go to about, go back)

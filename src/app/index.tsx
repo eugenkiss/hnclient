@@ -307,6 +307,7 @@ export default class App extends React.Component<{
           <Header/>
           <Box flex='1' className={css`
             position: relative; // For pull to refresh
+            height: 100%;
             color: #000;
             background: #ffffff;
             overflow: hidden;
