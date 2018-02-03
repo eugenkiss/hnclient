@@ -88,3 +88,5 @@ Observations
   - Native development gives you a lot for free by sacrificing part of your freedom/customizability
   - Why doesn't the Chrome browser use tha a's title attribute as share title
     when sharing a link?
+  - Even though inferno-compat is quite good it's still a PITA for edge
+    cases.

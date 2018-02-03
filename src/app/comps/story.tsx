@@ -242,7 +242,7 @@ class Header extends Component<{
 
   render() {
     const { story } = this.props
-    return ([
+    return (<div>
       <Box key={1}
         p={1} pb={2} pt={1}
         onClickCapture={this.handleContainerClick}
@@ -321,18 +321,18 @@ class Header extends Component<{
             <FontAwesome icon={faExternalLinkSquareAlt} size='lg'/>
           </A>
         </Flex>
-
       </Box>
-      ,
-      story.content != null &&
-        <ContentComp key={2}
+      {story.content != null &&
+        <ContentComp
+          key={2}
           p={1} pb={2} pt={1}
           f={2}
           content={story.content}
           className={css`
           border-bottom: 1px solid rgba(0,0,0,0.05);
         `}/>
-    ])
+      }
+    </div>)
   }
 }
 
