@@ -87,5 +87,6 @@ TODO Longterm (if ever)
   - User detail page, single comment page
   - Search
   - depending on type change path (e.g. /story /job /ask)
+  - if type job render differently (e.g. job symbol instead of comments)
   - auto-hiding toolbar
   - Theming (dark mode)

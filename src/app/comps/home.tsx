@@ -39,9 +39,6 @@ export class StoryEntry extends Component<{
             title={story.title}
             className={css`
             font-weight: 600;
-            &:visited {
-              color: #777777;
-            }
           `}>
             <Box f={2}>
               {story.title}
@@ -62,6 +59,7 @@ export class StoryEntry extends Component<{
         <Box flex='1 1 auto' pr={1}/>
         <Link
           f={1} p={1} m={-1} pb={2} mb={-2}
+          color='#999'
           link={StoryRoute.link(story.id)}
           title={`HN: ${story.title}`}
           className={css`
@@ -73,9 +71,6 @@ export class StoryEntry extends Component<{
           flex-direction: column;
           justify-content: center;
           align-items: center;
-          &:visited {
-            color: #777777;
-          }
         `}>
           <FontAwesome icon={faComments} size='lg'/>
           <Span mt={'0.2rem'}>{story.commentsCount != null ? story.commentsCount : '…'}</Span>

@@ -279,9 +279,6 @@ class Header extends Component<{
               title={story.title}
               className={css`
               font-weight: 600;
-              &:visited {
-                color: #777777;
-              }
             `}>
               <Box f={2}>
                 {story.title}
@@ -324,7 +321,7 @@ class Header extends Component<{
           </Box>
           <Box flex='1 1 auto' pr={1}/>
           <A
-            f={3} p={1} m={-1} pb={2} mb={-2}
+            f={2} p={1} m={-1} pb={2} mb={-2}
             color='#999'
             href={story.externalLink}
             title={story.title}
