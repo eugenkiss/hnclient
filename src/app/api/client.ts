@@ -22,9 +22,20 @@ export class ApiClient extends BaseApiClient {
 
   getComments = async (kids: Array<number>): Promise<Array<Comment>> => {
     return await Promise.all((kids || []).map(async id => {
-      const comment = await this.getComment(id)
-      comment.comments = await this.getComments(comment.kids)
-      return comment
+      try {
+        const comment = await this.getComment(id)
+        comment.comments = await this.getComments(comment.kids)
+        return comment
+      } catch (e) {
+        // Since a lot of requests can be made we don't want to render
+        // nothing if a few requests failed
+        console.error(e)
+        const failedComment = new Comment(this)
+        failedComment.user = '[failed]'
+        failedComment.time = new Date().getTime() / 1000
+        failedComment.content = '[failed]'
+        return failedComment
+      }
     }))
   }
 
