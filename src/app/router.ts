@@ -1,13 +1,19 @@
-import {observable} from 'mobx'
+import {action, observable} from 'mobx'
 import createRouter, {PluginFactory, Route, Router, State} from 'router5'
 import browserPlugin from 'router5/plugins/browser'
 import {routesMap} from './routes'
 import {Store} from './store'
 
+function extractId(state: State) {
+  return state.path
+}
+
 export type SaveUiCb = () => { id: string, data: any }
 export type RestoreUiCb = (data: any) => void
 
 export class RouterStore {
+  @observable startNext: State
+  @observable startPrev: State
   @observable current: State
   @observable history = observable.array<State>()
 
@@ -17,7 +23,7 @@ export class RouterStore {
   restoreUiCbIds = new Array<string>()
 
   persistUiStates() {
-    this.callSaveUiCbs(this.current)
+    this.callSaveUiCbs(extractId(this.current))
     sessionStorage.setItem('uiStates', JSON.stringify(this.uiStates))
   }
 
@@ -51,9 +57,7 @@ export class RouterStore {
     this.restoreUiCbIds.splice(i, 1)
   }
 
-  callSaveUiCbs = (state: State) => {
-    if (state == null) return
-    const id = state.meta['id']
+  callSaveUiCbs = (id: string) => {
     for (const cb of this.saveUiCbs) {
       const res = cb()
       const saved = this.uiStates[id] || {}
@@ -62,13 +66,12 @@ export class RouterStore {
     }
   }
 
-  callRestoreUiCbs = (state: State) => {
-    const id = state.meta['id']
+  callRestoreUiCbs = (id: string) => {
     for (let i = 0; i < this.restoreUiCbs.length; i++) {
       const cbId = this.restoreUiCbIds[i]
       const cb = this.restoreUiCbs[i]
       const uiState = this.uiStates[id]
-      if (uiState != null) cb(uiState[cbId])
+      cb(uiState == null ? null : uiState[cbId])
     }
   }
 }
@@ -77,6 +80,10 @@ function makeMobxRouterPlugin(routerStore: RouterStore): PluginFactory {
   function mobxRouterPlugin() {
     // noinspection JSUnusedGlobalSymbols
     return {
+      onTransitionStart: action((toState: State, fromState: State) => {
+        routerStore.startPrev = fromState
+        routerStore.startNext = toState
+      }),
       onTransitionSuccess: (toState: State) => {
         routerStore.current = toState
       },
@@ -91,10 +98,10 @@ function makeViewRestorePlugin(routerStore: RouterStore): PluginFactory {
     // noinspection JSUnusedGlobalSymbols
     return {
       onTransitionStart: (toState: State, fromState: State) => {
-        routerStore.callSaveUiCbs(fromState)
+        if (fromState != null) routerStore.callSaveUiCbs(extractId(fromState))
       },
       onTransitionSuccess: (toState: State) => {
-        routerStore.callRestoreUiCbs(toState)
+        routerStore.callRestoreUiCbs(extractId(toState))
       },
     }
   }

@@ -23,13 +23,14 @@ export class HomeRoute implements HNRoute {
   get name() { return HomeRoute.id }
   get path() { return '/?:kind' }
   globPath = '/'
+  prevKind: StoriesKind
   @action
-  onActivate(store, {kind}) {
+  onActivate(store: Store, {kind}) {
     kind = kind == null ? StoriesKind.Top : kind
     store.headerTitle = kind === StoriesKind.Top ? '' : kind
     store.refreshAction = () => store.getStoriesManualRefresh = store.getStories.refresh(300)
-    if (store.getStories.unstarted || kind !== store.selectedStoriesKind) {
-      store.selectedStoriesKind = kind
+    if (store.getStories.unstarted || kind !== this.prevKind) {
+      this.prevKind = kind
       const unstarted = store.getStories.unstarted
       const req = store.getStories.refresh()
       if (!unstarted) store.getStoriesManualRefresh = req

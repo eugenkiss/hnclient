@@ -9,7 +9,7 @@ import {faComments} from '@fortawesome/fontawesome-free-solid'
 import {StoryRoute} from '../routes'
 import {A, Box, Flex, Span} from './basic'
 import {Link} from './link'
-import {Story} from '../models/models'
+import {StoriesKind, Story} from '../models/models'
 import {Store} from '../store'
 
 @observer
@@ -49,10 +49,14 @@ export class StoryEntry extends Component<{
           </A>
           <Flex mt={1} f={0} align='center' color='#999'>
             {story.points != null ? story.points : '…'} points
-            {'\u00A0'}
-            |
-            {'\u00A0'}
-            {story.domain === 'cool.com' ? '……….…' : story.domain}
+            {story.domain &&
+              <Span>
+                {'\u00A0'}
+                |
+                {'\u00A0'}
+                {story.domain === 'cool.com' ? '……….…' : story.domain}
+              </Span>
+            }
           </Flex>
         </Box>
         <Box flex='1 1 auto' pr={1}/>
@@ -91,6 +95,8 @@ for (let i = 0; i < 30; i++) {
   skeletonStories.push(story)
 }
 
+type ViewRestoreData = { scrollTop: number, kind: StoriesKind }
+
 @inject('store') @observer
 export class Home extends Component<{store?: Store}> {
   static ID = 'Home'
@@ -104,11 +110,21 @@ export class Home extends Component<{store?: Store}> {
     const {store} = this.props
     const {routerStore} = store
     this.saveUiCb = routerStore.addSaveUiCb(() => {
-      return { id: Home.ID, data: this.containerNode.scrollTop }
+      return { id: Home.ID, data: {
+        scrollTop: this.containerNode.scrollTop,
+        kind: store.selectedStoriesKind,
+      } as ViewRestoreData}
     })
-    this.restoreUiCb = routerStore.addRestoreUiCb(Home.ID, async (data: number) => {
+    this.restoreUiCb = routerStore.addRestoreUiCb(Home.ID, async (data?: ViewRestoreData) => {
+      if (data == null || data.kind !== store.selectedStoriesKind) {
+        await whenAsync(() => store.getStories.state !== PENDING && this.containerNode != null)
+        if (this.containerNode != null) { // How can this happen?
+          this.containerNode.scrollTop = 0
+        }
+        return
+      }
       await whenAsync(() => store.getStories.value != null && this.containerNode != null)
-      this.containerNode.scrollTop = data
+      this.containerNode.scrollTop = data.scrollTop
     })
   }
 

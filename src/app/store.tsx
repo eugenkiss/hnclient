@@ -1,4 +1,4 @@
-import {autorun, observable} from 'mobx'
+import {autorun, computed, observable} from 'mobx'
 import {IPromiseBasedObservable, PENDING} from 'mobx-utils'
 import * as NProgress from 'nprogress'
 import {DoneFn, NavigationOptions, Route, Router} from 'router5'
@@ -44,7 +44,11 @@ export class Store extends BaseStore {
   @observable headerTitle = null
 
   getStories = new Requester<Array<Story>>(() => this.api.getStories(this.selectedStoriesKind))
-  @observable selectedStoriesKind = StoriesKind.Top
+  @computed get selectedStoriesKind() {
+    const defaultKind = StoriesKind.Top
+    if (this.routerStore.startNext == null) return defaultKind
+    return this.routerStore.startNext.params.kind || defaultKind
+  }
   @observable getStoriesManualRefresh: IPromiseBasedObservable<Array<Story>> = fulfilledReq
 
   getStory = new MapReq<Number, Story>((id: number) => this.api.getStoryWithComments(id))

@@ -7,7 +7,6 @@ https://hnpwa.com/
 
 Techs: mobx, typescript, inferno, router5, react, emotion, pwa, server side prerendering (SSPR), styled-system
 
-- update emotion
 - pwa 100 score (favicons, 192, 512)
 - Improve README
 - Merge and Tag 1.0
