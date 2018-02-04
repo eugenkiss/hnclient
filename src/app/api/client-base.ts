@@ -1,5 +1,5 @@
 import {ApiError} from './client'
-import {buildUrl, canUseDOM, sleep} from '../utils'
+import {buildUrl, canUseDOM, sleep} from '../utils/utils'
 
 export class BaseApiError {
   constructor(

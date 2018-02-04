@@ -1,19 +1,8 @@
 import {alias, createModelSchema, getDefaultModelSchema, identifier, list, primitive, serializable} from 'serializr'
 import {computed} from 'mobx'
 import {now} from 'mobx-utils'
-import * as ms from 'ms'
-import {makeExternalItemLink, makeExternalUserLink} from '../utils'
+import {makeExternalItemLink, makeExternalUserLink, timeAgo} from '../utils/utils'
 import {ApiClient} from '../api/client'
-
-const timeUnitMap = {
-  s: 'seconds',
-  ms: 'milliseconds',
-  m: 'minutes',
-  h: 'hours',
-  d: 'days',
-}
-
-const clock = now(1000 * 60)
 
 export class Comment {
   // noinspection JSUnusedLocalSymbols
@@ -35,8 +24,7 @@ export class Comment {
   comments: Array<Comment>
 
   @computed get timeAgo(): string {
-    // For some reason the time is sometimes negative on Moto G4 Chrome
-    return ms(Math.max(0, clock - this.time * 1000)).replace(/[a-z]+/, str => ` ${timeUnitMap[str]} ago`)
+    return timeAgo(now(), this.time * 1000)
   }
 
   @computed get excerpt(): string {
@@ -100,7 +88,7 @@ export class Story {
   }
 
   @computed get timeAgo(): string {
-    return ms(clock - this.time * 1000).replace(/[a-z]+/, str => ` ${timeUnitMap[str]} ago`)
+    return timeAgo(now(), this.time * 1000)
   }
 
   get externalUserLink() {

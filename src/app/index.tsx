@@ -24,8 +24,8 @@ import {css} from 'emotion'
 import {injectGlobal} from 'react-emotion'
 import {IS_DEV} from './cfg'
 import {AboutRoute, HomeRoute, StoryRoute} from './routes'
-import {Box, Flex, Overlay} from './comps/basic'
-import {canUseDOM} from './utils'
+import {Box, Flex, Overlay, Span} from './comps/basic'
+import {canUseDOM} from './utils/utils'
 import {Store} from './store'
 import {StoriesKind} from './models/models'
 
@@ -275,7 +275,26 @@ export class Header extends Component<{
               text-decoration: none;
               color: #fff;
             `}>
-              {store.headerTitle}
+              {routerStore.current.name === HomeRoute.id ? (
+                <Span
+                  className={css`
+                  position: relative;
+                `}>
+                  HN
+                  <Span
+                    f={0}
+                    className={css`
+                    text-transform: lowercase;
+                    margin-left: 0.1rem;
+                    position: absolute;
+                    bottom: 2px;
+                  `}>
+                    {store.headerTitle}
+                  </Span>
+                </Span>
+              ) : (
+                store.headerTitle
+              )}
             </Box>
           )}
         </Box>

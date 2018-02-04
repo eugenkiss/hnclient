@@ -71,6 +71,51 @@ const skeletonStory: StringStory = {
   //asStringStory: '',
 } as any
 
+@observer // Mainly for performance reasons due to timeAgo
+class CommentHeaderComp extends Component<{
+  comment: Comment
+  minimized: boolean
+  onMinimize: (...args: any[]) => void
+}> {
+  render() {
+    const { comment, minimized, onMinimize } = this.props
+    return (
+      <Flex
+        f={1}
+        className={css`
+        color: #999;
+      `}>
+        <A
+          mr={1}
+          fontWeight='bold'
+          href={comment.externalUserLink}
+          title={`HN User: ${comment.user}`}
+          >
+          {comment.user}
+        </A>
+        <A
+          mr={1}
+          href={comment.externalLink}
+          title={`HN 💬 ${comment.user}: ${comment.excerpt}`}
+          className={css`
+        `}>
+          {comment.timeAgo}
+        </A>
+        <Box
+          p={1} m={-1}
+          flex='1 1 auto'
+          onClick={onMinimize}
+          className={css`
+          text-align: right;
+          color: #ddd;
+        `}>
+          <FontAwesome icon={minimized ? faExpand : faCompress}/>
+        </Box>
+      </Flex>
+    )
+  }
+}
+
 @observer
 class CommentComp extends Component<{
   store?: Store
@@ -115,42 +160,11 @@ class CommentComp extends Component<{
             className={css`
             background: white;
           `}>
-            <Flex
-              f={1}
-              className={css`
-              color: #999;
-            `}>
-              <A
-                mr={1}
-                fontWeight='bold'
-                href={comment.externalUserLink}
-                title={`HN User: ${comment.user}`}
-                >
-                {comment.user}
-              </A>
-              <A
-                mr={1}
-                href={comment.externalLink}
-                title={`HN 💬 ${comment.user}: ${comment.excerpt}`}
-                className={css`
-              `}>
-                {comment.timeAgo}
-              </A>
-              <Box
-                p={1} m={-1}
-                flex='1 1 auto'
-                onClick={this.handleMinimzeClick}
-                className={css`
-                text-align: right;
-                color: #ddd;
-              `}>
-                {this.minimized ? (
-                  <FontAwesome icon={faExpand}/>
-                ) : (
-                  <FontAwesome icon={faCompress}/>
-                )}
-              </Box>
-            </Flex>
+            <CommentHeaderComp
+              comment={comment}
+              minimized={this.minimized}
+              onMinimize={this.handleMinimzeClick}
+            />
             {!this.minimized &&
               <ContentComp
                 mt={1} f={2}
@@ -173,11 +187,6 @@ class CommentComp extends Component<{
               </Box>
             }
           </Box>
-            {/*<Box*/}
-              {/*ml={1}*/}
-              {/*className={css`*/}
-              {/*border-bottom: 1px solid #eee;*/}
-            {/*`}/>*/}
           {this.collapsedChildren || this.minimized ? null :
             <CommentsComp
               level={level + 1}

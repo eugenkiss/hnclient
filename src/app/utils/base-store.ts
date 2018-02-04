@@ -1,4 +1,4 @@
-import {canUseDOM} from '../utils'
+import {canUseDOM} from './utils'
 
 // TODO: Is ther a more generic way to create null objects for window, document, etc.? Proxies?
 

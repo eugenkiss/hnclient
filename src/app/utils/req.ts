@@ -1,7 +1,7 @@
 import {fromPromise, FULFILLED, IPromiseBasedObservable, PENDING} from 'mobx-utils'
 import {PromiseState} from 'mobx-utils/lib/from-promise'
 import {action, computed, IObservableValue, observable, ObservableMap, when} from 'mobx'
-import {failedReq, fulfilledReq, sleep} from '../utils'
+import {failedReq, fulfilledReq, sleep} from './utils'
 
 // PoC
 export class Requester<T> {

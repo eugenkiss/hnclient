@@ -1,6 +1,7 @@
 import {execSync} from 'child_process'
 import * as http from 'http'
 import * as fs from 'fs'
+import * as url from 'url'
 import * as express from 'express'
 import * as compression from 'compression'
 import * as React from 'react'
@@ -64,7 +65,8 @@ if (ENV === 'loc') {
   app.use(compression())
 
   for (const [key, route] of routesMap) {
-    app.get(route.path, (req, res) => {
+    const purePath = url.parse(route.path).pathname
+    app.get(purePath, (req, res) => {
       res.send(htmlMap.get(key))
     })
   }

@@ -1,12 +1,11 @@
 import * as React from 'react'
+import {action} from 'mobx'
 import {Route} from 'router5/create-router'
 import {Store} from './store'
 import {Home} from './comps/home'
 import {StoryComp} from './comps/story'
 import {About} from './comps/about'
 import {StoriesKind} from './models/models'
-import {Span} from './comps/basic'
-import {css} from 'emotion'
 
 const rs: Map<string, HNRoute> = new Map()
 
@@ -24,33 +23,16 @@ export class HomeRoute implements HNRoute {
   get name() { return HomeRoute.id }
   get path() { return '/?:kind' }
   globPath = '/'
+  @action
   onActivate(store, {kind}) {
     kind = kind == null ? StoriesKind.Top : kind
-    const subTitle = kind === StoriesKind.Top ? null : kind
-    store.headerTitle =
-      <Span
-        key='HN'
-        className={css`
-        position: relative;
-      `}>
-        HN
-        <Span
-          key='Subtitle'
-          f={0}
-          className={css`
-          text-transform: lowercase;
-          margin-left: 0.1rem;
-          position: absolute;
-          bottom: 0.095rem;
-        `}>
-          {subTitle}
-        </Span>
-      </Span>
+    store.headerTitle = kind === StoriesKind.Top ? '' : kind
     store.refreshAction = () => store.getStoriesManualRefresh = store.getStories.refresh(300)
     if (store.getStories.unstarted || kind !== store.selectedStoriesKind) {
       store.selectedStoriesKind = kind
+      const unstarted = store.getStories.unstarted
       const req = store.getStories.refresh()
-      if (!store.getStories.unstarted) store.getStoriesManualRefresh = req
+      if (!unstarted) store.getStoriesManualRefresh = req
     }
   }
   onDeactivate(store) {
