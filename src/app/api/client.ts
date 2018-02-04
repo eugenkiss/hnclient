@@ -55,4 +55,13 @@ export class ApiClient extends BaseApiClient {
       return await this.getStory(id)
     }))
   }
+
+  getStoriesIds = async (kind: StoriesKind): Promise<Array<number>> => {
+    const page = 1
+    const max = 30
+    const start = max * (page - 1)
+    const end = start + max - 1
+    const { json } = await this.GET<number[]>(`/${kind}stories.json`)
+    return json.slice(start, end)
+  }
 }

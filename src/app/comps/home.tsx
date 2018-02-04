@@ -133,7 +133,7 @@ export class Home extends Component<{store?: Store}> {
   renderBody() {
     const {store} = this.props
     const req = store.getStories
-    if (req.value == null) {
+    if (store.storyIds == null) {
       switch (req.state) {
         case REJECTED: return <div>Failed to load stories!</div>
         default: return skeletonStories.map(story =>
@@ -141,10 +141,10 @@ export class Home extends Component<{store?: Store}> {
         )
       }
     } else {
-      const stories = req.value
-      return stories.map(story =>
-        <StoryEntry key={story.id} story={story}/>
-      )
+      return store.stories.map((story, i) => {
+        const s = story == null ? skeletonStories[i] : story
+        return <StoryEntry key={s.id} story={s}/>
+      })
     }
   }
 

@@ -41,14 +41,32 @@ export class Store extends BaseStore {
     })
   }
 
+  @observable storyIds: Array<number>
+  storyDb = observable.map<Story>()
+  @computed get stories(): Array<Story | null> {
+    const result = []
+    for (const id of this.storyIds) {
+      result.push(this.storyDb.get(id.toString()))
+    }
+    return result
+  }
+
   @observable headerTitle = null
 
-  getStories = new Requester<Array<Story>>(() => this.api.getStories(this.selectedStoriesKind || StoriesKind.Top))
+  getStories = new Requester<Array<Story>>(() => (async () => {
+    const ids = await this.api.getStoriesIds(this.selectedStoriesKind || StoriesKind.Top)
+    this.storyIds = ids
+    return await Promise.all(ids.map(async (id) => {
+      const story = await this.api.getStory(id)
+      this.storyDb.set(story.id.toString(), story)
+      return story
+    }))
+  })())
   @computed get selectedStoriesKind() {
     if (this.routerStore.startNext == null) return null
     return this.routerStore.startNext.params.kind
   }
-  @observable getStoriesManualRefresh: IPromiseBasedObservable<Array<Story>> = fulfilledReq
+  @observable getStoriesManualRefresh: IPromiseBasedObservable<any> = fulfilledReq
 
   getStory = new MapReq<Number, Story>((id: number) => this.api.getStoryWithComments(id))
 

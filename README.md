@@ -18,7 +18,10 @@ Principles:
   - High perceived speed using the UI without giving up DX/abstractions on the programmatic side
 
 [WebPagetest](https://www.webpagetest.org/easy):
-  - [Mobile - Regular 3G](https://www.webpagetest.org/result/180204_TH_bdcc6123911e11a23a90ccf68879d4c0/)
+  - [Mobile – Slow 3G](https://www.webpagetest.org/result/180204_1G_16498ea8439dc695cf46b6fa33c205e5/) 
+    (Lighthouse Performance Score: 75)
+  - [Mobile – Regular 3G](https://www.webpagetest.org/result/180204_PC_2c22222e5832cdd3406b4e93fce9227f/) 
+    (Lighthouse Performance Score: 90)
 
 Notable Concepts:
   - As part of the build process a server-side rendered HTML shell is generated for each route.
@@ -59,7 +62,7 @@ Observations:
   
 TODO:
   - Using the firebase HN API the time to consistently interactive sucks
-    need to think of something
+    need to think of something -> In progress
   - Submit to https://github.com/tastejs/hacker-news-pwas
   - Instead of having MapReq, have a side-effect of Req and a Story DB (Just Map)
   - remember scroll position for comments (scroll, go to about, go back)

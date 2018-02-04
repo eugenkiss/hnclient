@@ -379,14 +379,7 @@ export class StoryComp extends Component<{
 
   @computed get story(): Story {
     const { store, id } = this.props
-    const req = store.getStory
-    if (req.value(id) == null) {
-      const stories = store.getStories.value
-      if (stories != null) return stories.find(s => s.id === id)
-    } else {
-      return req.value(id)
-    }
-    return null
+    return store.storyDb.get(id.toString())
   }
 
   componentDidMount() {
