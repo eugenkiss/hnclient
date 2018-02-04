@@ -18,6 +18,8 @@ export class Comment {
   time: number
   @serializable(alias('text', primitive()))
   content: string
+  @serializable
+  deleted: boolean
   @serializable(list(primitive()))
   kids: Array<number>
 
@@ -67,6 +69,8 @@ export class Story {
   time: number
   @serializable(alias('text', primitive()))
   content: string
+  @serializable
+  deleted: boolean
   @serializable(list(primitive()))
   kids: Array<number>
   @serializable(alias('descendants', primitive()))

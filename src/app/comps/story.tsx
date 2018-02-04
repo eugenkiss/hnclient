@@ -19,36 +19,41 @@ import {A, Box, Flex, Span} from './basic'
 
 @observer
 class ContentComp extends Component<{
+  deleted: boolean
   content: string
   [key: string]: any
 }> {
   render() {
-    const { content, ...rest } = this.props
+    const { deleted, content, ...rest } = this.props
     return (
       <Box {...rest}>
         <base target='_blank'/>
-        <Box
-          dangerouslySetInnerHTML={{__html: content}}
-          className={css`
-          &>* {
-            margin-top: 0.5rem;
-          }
-          & a {
-            text-decoration: underline;
-            color: deepskyblue;
-            word-break: break-all;
-          }
-          & a:visited {
-            color: skyblue;
-          }
-          & p {
-            word-break: break-word;
-          }
-          & pre {
-            font-size: 0.85em;
-            white-space: pre-wrap;
-          }
-        `}/>
+        {deleted ? (
+          <Span color='#999'>[deleted]</Span>
+        ) : (
+          <Box
+            dangerouslySetInnerHTML={{__html: content}}
+            className={css`
+            &>* {
+              margin-top: 0.5rem;
+            }
+            & a {
+              text-decoration: underline;
+              color: deepskyblue;
+              word-break: break-all;
+            }
+            & a:visited {
+              color: skyblue;
+            }
+            & p {
+              word-break: break-word;
+            }
+            & pre {
+              font-size: 0.85em;
+              white-space: pre-wrap;
+            }
+          `}/>
+        )}
       </Box>
     )
   }
@@ -91,7 +96,7 @@ class CommentHeaderComp extends Component<{
           href={comment.externalUserLink}
           title={`HN User: ${comment.user}`}
           >
-          {comment.user}
+          {comment.deleted ? '[deleted]' : comment.user}
         </A>
         <A
           mr={1}
@@ -101,6 +106,7 @@ class CommentHeaderComp extends Component<{
         `}>
           {comment.timeAgo}
         </A>
+        {minimized && <Span>……</Span>}
         <Box
           p={1} m={-1}
           flex='1 1 auto'
@@ -109,7 +115,10 @@ class CommentHeaderComp extends Component<{
           text-align: right;
           color: #ddd;
         `}>
-          <FontAwesome icon={minimized ? faExpand : faCompress}/>
+          <FontAwesome
+            size={!minimized ? 'xs' : undefined}
+            icon={minimized ? faExpand : faCompress}
+          />
         </Box>
       </Flex>
     )
@@ -119,6 +128,7 @@ class CommentHeaderComp extends Component<{
 @observer
 class CommentComp extends Component<{
   store?: Store
+  firstChild: boolean
   level: number
   renderedCommentCount: number
   renderedCommentCounter: Counter
@@ -138,7 +148,7 @@ class CommentComp extends Component<{
   }
 
   render() {
-    const { level, comment, renderedCommentCounter } = this.props
+    const { firstChild, level, comment, renderedCommentCounter } = this.props
     const comments = comment.comments == null ? [] : comment.comments
     if (renderedCommentCounter.get() <= 0) return null
     renderedCommentCounter.dec()
@@ -147,7 +157,7 @@ class CommentComp extends Component<{
       <Flex flex='1' className={css`
       `}>
         <Box
-          flex={`0 0 ${level === 0 ? '0' : '0.9'}rem`}
+          flex={`0 0 ${level === 0 ? '0' : '10'}px`}
           className={css`
           border-right: ${level === 0 ? 'none' : '1px solid #eee'};
         `}/>
@@ -156,7 +166,7 @@ class CommentComp extends Component<{
         `}>
           <Box
             key={comment.id}
-            p={1}
+            p={1} pt={firstChild && level > 0 ? 0 : 1}
             className={css`
             background: white;
           `}>
@@ -168,22 +178,23 @@ class CommentComp extends Component<{
             {!this.minimized &&
               <ContentComp
                 mt={1} f={2}
+                deleted={comment.deleted}
                 content={comment.content}
               />
             }
             {comments.length > 0 && !this.minimized &&
               <Box
-                mt={1} mx={-1} px={1} mb={-1} pb={1}
+                mt={1} ml={!this.collapsedChildren ? '-11px' : -1} px={1} mb={-1} pb={1}
                 f={1}
                 onClick={this.handleCollapseClick}
                 className={css`
                 color: #ddd;
               `}>
-                {this.collapsedChildren ? (
-                  <FontAwesome icon={faExpand}/>
-                ) : (
-                  <FontAwesome icon={faCompress}/>
-                )}
+                <FontAwesome
+                  size={!this.collapsedChildren ? 'xs' : undefined}
+                  icon={this.collapsedChildren ? faExpand : faCompress}
+                />
+                {this.collapsedChildren && <Span ml={1}>……</Span>}
               </Box>
             }
           </Box>
@@ -225,9 +236,10 @@ class CommentsComp extends Component<{
     if (comments == null) return null
     // TODO: Once Inferno supports Fragment, use it
     return (<div>
-      {comments.map(c =>
+      {comments.map((c, i) =>
         <CommentComp
           key={c.id}
+          firstChild={i === 0}
           level={level}
           comment={c}
           renderedCommentCount={renderedCommentCounter.get()}
@@ -336,6 +348,7 @@ class Header extends Component<{
           key={2}
           p={1} pb={2} pt={1}
           f={2}
+          deleted={story.deleted === true}
           content={story.content}
           className={css`
           border-bottom: 1px solid rgba(0,0,0,0.05);
