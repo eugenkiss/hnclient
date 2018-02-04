@@ -14,11 +14,11 @@ Built using:
 - [emotion](https://emotion.sh)
 - [Styled System](http://jxnblk.com/styled-system)
 
-[WebPagetest](https://www.webpagetest.org/easy):
-  - Mobile - Regular 3G: <https://www.webpagetest.org/result/180204_TH_bdcc6123911e11a23a90ccf68879d4c0/>
-
 Principles:
-- High perceived speed using the UI without giving up DX/abstractions on the programmatic side
+  - High perceived speed using the UI without giving up DX/abstractions on the programmatic side
+
+[WebPagetest](https://www.webpagetest.org/easy):
+  - [Mobile - Regular 3G](https://www.webpagetest.org/result/180204_TH_bdcc6123911e11a23a90ccf68879d4c0/)
 
 Notable Concepts:
   - As part of the build process a server-side rendered HTML shell is generated for each route.
@@ -52,19 +52,23 @@ Observations:
   - Native development gives you a lot for free by sacrificing part of your freedom/customizability
   - Why doesn't the Chrome browser use the a's title attribute as share title when sharing a link?
   - Even though inferno-compat is quite good it's still a PITA for edge cases
-    
+
+
+---------------------------------  
+  
+  
 TODO:
-- Using the firebase HN API the time to consistently interactive sucks
-  need to think of something
-- Submit to https://github.com/tastejs/hacker-news-pwas
-- Instead of having MapReq, have a side-effect of Req and a Story DB (Just Map)
-- remember scroll position for comments (scroll, go to about, go back)
-- pagination or just more
-- (de)serialisation in requester
-- Create requester package? Make generic inpute type
-- pull to refresh (such a PITA): 
-  https://github.com/yusukeshibata/react-pullrefresh/issues/28
-  https://github.com/infernojs/inferno/issues/1001
+  - Using the firebase HN API the time to consistently interactive sucks
+    need to think of something
+  - Submit to https://github.com/tastejs/hacker-news-pwas
+  - Instead of having MapReq, have a side-effect of Req and a Story DB (Just Map)
+  - remember scroll position for comments (scroll, go to about, go back)
+  - pagination or just more
+  - (de)serialisation in requester
+  - Create requester package? Make generic inpute type
+  - pull to refresh (such a PITA): 
+    https://github.com/yusukeshibata/react-pullrefresh/issues/28
+    https://github.com/infernojs/inferno/issues/1001
   
 TODO Longterm (if ever):
   - compare to https://medium.com/@NareshBhatia/introducing-mobx-state-router-dae4cb9386fb
