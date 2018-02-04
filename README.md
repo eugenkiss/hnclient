@@ -46,16 +46,13 @@ Observations
     cases.
     
 TODO
-- pull to refresh: 
-  https://github.com/yusukeshibata/react-pullrefresh/issues/28
-  https://github.com/infernojs/inferno/issues/1001
-- If last refresh > 1h, show it in toast bar
 - remember scroll position for comments (scroll, go to about, go back)
 - pagination or just more
 - (de)serialisation in requester
 - Create requester package? Make generic inpute type
-- handle deleted comments
-- Extract style (color constants etc.)
+- pull to refresh: 
+  https://github.com/yusukeshibata/react-pullrefresh/issues/28
+  https://github.com/infernojs/inferno/issues/1001
   
 TODO Longterm (if ever)
   - compare to https://medium.com/@NareshBhatia/introducing-mobx-state-router-dae4cb9386fb
@@ -77,6 +74,9 @@ TODO Longterm (if ever)
     e.g. selected/active comment, top/hot/... tabs underneath toolbar
   - Reduce bundle size
       - Code splitting
+  - If last refresh > 1h, show it in toast bar
+  - Refactoring
+      - Extract style (color constants etc.)
   - Abstract/extract code into reusable libraries?
       - Routing, pregen, req, scroll restoration
   - Error boundary (e.g. to not break client-side navigation on error)
@@ -84,8 +84,12 @@ TODO Longterm (if ever)
     I think it doesn't work for them because hn isn't mobile optimized?
   - Reactive item database. To solve E.g. you go to story, comment count is updated,
     you go back to overview, but overview shows old comment count
+    The problem is that you can get the same kind of entity via different requests.
+    If you only cache the result of a request but do not save the retrieved entity
+    centrally, then there is going to be staleness.
   - User detail page, single comment page
   - Search
+  - Don't render deleted if they also don't have children
   - depending on type change path (e.g. /story /job /ask)
   - if type job render differently (e.g. job symbol instead of comments)
   - auto-hiding toolbar
