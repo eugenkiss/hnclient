@@ -61,11 +61,7 @@ export function timeAgo(now, then) {
 
     const elapsed = now - then
 
-    if (elapsed < msPerMinute) {
-         return Math.round(elapsed/1000) + ' seconds ago'
-    }
-
-    else if (elapsed < msPerHour) {
+    if (elapsed < msPerHour) {
          return Math.round(elapsed/msPerMinute) + ' minutes ago'
     }
 
