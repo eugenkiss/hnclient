@@ -17,12 +17,28 @@
         }
       ]
     ,
-    "headers": [ {
-      "source" : "/service-worker.js",
-      "headers" : [ {
-        "key" : "Cache-Control",
-        "value" : "no-store"
-      } ]
-    } ]
+    "headers": [
+      {
+        "source" : "/service-worker.js",
+        "headers" : [{
+          "key" : "Cache-Control",
+          "value" : "no-store"
+        }]
+      },
+      {
+        "source": "**/*.@(jpg|jpeg|gif|png)",
+        "headers": [{
+          "key": "Cache-Control",
+          "value": "max-age=7200"
+        }]
+      },
+      {
+        "source": "**/*.@(js)",
+        "headers": [{
+          "key": "Cache-Control",
+          "value": "max-age=31536000"
+        }]
+      }
+    ]
   }
 }

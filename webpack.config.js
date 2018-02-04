@@ -9,6 +9,7 @@ const HtmlWebpackPlugin = require('html-webpack-plugin')
 const CopyWebpackPlugin = require('copy-webpack-plugin')
 const DllReferencePlugin = webpack.DllReferencePlugin
 const AddAssetHtmlPlugin = require('add-asset-html-webpack-plugin')
+const FaviconsWebpackPlugin = require('favicons-webpack-plugin')
 
 const PORT = process.env['PORT'] || '5001'
 const OUTPUT_DLL = process.env['OUTPUT_DLL'] || 'dist-dll-dev'
@@ -57,11 +58,13 @@ cfg.resolve = {
   mainFields: ['module', 'browser', 'main'],
 }
 
+cfg.resolve.alias = {
+  '@fortawesome/fontawesome-free-solid$': '@fortawesome/fontawesome-free-solid/shakable.es.js'
+}
+
 if (isBuild) {
-  cfg.resolve.alias = {
-    "react": "inferno-compat",
-    "react-dom": "inferno-compat",
-  }
+  cfg.resolve.alias['react'] = 'inferno-compat'
+  cfg.resolve.alias['react-dom'] = 'inferno-compat'
 }
 
 cfg.module = {
@@ -118,12 +121,13 @@ if (isBuild) {
     new webpack.optimize.AggressiveMergingPlugin(),
     new webpack.optimize.ModuleConcatenationPlugin(),
     new UglifyJSPlugin({ sourceMap: true }),
+    new FaviconsWebpackPlugin(root('src', 'public', 'favicon.png')), // Doesn't iject into Html...
   )
 } else {
   cfg.plugins.push(
     new HtmlWebpackPlugin({
       template: root('src', 'public', 'template.html'),
-      favicon: root('src', 'public', 'favicon.png'),
+      favicon: isDev ? root('src', 'public', 'favicon.png') : undefined,
       inject: 'body',
     }),
     new DllReferencePlugin({

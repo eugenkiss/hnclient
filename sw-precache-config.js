@@ -1,9 +1,9 @@
 module.exports = {
   stripPrefix: 'dist/',
   staticFileGlobs: [
-    'dist/*.html',
+    'dist/fallback.html',
     'dist/manifest.json',
-    'dist/favicon.png',
+    'dist/favicon.ico',
     'dist/js/**/!(*map*)'
   ],
   dontCacheBustUrlsMatching: /\.\w{8}\./,

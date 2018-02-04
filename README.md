@@ -1,8 +1,3 @@
-- pwa 100 score (favicons, 192, 512)
-- Merge and Tag 1.0
-- Submit to https://github.com/tastejs/hacker-news-pwas
-
-
 Hacker News Client
 ==================
 
@@ -18,6 +13,9 @@ Built using:
 - [Inferno](https://infernojs.org)
 - [emotion](https://emotion.sh)
 - [Styled System](http://jxnblk.com/styled-system)
+
+[WebPagetest](https://www.webpagetest.org/easy):
+  - Mobile - Regular 3G: <https://www.webpagetest.org/result/180204_TH_bdcc6123911e11a23a90ccf68879d4c0/>
 
 Principles:
 - High perceived speed using the UI without giving up DX/abstractions on the programmatic side
@@ -45,7 +43,7 @@ Shoutout:
   - router5 is awesome
   - MobX is awesome as always
 
-Observations
+Observations:
   - Official HN Firebase API is admitted bad: https://github.com/HackerNews/API/#design
   - Service Worker configuration and workflow is a pain in the ass:
       - https://github.com/facebook/create-react-app/issues/2554
@@ -55,7 +53,10 @@ Observations
   - Why doesn't the Chrome browser use the a's title attribute as share title when sharing a link?
   - Even though inferno-compat is quite good it's still a PITA for edge cases
     
-TODO
+TODO:
+- Using the firebase HN API the time to consistently interactive sucks
+  need to think of something
+- Submit to https://github.com/tastejs/hacker-news-pwas
 - Instead of having MapReq, have a side-effect of Req and a Story DB (Just Map)
 - remember scroll position for comments (scroll, go to about, go back)
 - pagination or just more
@@ -65,7 +66,7 @@ TODO
   https://github.com/yusukeshibata/react-pullrefresh/issues/28
   https://github.com/infernojs/inferno/issues/1001
   
-TODO Longterm (if ever)
+TODO Longterm (if ever):
   - compare to https://medium.com/@NareshBhatia/introducing-mobx-state-router-dae4cb9386fb
   - Improve Makefile
   - Would MobX State Tree help somehow? In retaining scroll position for example?

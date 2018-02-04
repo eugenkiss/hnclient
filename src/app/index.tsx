@@ -28,6 +28,7 @@ import {Box, Flex, Overlay, Span} from './comps/basic'
 import {canUseDOM} from './utils/utils'
 import {Store} from './store'
 import {StoriesKind} from './models/models'
+import './font-awesome-css'
 
 const MobxDevTools = IS_DEV ? require('mobx-react-devtools').default : null
 
