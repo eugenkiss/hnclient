@@ -8,7 +8,7 @@ function extractId(state: State) {
   return state.path
 }
 
-export type SaveUiCb = () => { id: string, data: any }
+export type SaveUiCb = (current: State) => { id: string, data: any }
 export type RestoreUiCb = (data: any) => void
 
 export class RouterStore {
@@ -59,7 +59,7 @@ export class RouterStore {
 
   callSaveUiCbs = (id: string) => {
     for (const cb of this.saveUiCbs) {
-      const res = cb()
+      const res = cb(this.current)
       const saved = this.uiStates[id] || {}
       if (res != null) saved[res.id] = res.data
       this.uiStates[id] = saved

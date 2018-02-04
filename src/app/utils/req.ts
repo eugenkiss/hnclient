@@ -6,6 +6,7 @@ import {failedReq, fulfilledReq, sleep} from './utils'
 // PoC
 export class Requester<T> {
   private last: IObservableValue<T> = observable(null)
+  private lastTimeStamp: IObservableValue<number> = observable(-1)
   @observable private req: IPromiseBasedObservable<T> = fulfilledReq
   unstarted = true
 
@@ -24,10 +25,11 @@ export class Requester<T> {
       })();
     this.req = fromPromise(promise)
     this.whenDisposer()
-    this.whenDisposer = when(() => this.req.state !== PENDING, () => {
+    this.whenDisposer = when(() => this.req.state !== PENDING, action(() => {
       if (this.req.state !== FULFILLED) return
       this.last.set(this.req.value)
-    })
+      this.lastTimeStamp.set(new Date().getTime())
+    }))
     return this.req
   }
 
@@ -37,6 +39,10 @@ export class Requester<T> {
 
   get value(): T {
     return this.last.get()
+  }
+
+  get timestamp(): number {
+    return this.lastTimeStamp.get()
   }
 
   get state(): PromiseState {

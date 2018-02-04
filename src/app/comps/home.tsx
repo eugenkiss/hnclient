@@ -9,7 +9,7 @@ import {faComments} from '@fortawesome/fontawesome-free-solid'
 import {StoryRoute} from '../routes'
 import {A, Box, Flex, Span} from './basic'
 import {Link} from './link'
-import {StoriesKind, Story} from '../models/models'
+import {Story} from '../models/models'
 import {Store} from '../store'
 
 @observer
@@ -90,7 +90,7 @@ for (let i = 0; i < 30; i++) {
   skeletonStories.push(story)
 }
 
-type ViewRestoreData = { scrollTop: number, kind: StoriesKind }
+type ViewRestoreData = { scrollTop: number, dataTimeStamp: number }
 
 @inject('store') @observer
 export class Home extends Component<{store?: Store}> {
@@ -107,19 +107,20 @@ export class Home extends Component<{store?: Store}> {
     this.saveUiCb = routerStore.addSaveUiCb(() => {
       return { id: Home.ID, data: {
         scrollTop: this.containerNode.scrollTop,
-        kind: store.selectedStoriesKind,
+        dataTimeStamp: store.getStories.timestamp,
       } as ViewRestoreData}
     })
     this.restoreUiCb = routerStore.addRestoreUiCb(Home.ID, async (data?: ViewRestoreData) => {
-      if (data == null || data.kind !== store.selectedStoriesKind) {
-        await whenAsync(() => store.getStories.state !== PENDING && this.containerNode != null)
+      await whenAsync(() => store.getStories.state !== PENDING && this.containerNode != null)
+      if (data == null || data.dataTimeStamp !== store.getStories.timestamp) {
         if (this.containerNode != null) { // How can this happen?
           this.containerNode.scrollTop = 0
         }
         return
       }
-      await whenAsync(() => store.getStories.value != null && this.containerNode != null)
-      this.containerNode.scrollTop = data.scrollTop
+      if (store.getStories.value != null) {
+        this.containerNode.scrollTop = data.scrollTop
+      }
     })
   }
 

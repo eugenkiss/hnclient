@@ -43,11 +43,10 @@ export class Store extends BaseStore {
 
   @observable headerTitle = null
 
-  getStories = new Requester<Array<Story>>(() => this.api.getStories(this.selectedStoriesKind))
+  getStories = new Requester<Array<Story>>(() => this.api.getStories(this.selectedStoriesKind || StoriesKind.Top))
   @computed get selectedStoriesKind() {
-    const defaultKind = StoriesKind.Top
-    if (this.routerStore.startNext == null) return defaultKind
-    return this.routerStore.startNext.params.kind || defaultKind
+    if (this.routerStore.startNext == null) return null
+    return this.routerStore.startNext.params.kind
   }
   @observable getStoriesManualRefresh: IPromiseBasedObservable<Array<Story>> = fulfilledReq
 
