@@ -1,12 +1,19 @@
-import {observable} from 'mobx'
+import {action, observable} from 'mobx'
 import createRouter, {PluginFactory, Route, Router, State} from 'router5'
 import browserPlugin from 'router5/plugins/browser'
 import {routesMap} from './routes'
+import {Store} from './store'
 
-export type SaveUiCb = () => { id: string, data: any }
+function extractId(state: State) {
+  return state.path
+}
+
+export type SaveUiCb = (current: State) => { id: string, data: any }
 export type RestoreUiCb = (data: any) => void
 
 export class RouterStore {
+  @observable startNext: State
+  @observable startPrev: State
   @observable current: State
   @observable history = observable.array<State>()
 
@@ -16,7 +23,7 @@ export class RouterStore {
   restoreUiCbIds = new Array<string>()
 
   persistUiStates() {
-    this.callSaveUiCbs(this.current)
+    this.callSaveUiCbs(extractId(this.current))
     sessionStorage.setItem('uiStates', JSON.stringify(this.uiStates))
   }
 
@@ -50,24 +57,21 @@ export class RouterStore {
     this.restoreUiCbIds.splice(i, 1)
   }
 
-  callSaveUiCbs = (state: State) => {
-    if (state == null) return
-    const id = state.meta['id']
+  callSaveUiCbs = (id: string) => {
     for (const cb of this.saveUiCbs) {
-      const res = cb()
+      const res = cb(this.current)
       const saved = this.uiStates[id] || {}
       if (res != null) saved[res.id] = res.data
       this.uiStates[id] = saved
     }
   }
 
-  callRestoreUiCbs = (state: State) => {
-    const id = state.meta['id']
+  callRestoreUiCbs = (id: string) => {
     for (let i = 0; i < this.restoreUiCbs.length; i++) {
       const cbId = this.restoreUiCbIds[i]
       const cb = this.restoreUiCbs[i]
       const uiState = this.uiStates[id]
-      if (uiState != null) cb(uiState[cbId])
+      cb(uiState == null ? null : uiState[cbId])
     }
   }
 }
@@ -76,13 +80,12 @@ function makeMobxRouterPlugin(routerStore: RouterStore): PluginFactory {
   function mobxRouterPlugin() {
     // noinspection JSUnusedGlobalSymbols
     return {
-      onTransitionSuccess: (toState: State, fromState: State) => {
+      onTransitionStart: action((toState: State, fromState: State) => {
+        routerStore.startPrev = fromState
+        routerStore.startNext = toState
+      }),
+      onTransitionSuccess: (toState: State) => {
         routerStore.current = toState
-        if (fromState == null || toState.meta.id > fromState.meta.id) {
-          routerStore.history.push(toState)
-        } else {
-          routerStore.history.pop()
-        }
       },
     }
   }
@@ -95,10 +98,10 @@ function makeViewRestorePlugin(routerStore: RouterStore): PluginFactory {
     // noinspection JSUnusedGlobalSymbols
     return {
       onTransitionStart: (toState: State, fromState: State) => {
-        routerStore.callSaveUiCbs(fromState)
+        if (fromState != null) routerStore.callSaveUiCbs(extractId(fromState))
       },
       onTransitionSuccess: (toState: State) => {
-        routerStore.callRestoreUiCbs(toState)
+        routerStore.callRestoreUiCbs(extractId(toState))
       },
     }
   }
@@ -107,25 +110,32 @@ function makeViewRestorePlugin(routerStore: RouterStore): PluginFactory {
 }
 
 // noinspection JSUnusedLocalSymbols
-const asyncMiddleware =
+const asyncMiddleware = (store: Store) =>
   (router: Router) =>
-    (toState: any, fromState: State, done: any) => {
-      const route = routesMap.get(toState.name)
-      if (route.onActivate != null) {
-        route.onActivate(toState.params, (fromState || {} as any).params || {})
+    (nextState: State, prevState: State, done: any) => {
+      prevState = prevState || {} as any
+      const prevParams = prevState.params || {}
+      const nextParams = nextState.params || {}
+      const prevRoute = routesMap.get(prevState.name) || {} as any
+      const nextRoute = routesMap.get(nextState.name)
+      if (prevRoute.onDeactivate != null) {
+        prevRoute.onDeactivate(store, prevParams, nextParams)
+      }
+      if (nextRoute.onActivate != null) {
+        nextRoute.onActivate(store, nextParams, prevParams)
       }
       done()
     }
 
-export function makeRouter(routes: Array<Route>, routerStore: RouterStore): Router {
+export function makeRouter(routes: Array<Route>, store: Store): Router {
   const router = createRouter(routes, {
     trailingSlash: true
   })
   router.usePlugin(
     browserPlugin({}),
-    makeMobxRouterPlugin(routerStore),
-    makeViewRestorePlugin(routerStore)
+    makeMobxRouterPlugin(store.routerStore),
+    makeViewRestorePlugin(store.routerStore)
   )
-  router.useMiddleware(asyncMiddleware)
+  router.useMiddleware(asyncMiddleware(store))
   return router
 }

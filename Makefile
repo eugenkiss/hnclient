@@ -2,6 +2,7 @@
 #############
 
 port_dev=5001
+port_ssr=5002
 
 # Use dist instead of build prefix
 # to remove the need for PHONY
@@ -11,6 +12,8 @@ out_dll_dev=dist-dll-dev
 webpack=./node_modules/webpack/bin/webpack.js
 webpack-dev-server=./node_modules/webpack-dev-server/bin/webpack-dev-server.js
 sw-precache=./node_modules/sw-precache/cli.js
+ts-node=./node_modules/ts-node/dist/bin.js
+#typescript=./node_modules/typescript/bin/tsc # TODO
 
 
 # Installation #
@@ -34,7 +37,7 @@ dev: node_modules build-dll-dev
 	PORT=$(or $(port),$(port_dev)) \
 	$(webpack-dev-server) -d --progress --colors --open
 
-$(out_dll_dev): node_modules webpack.dll.js
+$(out_dll_dev): node_modules webpack.dll.js webpack.config.js
 	rm -rf ./$(out_dll_dev)
 	OUTPUT_DLL=$(out_dll_dev) \
 	$(webpack) --config webpack.dll.js --progress --profile
@@ -45,11 +48,17 @@ build-dll-dev: $(out_dll_dev)
 # Building #
 ############
 
-build: node_modules src
+gen-shells: node_modules
+	ENV=$(or $(env),loc) \
+	PORT=$(or $(port),$(port_ssr)) \
+	$(ts-node) -O '{"module":"commonjs"}' src/ssr/gen-shells.tsx
+
+build: node_modules src webpack.config.js
 	rm -rf ./$(out)
 	BUILD=true \
 	OUTPUT=$(out) \
 	$(webpack) --progress --profile
+	$(MAKE) gen-shells env=prd
 	$(sw-precache) --config=sw-precache-config.js
 
 

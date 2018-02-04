@@ -1,16 +1,44 @@
 {
   "hosting": {
     "public": "dist",
-    "rewrites": [ {
-      "source": "**",
-      "destination": "/index.html"
-    } ],
-    "headers": [ {
-      "source" : "/service-worker.js",
-      "headers" : [ {
-        "key" : "Cache-Control",
-        "value" : "no-store"
-      } ]
-    } ]
+    "rewrites":
+      [
+        {
+          "source": "/",
+          "destination": "/home.html"
+        },
+        {
+          "source": "/story/*",
+          "destination": "/story.html"
+        },
+        {
+          "source": "/about",
+          "destination": "/about.html"
+        }
+      ]
+    ,
+    "headers": [
+      {
+        "source" : "/service-worker.js",
+        "headers" : [{
+          "key" : "Cache-Control",
+          "value" : "no-store"
+        }]
+      },
+      {
+        "source": "**/*.@(jpg|jpeg|gif|png)",
+        "headers": [{
+          "key": "Cache-Control",
+          "value": "max-age=7200"
+        }]
+      },
+      {
+        "source": "**/*.@(js)",
+        "headers": [{
+          "key": "Cache-Control",
+          "value": "max-age=31536000"
+        }]
+      }
+    ]
   }
 }

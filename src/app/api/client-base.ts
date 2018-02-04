@@ -1,6 +1,5 @@
-import 'whatwg-fetch'
 import {ApiError} from './client'
-import {buildUrl} from '../utils'
+import {buildUrl, canUseDOM, sleep} from '../utils/utils'
 
 export class BaseApiError {
   constructor(
@@ -26,9 +25,10 @@ export class BaseApiClient {
   ) {}
 
   request = async (url: string, options: Object): Promise<{ json: any, response: Response }> => {
+    if (!canUseDOM) await sleep(100000000)
     let response: Response
     try {
-      response = await fetch(url)
+      response = await fetch(url, options)
     } catch (e) {
       if (this.logApiError) {
         console.error(`NetworkError:\n${url}\n${JSON.stringify(options)}\n${e.message}`)
@@ -64,8 +64,8 @@ export class BaseApiClient {
     return { json: json, response: response }
   }
 
-  GET = (endpoint: string, params?: Object): Promise<{ json: any, response: Response }> => {
-    const url = buildUrl(this.host, endpoint, params)
+  GET = <T>(endpoint: string, params?: Object, host?: string): Promise<{ json: T, response: Response }> => {
+    const url = buildUrl(host || this.host, endpoint, params)
     const options = {
       method: 'GET'
     }

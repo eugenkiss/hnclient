@@ -9,6 +9,7 @@ const HtmlWebpackPlugin = require('html-webpack-plugin')
 const CopyWebpackPlugin = require('copy-webpack-plugin')
 const DllReferencePlugin = webpack.DllReferencePlugin
 const AddAssetHtmlPlugin = require('add-asset-html-webpack-plugin')
+const FaviconsWebpackPlugin = require('favicons-webpack-plugin')
 
 const PORT = process.env['PORT'] || '5001'
 const OUTPUT_DLL = process.env['OUTPUT_DLL'] || 'dist-dll-dev'
@@ -31,14 +32,18 @@ if (isBuild) {
   cfg.devtool = 'cheap-module-eval-source-map'
 }
 
+// PITA!!!
+const hostName = require('os').hostname().toLowerCase()
+const hostNameLocal = `${hostName}.local`
+const hostLocal = `${hostNameLocal}:${PORT}`
+
 cfg.entry = {
-  main: './app/index',
-  //vendor: ['firebase']
+  main: './app/index'
 }
 
 cfg.output = {
   path: root(OUTPUT),
-  publicPath: isBuild ? '/' : `http://localhost:${PORT}/`,
+  publicPath: '/',
   filename: isBuild ? 'js/[name].[hash].js' : 'js/[name].js',
   chunkFilename: isBuild ? '[id].[hash].chunk.js' : '[id].chunk.js',
 }
@@ -53,17 +58,37 @@ cfg.resolve = {
   mainFields: ['module', 'browser', 'main'],
 }
 
+cfg.resolve.alias = {
+  '@fortawesome/fontawesome-free-solid$': '@fortawesome/fontawesome-free-solid/shakable.es.js'
+}
+
+if (isBuild) {
+  cfg.resolve.alias['react'] = 'inferno-compat'
+  cfg.resolve.alias['react-dom'] = 'inferno-compat'
+}
+
 cfg.module = {
   loaders: [
     {
       test: /\.tsx?$/,
       include: root('src', 'app'),
-      loader: 'awesome-typescript-loader',
-    },
-    {
-      test: /mobx-react-devtools/,
-      loader: isDev ? 'noop-loader' : 'null-loader',
-      include: root('src', 'app'),
+      use: {
+        loader: 'awesome-typescript-loader',
+        options: {
+          useCache: true,
+          useBabel: true,
+          babelOptions: {
+              babelrc: false,
+              plugins: [
+                ["emotion", {
+                  "hoist":  true,
+                  "sourceMap": !isBuild,
+                  "autoLabel": !isBuild,
+                }],
+              ]
+          },
+        }
+      },
     },
   ]
 }
@@ -81,11 +106,6 @@ cfg.plugins = [
 ]
 
 cfg.plugins.push(
-  new HtmlWebpackPlugin({
-    template: root('src', 'public', 'index.html'),
-    favicon: root('src', 'public', 'favicon.png'),
-    inject: 'body',
-  }),
   new CopyWebpackPlugin([{
     from: root('src/public')
   }]),
@@ -96,13 +116,20 @@ cfg.plugins.push(
 
 if (isBuild) {
   cfg.plugins.push(
+    new webpack.IgnorePlugin(/mobx-react-devtools/),
     new webpack.NoEmitOnErrorsPlugin(),
     new webpack.optimize.AggressiveMergingPlugin(),
     new webpack.optimize.ModuleConcatenationPlugin(),
-    new UglifyJSPlugin(),
+    new UglifyJSPlugin({ sourceMap: true }),
+    new FaviconsWebpackPlugin(root('src', 'public', 'favicon.png')), // Doesn't iject into Html...
   )
 } else {
   cfg.plugins.push(
+    new HtmlWebpackPlugin({
+      template: root('src', 'public', 'template.html'),
+      favicon: isDev ? root('src', 'public', 'favicon.png') : undefined,
+      inject: 'body',
+    }),
     new DllReferencePlugin({
       context: root('src', 'app'),
       manifest: root(OUTPUT_DLL, 'dependencies.dll.manifest.json')
@@ -124,6 +151,15 @@ cfg.devServer = {
   stats: {
     warnings: false,
   },
+
+  // PITA!!!
+  public: hostLocal,
+  useLocalIp: true,
+  host: '0.0.0.0',
+  allowedHosts: [
+    hostName,
+    hostNameLocal,
+  ],
 }
 
 module.exports = cfg

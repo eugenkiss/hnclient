@@ -1,111 +1,24 @@
 import * as React from 'react'
 import {Component} from 'react'
-import {observer} from 'mobx-react'
-import {routerStore, uiStore} from '../deps'
-import {REJECTED, whenAsync} from 'mobx-utils'
-import {Link} from './link'
+import {observable} from 'mobx'
+import {inject, observer} from 'mobx-react'
+import {PENDING, REJECTED, whenAsync} from 'mobx-utils'
+import {css} from 'emotion'
+import * as FontAwesome from '@fortawesome/react-fontawesome'
+import {faComments} from '@fortawesome/fontawesome-free-solid'
 import {StoryRoute} from '../routes'
-import {Story} from '../models/story'
-import {Box, Flex} from './basic'
-import {space} from 'styled-system'
-import styled from 'react-emotion'
-
-const Container = styled(Flex)`
-  border-bottom: 1px solid rgba(0,0,0,0.05);
-`
-
-const LinkAreaStory = styled('a')`
-  ${space};
-  &:visited {
-    color: #777777;
-  }
-` as any
-
-const Title = styled('div')`
-  font-size: 15px;
-  font-weight: bold;
-`
-
-const ScoreBox = styled('div')`
-  ${space};
-  padding: 3px;
-  min-width: 31px;
-  height: 22px;
-  background: rgba(0,0,0,0.05);
-  font-size: 12px;
-  display: flex;
-  flex: 0 0 auto;
-  justify-content: center;
-  align-items: center;
-  border-radius: 4px;
-  color: #666;
-` as any
-
-const Source = styled('div')`
-  ${space};
-  font-size: 12px;
-  display: flex;
-  color: #666;
-` as any
-
-const LinkAreaComments = styled(Link as any)`
-  ${space};
-  font-size: 14px;
-  width: 60px;
-  display: flex;
-  flex: 0 0 auto;
-  justify-content: center;
-  align-items: center;
-  &:visited {
-    color: #777777;
-  }
-` as any
-
-const CommentBox = styled('div')`
-  ${space};
-  padding: 2px;
-  width: 40px;
-  height: 30px;
-  border: 1px solid #ccc;
-  box-shadow: 1px 1px 0 #eee;
-  border-radius: 3px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  
-  /* http://www.cssarrowplease.com/ */
-  position: relative;
-  &:after, &:before {
-    right: 100%;
-    top: 50%;
-    border: solid transparent;
-    content: " ";
-    height: 0;
-    width: 0;
-    position: absolute;
-    pointer-events: none;
-  }
-  &:after {
-    border-color: rgba(255, 255, 255, 0);
-    border-right-color: #fff;
-    border-width: 4px;
-    margin-top: -4px;
-  }
-  &:before {
-    border-color: rgba(181, 181, 181, 0);
-    border-right-color: #b5b5b5;
-    border-width: 5px;
-    margin-top: -5px;
-  }
-` as any
+import {A, Box, Flex, Span} from './basic'
+import {Link} from './link'
+import {Story} from '../models/models'
+import {Store} from '../store'
 
 @observer
 export class StoryEntry extends Component<{
   story: Story
-  skeleton?: boolean
+  readOnly?: boolean
 }> {
   handleContainerClick = (e) => {
-    if (!this.props.skeleton) return
+    if (!this.props.readOnly) return
     e.stopPropagation()
     e.nativeEvent.stopImmediatePropagation()
     e.preventDefault()
@@ -114,76 +27,141 @@ export class StoryEntry extends Component<{
   render() {
     const { story } = this.props
     return (
-      <Container flex='1 1 auto' py={1} onClickCapture={this.handleContainerClick}>
-        <LinkAreaStory px={1} href={story.url} target='_blank'>
-          <Title>{story.title}</Title>
-          <Flex mt={1} align='center'>
-            <ScoreBox mr={1}>{story.points}</ScoreBox>
-            <Source>{story.domain}</Source>
+      <Flex
+        flex='1 1 auto'
+        p={1} pb={2}
+        onClickCapture={this.handleContainerClick}
+        className={css`
+      `}>
+        <Box pr={1}>
+          <A
+            href={story.url}
+            title={story.title}
+            className={css`
+            font-weight: 600;
+          `}>
+            <Box f={2}>
+              {story.title}
+            </Box>
+          </A>
+          <Flex mt={1} f={0} align='center' color='#999'>
+            {story.points != null ? story.points : '…'} points
+            {story.domain &&
+              <Span>
+                {'\u00A0'}
+                |
+                {'\u00A0'}
+                {story.domain === 'cool.com' ? '……….…' : story.domain}
+              </Span>
+            }
           </Flex>
-        </LinkAreaStory>
-        <Box flex='1 1 auto'/>
-          <LinkAreaComments my={-1} link={StoryRoute.link(story.id)}>
-            <CommentBox>{story.commentsCount}</CommentBox>
-          </LinkAreaComments>
-      </Container>
+        </Box>
+        <Box flex='1 1 auto' pr={1}/>
+        <Link
+          f={1} p={1} m={-1} pb={2} mb={-2}
+          color='#999'
+          link={StoryRoute.link(story.id)}
+          title={`HN: ${story.title}`}
+          className={css`
+          width: 48px;
+          border-left: 1px solid #eee;
+          background: rgba(0,0,0,.01);
+          display: flex;
+          flex: 0 0 auto;
+          flex-direction: column;
+          justify-content: center;
+          align-items: center;
+        `}>
+          <FontAwesome icon={faComments} size='lg'/>
+          <Span mt={'0.2rem'}>{story.commentsCount != null ? story.commentsCount : '…'}</Span>
+        </Link>
+      </Flex>
     )
   }
 }
 
 const skeletonStories = []
 for (let i = 0; i < 30; i++) {
-  const story = new Story()
+  const story = new Story(null)
   story.id = i
-  story.title = '…'
-  story.domain = '…'
+  story.title = '…… … … ……… … ……… … … ……… …… ………… ………'
+  story.kids = []
+  story.url = 'https://cool.com/' // TODO
   skeletonStories.push(story)
 }
 
-@observer
-export class Home extends Component<{}> {
+type ViewRestoreData = { scrollTop: number, dataTimeStamp: number }
+
+@inject('store') @observer
+export class Home extends Component<{store?: Store}> {
   static ID = 'Home'
 
   saveUiCb
   restoreUiCb
 
+  @observable containerNode = null
+
   componentDidMount() {
+    const {store} = this.props
+    const {routerStore} = store
     this.saveUiCb = routerStore.addSaveUiCb(() => {
-      return { id: Home.ID, data: window.pageYOffset }
+      return { id: Home.ID, data: {
+        scrollTop: this.containerNode.scrollTop,
+        dataTimeStamp: store.getStories.timestamp,
+      } as ViewRestoreData}
     })
-    this.restoreUiCb = routerStore.addRestoreUiCb(Home.ID, async (data: number) => {
-      await whenAsync(() => uiStore.lastGetStoriesValue != null)
-      window.scrollTo(0, data)
+    this.restoreUiCb = routerStore.addRestoreUiCb(Home.ID, async (data?: ViewRestoreData) => {
+      await whenAsync(() => store.getStories.state !== PENDING && this.containerNode != null)
+      if (data == null || data.dataTimeStamp !== store.getStories.timestamp) {
+        if (this.containerNode != null) { // How can this happen?
+          this.containerNode.scrollTop = 0
+        }
+        return
+      }
+      if (store.getStories.value != null) {
+        this.containerNode.scrollTop = data.scrollTop
+      }
     })
   }
 
   componentWillUnmount() {
+    const {routerStore} = this.props.store
     routerStore.delSaveUiCb(this.saveUiCb)
     routerStore.delRestoreUiCb(this.restoreUiCb)
   }
 
   renderBody() {
-    const req = uiStore.getStoriesReq
-    if (uiStore.lastGetStoriesValue == null) {
+    const {store} = this.props
+    const req = store.getStories
+    if (store.storyIds == null) {
       switch (req.state) {
         case REJECTED: return <div>Failed to load stories!</div>
-        default: return skeletonStories.map((story, i) =>
-          <StoryEntry key={story.id} story={story} skeleton={true}/>
+        default: return skeletonStories.map(story =>
+          <StoryEntry key={story.id} story={story} readOnly={true}/>
         )
       }
     } else {
-      const stories = uiStore.lastGetStoriesValue
-      return stories.map(story =>
-        <StoryEntry key={story.id} story={story}/>
-      )
+      return store.stories.map((story, i) => {
+        const s = story == null ? skeletonStories[i] : story
+        return <StoryEntry key={s.id} story={s}/>
+      })
     }
   }
 
   render() {
+    const {store} = this.props
     return (
-      <div>
-        {this.renderBody()}
-      </div>
+        <Box
+          innerRef={r => this.containerNode = r}
+          className={css`
+          position: relative;
+          transition: opacity 0.15s ease-in-out;
+          ${store.getStoriesManualRefresh.state === PENDING && 'opacity: 0.25'};
+          overflow: auto;
+          height: 100%;
+        `}>
+          {this.renderBody()}
+        </Box>
     )
   }
 }
