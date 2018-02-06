@@ -349,7 +349,7 @@ export default class App extends React.Component<{
             width: auto;
           }
         `}>
-          {IS_DEV && false && <MobxDevTools/>}
+          {IS_DEV && <MobxDevTools position={{bottom: 0, right: 0}}/>}
           <Header/>
           <Box flex='1' className={css`
             position: relative; // For pull to refresh

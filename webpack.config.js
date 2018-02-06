@@ -121,7 +121,7 @@ if (isBuild) {
     new webpack.optimize.AggressiveMergingPlugin(),
     new webpack.optimize.ModuleConcatenationPlugin(),
     new UglifyJSPlugin({ sourceMap: true }),
-    new FaviconsWebpackPlugin(root('src', 'public', 'favicon.png')), // Doesn't iject into Html...
+    new FaviconsWebpackPlugin(root('src', 'public', 'favicon.png')), // Doesn't inject into Html...
   )
 } else {
   cfg.plugins.push(
