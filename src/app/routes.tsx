@@ -2,10 +2,10 @@ import * as React from 'react'
 import {action} from 'mobx'
 import {Route} from 'router5/create-router'
 import {Store} from './store'
-import {Home} from './comps/home'
+import {Feed} from './comps/feed'
 import {StoryComp} from './comps/story'
 import {About} from './comps/about'
-import {StoriesKind} from './models/models'
+import {FeedType} from './models/models'
 
 const rs: Map<string, HNRoute> = new Map()
 
@@ -18,35 +18,35 @@ export interface HNRoute extends Route {
   onDeactivate?: (store: Store, next?: any, prev?: any) => void
 }
 
-export class HomeRoute implements HNRoute {
-  static id = 'home'
-  get name() { return HomeRoute.id }
+export class FeedRoute implements HNRoute {
+  static id = 'feed'
+  get name() { return FeedRoute.id }
   get path() { return '/?:kind' }
   globPath = '/'
-  prevKind: StoriesKind
-  @action
-  onActivate(store: Store, {kind}) {
-    kind = kind == null ? StoriesKind.Top : kind
-    store.headerTitle = kind === StoriesKind.Top ? '' : kind
-    store.refreshAction = () => store.getStoriesManualRefresh = store.getStories.refresh(300)
-    if (store.getStories.unstarted || kind !== this.prevKind) {
+  prevKind: FeedType
+  @action onActivate(store: Store, {kind}) {
+    kind = kind == null ? FeedType.Top : kind
+    store.headerTitle = kind === FeedType.Top ? '' : kind
+    // TODO: use minduration wrapper here!
+    store.refreshAction = () => store.getFeedItemsManualRefreshRequest = store.getFeedItems.refresh(300)
+    if (store.getFeedItems.unstarted || kind !== this.prevKind) {
       this.prevKind = kind
-      const unstarted = store.getStories.unstarted
-      const req = store.getStories.refresh()
-      if (!unstarted) store.getStoriesManualRefresh = req
+      const unstarted = store.getFeedItems.unstarted
+      const req = store.getFeedItems.refresh()
+      if (!unstarted) store.getFeedItemsManualRefreshRequest = req
     }
   }
   onDeactivate(store) {
     store.refreshAction = null
-    store.getStories.cancel()
+    store.getFeedItems.cancel()
   }
   // noinspection JSUnusedGlobalSymbols
-  static link = (kind?: StoriesKind): LinkData => ({
-    name: HomeRoute.id, params: {kind: kind}
+  static link = (kind?: FeedType): LinkData => ({
+    name: FeedRoute.id, params: {kind: kind}
   })
-  comp() { return <Home/> }
+  comp() { return <Feed/> }
 }
-rs.set(HomeRoute.id, new HomeRoute())
+rs.set(FeedRoute.id, new FeedRoute())
 
 export class StoryRoute implements HNRoute {
   static id = 'story'

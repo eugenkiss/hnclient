@@ -1,29 +1,39 @@
-import {alias, createModelSchema, getDefaultModelSchema, identifier, list, primitive, serializable} from 'serializr'
-import {computed} from 'mobx'
+import {alias, identifier, list, object, primitive, serializable} from 'serializr'
+import {action, computed} from 'mobx'
 import {now} from 'mobx-utils'
 import {makeExternalItemLink, makeExternalUserLink, timeAgo} from '../utils/utils'
-import {ApiClient} from '../api/client'
 
-export class Comment {
-  // noinspection JSUnusedLocalSymbols
-  constructor(private api: ApiClient) {}
-
+export class Item {
+  _createdAt = new Date().getTime()
   @serializable(identifier())
   id: number
   @serializable
-  parent: number
-  @serializable(alias('by', primitive()))
-  user: string
+  title: string
+  @serializable
+  points?: number
+  @serializable
+  user?: string
   @serializable
   time: number
-  @serializable(alias('text', primitive()))
+  @serializable
   content: string
   @serializable
   deleted: boolean
-  @serializable(list(primitive()))
-  kids: Array<number>
+  @serializable
+  dead: boolean // TODO: handle
+  @serializable
+  type: string
+  @serializable
+  url?: string
+  @serializable
+  domain?: string
 
-  comments: Array<Comment>
+  @serializable(list(object(Item)))
+  comments: Array<Item>
+  @serializable(alias('comments_count', primitive()))
+  commentsCount: number
+  @serializable
+  level: number
 
   @computed get timeAgo(): string {
     return timeAgo(now(), this.time * 1000)
@@ -37,8 +47,8 @@ export class Comment {
     return this.content.slice(0, Math.min(100, this.content.length)) + (trueExcerpt ? '…' : '')
   }
 
-  get externalUserLink() {
-    return makeExternalUserLink(this.user)
+  get externalUserLink(): string | null {
+    return this.user == null ? null : makeExternalUserLink(this.user)
   }
 
   get externalLink() {
@@ -46,78 +56,59 @@ export class Comment {
   }
 }
 
-// TODO: Probably not needed
-createModelSchema(Comment, getDefaultModelSchema(Comment).props, ctx => {
-  const comment = new Comment(ctx.args.api)
-  if (comment.kids == null) comment.kids = []
-  return comment
-})
+export type Comment = Item
+export type Story = Item
+export type StringStory = {[P in keyof Story]: string}
 
-export class Story {
-  // noinspection JSUnusedLocalSymbols
-  constructor(private api: ApiClient) {}
-
+export class FeedItem {
+  _createdAt = new Date().getTime()
   @serializable(identifier())
   id: number
   @serializable
   title: string
-  @serializable(alias('score', primitive()))
-  points: number
-  @serializable(alias('by', primitive()))
-  user: string
+  @serializable
+  points?: number
+  @serializable
+  user?: string
   @serializable
   time: number
-  @serializable(alias('text', primitive()))
-  content: string
-  @serializable
-  deleted: boolean
-  @serializable(list(primitive()))
-  kids: Array<number>
-  @serializable(alias('descendants', primitive()))
-  commentsCount: number
   @serializable
   type: string
   @serializable
-  url: string
-
-  comments: Array<Comment>
-
-  @computed get domain(): string {
-    try {
-      const host = new URL(this.url).host
-      return host.startsWith('www.') ? host.slice('www.'.length) : host
-    } catch (e) {
-      return null
-    }
-  }
+  url?: string
+  @serializable
+  domain?: string
+  @serializable(alias('comments_count', primitive()))
+  commentsCount: number
 
   @computed get timeAgo(): string {
     return timeAgo(now(), this.time * 1000)
   }
 
-  get externalUserLink() {
-    return makeExternalUserLink(this.user)
+  get externalUserLink(): string | null {
+    return this.user == null ? null : makeExternalUserLink(this.user)
   }
 
   get externalLink() {
     return makeExternalItemLink(this.id.toString())
   }
+
+  @action updateFromStory(story: Item) {
+    this.title = story.title
+    this.points = story.points
+    this.user = story.user
+    this.type = story.type
+    this.url = story.url
+    this.domain = story.domain
+    this.commentsCount = story.commentsCount
+  }
 }
 
-// TODO: Probably not needed
-createModelSchema(Story, getDefaultModelSchema(Story).props, ctx => {
-  const story = new Story(ctx.args.api)
-  if (story.kids == null) story.kids = []
-  return story
-})
-
-export type StringStory = {[P in keyof Story]: string}
-
-export enum StoriesKind {
-  Top = 'top',
-  New = 'new',
-  Best = 'best',
+export enum FeedType {
+  Top = 'news',
+  New = 'newest',
+  // Best = 'best',
   Ask = 'ask',
   Show = 'show',
-  Job = 'job',
+  Job = 'jobs',
 }

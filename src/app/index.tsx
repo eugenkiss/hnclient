@@ -6,7 +6,6 @@ import {IObservableValue, observable} from 'mobx'
 import {inject, observer, Provider} from 'mobx-react'
 import * as FontAwesome from '@fortawesome/react-fontawesome'
 import {
-  faArrowAltCircleUp,
   faBriefcase,
   faChevronLeft,
   faClock,
@@ -23,11 +22,11 @@ import {IconDefinition} from '@fortawesome/fontawesome-common-types';
 import {css} from 'emotion'
 import {injectGlobal} from 'react-emotion'
 import {IS_DEV} from './cfg'
-import {AboutRoute, HomeRoute, StoryRoute} from './routes'
+import {AboutRoute, FeedRoute, StoryRoute} from './routes'
 import {Box, Flex, Overlay, Span} from './comps/basic'
 import {canUseDOM} from './utils/utils'
 import {Store} from './store'
-import {StoriesKind} from './models/models'
+import {FeedType} from './models/models'
 import './font-awesome-css'
 
 const MobxDevTools = IS_DEV ? require('mobx-react-devtools').default : null
@@ -158,8 +157,8 @@ class OverflowMenu extends React.Component<{
     window.location.reload(true)
   }
 
-  handleSwitchStories = (kind?: StoriesKind) => () => {
-    this.props.store.navigate(HomeRoute.link(kind), {replace: true})
+  handleFeedType = (kind?: FeedType) => () => {
+    this.props.store.navigate(FeedRoute.link(kind), {replace: true})
   }
 
   render() {
@@ -185,27 +184,27 @@ class OverflowMenu extends React.Component<{
           {false && <OverflowMenuEntry title='Profile' icon={faUser} onClick={() => alert('TODO')}/>}
           <OverflowMenuEntry
             title='Hot' icon={faFire}
-            onClick={this.handleSwitchStories()}
+            onClick={this.handleFeedType()}
           />
           <OverflowMenuEntry
             title='New' icon={faClock}
-            onClick={this.handleSwitchStories(StoriesKind.New)}
+            onClick={this.handleFeedType(FeedType.New)}
           />
-          <OverflowMenuEntry
-            title='Best' icon={faArrowAltCircleUp}
-            onClick={this.handleSwitchStories(StoriesKind.Best)}
-          />
+          {/*<OverflowMenuEntry*/}
+            {/*title='Best' icon={faArrowAltCircleUp}*/}
+            {/*onClick={this.handleSwitchStories(FeedItemType.Best)}*/}
+          {/*/>*/}
           <OverflowMenuEntry
             title='Show' icon={faEye}
-            onClick={this.handleSwitchStories(StoriesKind.Show)}
+            onClick={this.handleFeedType(FeedType.Show)}
           />
           <OverflowMenuEntry
             title='Ask' icon={faQuestionCircle}
-            onClick={this.handleSwitchStories(StoriesKind.Ask)}
+            onClick={this.handleFeedType(FeedType.Ask)}
           />
           <OverflowMenuEntry
             title='Jobs' icon={faBriefcase}
-            onClick={this.handleSwitchStories(StoriesKind.Job)}
+            onClick={this.handleFeedType(FeedType.Job)}
           />
           <OverflowMenuEntry
             title='Update' icon={faDownload}
@@ -241,7 +240,7 @@ export class Header extends Component<{
         color: rgba(0,0,0,0.4);
         height: 48px;
       `}>
-        {routerStore.current.name !== HomeRoute.id &&
+        {routerStore.current.name !== FeedRoute.id &&
           <HeaderButton
             icon={faChevronLeft}
             marginLeft={'-0.5rem'}
@@ -276,7 +275,7 @@ export class Header extends Component<{
               text-decoration: none;
               color: #fff;
             `}>
-              {routerStore.current.name === HomeRoute.id ? (
+              {routerStore.current.name === FeedRoute.id ? (
                 <Span
                   className={css`
                   position: relative;

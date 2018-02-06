@@ -1,9 +1,9 @@
-import {fromPromise, FULFILLED, IPromiseBasedObservable, PENDING} from 'mobx-utils'
+import {fromPromise, FULFILLED, IPromiseBasedObservable, PENDING, REJECTED} from 'mobx-utils'
 import {PromiseState} from 'mobx-utils/lib/from-promise'
-import {action, computed, IObservableValue, observable, ObservableMap, when} from 'mobx'
+import {action, computed, IObservableValue, observable, ObservableMap, runInAction, when} from 'mobx'
 import {failedReq, fulfilledReq, sleep} from './utils'
 
-// PoC
+// PoC: Like fromPromise but generalized to continue making requests
 export class Requester<T> {
   private last: IObservableValue<T> = observable(null)
   private lastTimeStamp: IObservableValue<number> = observable(-1)
@@ -51,7 +51,7 @@ export class Requester<T> {
 }
 
 // PoC
-export class MapReq<I, T> {
+export class MapRequester<I, T> {
   private map: ObservableMap<T> = observable.map<T>()
   private reqMap: ObservableMap<IPromiseBasedObservable<T>> = observable.map()
   @observable lastReqId: I = null
@@ -78,6 +78,17 @@ export class MapReq<I, T> {
   @action cancel(x: I) {
     const req = this.reqMap.get(x.toString()) || {} as any
     if (req.state === PENDING) this.reqMap.set(x.toString(), failedReq)
+  }
+
+  valueOrRefresh(x: I): T {
+    const v = this.map.get(x.toString())
+    runInAction(() => {
+      const r = this.reqMap.get(x.toString())
+      if (v == null && (r == null || r.state !== PENDING && r.state !== REJECTED)) {
+        this.refresh(x)
+      }
+    })
+    return v
   }
 
   value(x: I): T {

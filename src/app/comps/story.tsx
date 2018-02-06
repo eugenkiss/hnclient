@@ -1,6 +1,6 @@
 import * as React from 'react'
 import {Component} from 'react'
-import {computed, observable, when} from 'mobx'
+import {autorun, computed, observable} from 'mobx'
 import {inject, observer} from 'mobx-react'
 import {REJECTED} from 'mobx-utils'
 import {css} from 'emotion'
@@ -14,7 +14,7 @@ import {
   faSpinner
 } from '@fortawesome/fontawesome-free-solid'
 import {Store} from '../store'
-import {Comment, Story, StringStory} from '../models/models'
+import {Comment, FeedItem, Item, Story, StringStory} from '../models/models'
 import {A, Box, Flex, Span} from './basic'
 
 @observer
@@ -251,7 +251,7 @@ class CommentsComp extends Component<{
 
 @observer
 class Header extends Component<{
-  story: Story | StringStory
+  story: Story | StringStory | FeedItem
   readOnly?: boolean
 }> {
   handleContainerClick = (e) => {
@@ -340,7 +340,7 @@ class Header extends Component<{
           </A>
         </Flex>
       </Box>
-      {story.content != null &&
+      {story instanceof Item && story.content != null && story.content.length > 0 &&
         <ContentComp
           key={2}
           p={1} pb={2} pt={1}
@@ -379,7 +379,12 @@ export class StoryComp extends Component<{
 
   @computed get story(): Story {
     const { store, id } = this.props
-    return store.storyDb.get(id.toString())
+    return store.getStory.valueOrRefresh(id)
+  }
+
+  @computed get feedItem(): FeedItem {
+    const { store, id } = this.props
+    return store.feedItemDb.get(id.toString())
   }
 
   componentDidMount() {
@@ -390,8 +395,12 @@ export class StoryComp extends Component<{
 
     const { store } = this.props
     store.headerTitle = skeletonStory.title
-    this.disposers.push(when(() => this.story != null, () => {
-      store.headerTitle = this.story.title
+    this.disposers.push(autorun(() => {
+      if (this.story != null) {
+        store.headerTitle = this.story.title
+      } else if (this.feedItem != null) {
+        store.headerTitle = this.feedItem.title
+      }
     }))
   }
 
@@ -402,8 +411,7 @@ export class StoryComp extends Component<{
 
   renderBody() {
     const { store, id } = this.props
-    const req = store.getStory
-    if (req.value(id) == null) {
+    if (this.story == null) {
       return (
         <Flex
           flexDirection='column'
@@ -412,8 +420,8 @@ export class StoryComp extends Component<{
           `}>
           <Box flex='0'>
             <Header
-              story={this.story != null ? this.story : skeletonStory}
-              readOnly={this.story == null}
+              story={this.feedItem != null ? this.feedItem : skeletonStory}
+              readOnly={this.feedItem == null}
             />
           </Box>
           <Flex
@@ -424,7 +432,7 @@ export class StoryComp extends Component<{
             className={css`
               color: #666;
           `}>
-            {req.state(id) === REJECTED ? (
+            {store.getStory.state(id) === REJECTED ? (
               <div>Failed to load story!</div>
             ) : (
               <FontAwesome icon={faSpinner} pulse/>
@@ -433,9 +441,7 @@ export class StoryComp extends Component<{
         </Flex>
       )
     } else {
-      const story = req.value(id)
-
-      if (this.toRenderCommentsLength < story.commentsCount) {
+      if (this.toRenderCommentsLength < this.story.commentsCount) {
         setTimeout(this.handleIncreaseRenderCommentsLength)
       } else {
         this.renderedCommentCounter.frozen = true
@@ -447,12 +453,12 @@ export class StoryComp extends Component<{
           className={css`
           height: 100%;
         `}>
-          <Header story={story}/>
-          {story.commentsCount > 0 ? (
+          <Header story={this.story}/>
+          {this.story.commentsCount > 0 ? (
             <Box>
               <CommentsComp
                 level={0}
-                comments={story.comments}
+                comments={this.story.comments}
                 renderedCommentCount={this.renderedCommentCounter.get()}
                 renderedCommentCounter={this.renderedCommentCounter}
               />

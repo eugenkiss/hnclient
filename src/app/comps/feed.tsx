@@ -9,12 +9,12 @@ import {faComments} from '@fortawesome/fontawesome-free-solid'
 import {StoryRoute} from '../routes'
 import {A, Box, Flex, Span} from './basic'
 import {Link} from './link'
-import {Story} from '../models/models'
+import {FeedItem} from '../models/models'
 import {Store} from '../store'
 
 @observer
-export class StoryEntry extends Component<{
-  story: Story
+export class FeedItemComp extends Component<{
+  story: FeedItem
   readOnly?: boolean
 }> {
   handleContainerClick = (e) => {
@@ -80,21 +80,20 @@ export class StoryEntry extends Component<{
   }
 }
 
-const skeletonStories = []
+const skeletonFeedItems = []
 for (let i = 0; i < 30; i++) {
-  const story = new Story(null)
-  story.id = i
-  story.title = '…… … … ……… … ……… … … ……… …… ………… ………'
-  story.kids = []
-  story.url = 'https://cool.com/' // TODO
-  skeletonStories.push(story)
+  const item = new FeedItem()
+  item.id = i
+  item.title = '…… … … ……… … ……… … … ……… …… ………… ………'
+  item.domain = '………'
+  skeletonFeedItems.push(item)
 }
 
 type ViewRestoreData = { scrollTop: number, dataTimeStamp: number }
 
 @inject('store') @observer
-export class Home extends Component<{store?: Store}> {
-  static ID = 'Home'
+export class Feed extends Component<{store?: Store}> {
+  static ID = 'Feed'
 
   saveUiCb
   restoreUiCb
@@ -105,20 +104,20 @@ export class Home extends Component<{store?: Store}> {
     const {store} = this.props
     const {routerStore} = store
     this.saveUiCb = routerStore.addSaveUiCb(() => {
-      return { id: Home.ID, data: {
+      return { id: Feed.ID, data: {
         scrollTop: this.containerNode.scrollTop,
-        dataTimeStamp: store.getStories.timestamp,
+        dataTimeStamp: store.getFeedItems.timestamp,
       } as ViewRestoreData}
     })
-    this.restoreUiCb = routerStore.addRestoreUiCb(Home.ID, async (data?: ViewRestoreData) => {
-      await whenAsync(() => store.getStories.state !== PENDING && this.containerNode != null)
-      if (data == null || data.dataTimeStamp !== store.getStories.timestamp) {
+    this.restoreUiCb = routerStore.addRestoreUiCb(Feed.ID, async (data?: ViewRestoreData) => {
+      await whenAsync(() => store.getFeedItems.state !== PENDING && this.containerNode != null)
+      if (data == null || data.dataTimeStamp !== store.getFeedItems.timestamp) {
         if (this.containerNode != null) { // How can this happen?
           this.containerNode.scrollTop = 0
         }
         return
       }
-      if (store.getStories.value != null) {
+      if (store.getFeedItems.value != null) {
         this.containerNode.scrollTop = data.scrollTop
       }
     })
@@ -132,19 +131,18 @@ export class Home extends Component<{store?: Store}> {
 
   renderBody() {
     const {store} = this.props
-    const req = store.getStories
-    if (store.storyIds == null) {
+    const req = store.getFeedItems
+    if (req.value == null) {
       switch (req.state) {
         case REJECTED: return <div>Failed to load stories!</div>
-        default: return skeletonStories.map(story =>
-          <StoryEntry key={story.id} story={story} readOnly={true}/>
+        default: return skeletonFeedItems.map(story =>
+          <FeedItemComp key={story.id} story={story} readOnly={true}/>
         )
       }
     } else {
-      return store.stories.map((story, i) => {
-        const s = story == null ? skeletonStories[i] : story
-        return <StoryEntry key={s.id} story={s}/>
-      })
+      return store.feedItems.map(story =>
+        <FeedItemComp key={story.id} story={story}/>
+      )
     }
   }
 
@@ -156,7 +154,7 @@ export class Home extends Component<{store?: Store}> {
           className={css`
           position: relative;
           transition: opacity 0.15s ease-in-out;
-          ${store.getStoriesManualRefresh.state === PENDING && 'opacity: 0.25'};
+          ${store.getFeedItemsManualRefreshRequest.state === PENDING && 'opacity: 0.25'};
           overflow: auto;
           height: 100%;
         `}>

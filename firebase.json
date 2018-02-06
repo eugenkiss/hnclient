@@ -5,7 +5,7 @@
       [
         {
           "source": "/",
-          "destination": "/home.html"
+          "destination": "/feed.html"
         },
         {
           "source": "/story/*",
@@ -33,7 +33,7 @@
         }]
       },
       {
-        "source": "**/*.@(js)",
+        "source": "/js/**/*.@(js)",
         "headers": [{
           "key": "Cache-Control",
           "value": "max-age=31536000"
