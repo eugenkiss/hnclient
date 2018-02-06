@@ -9,7 +9,7 @@ const HtmlWebpackPlugin = require('html-webpack-plugin')
 const CopyWebpackPlugin = require('copy-webpack-plugin')
 const DllReferencePlugin = webpack.DllReferencePlugin
 const AddAssetHtmlPlugin = require('add-asset-html-webpack-plugin')
-const FaviconsWebpackPlugin = require('favicons-webpack-plugin')
+// const FaviconsWebpackPlugin = require('favicons-webpack-plugin')
 
 const PORT = process.env['PORT'] || '5001'
 const OUTPUT_DLL = process.env['OUTPUT_DLL'] || 'dist-dll-dev'
@@ -121,7 +121,7 @@ if (isBuild) {
     new webpack.optimize.AggressiveMergingPlugin(),
     new webpack.optimize.ModuleConcatenationPlugin(),
     new UglifyJSPlugin({ sourceMap: true }),
-    new FaviconsWebpackPlugin(root('src', 'public', 'favicon.png')), // Doesn't inject into Html...
+    //new FaviconsWebpackPlugin(root('src', 'public', 'favicon.png')),
   )
 } else {
   cfg.plugins.push(
