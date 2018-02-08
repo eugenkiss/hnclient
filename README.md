@@ -67,9 +67,6 @@ Observations:
   
   
 TODO:
-  - Find out why the hell webpagetest says that main thread is busy...
-    "Audit error: Main thread activity continued through the end of the trace recording. Consistently Interactive requires a minimum of 5 seconds of both main thread idle and network idle."
-    How can this be?: https://www.webpagetest.org/result/180206_46_90d33941e4d8a6d2b89405f23531e2c1/
   - Update webpagetest entries
   - Submit to https://github.com/tastejs/hacker-news-pwas
   - Sessionstorage for persisting view state

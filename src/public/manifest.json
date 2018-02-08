@@ -8,22 +8,12 @@
       "type": "image/png"
     },
     {
-      "src": "favicon-32x32.png",
-      "sizes": "32x32",
-      "type": "image/png"
-    },
-    {
-      "src": "favicon-128x128.png",
-      "sizes": "128x128",
-      "type": "image/png"
-    },
-    {
-      "src": "favicon-512x512.png",
+      "src": "favicon-512x512.jpg",
       "sizes": "512x512",
-      "type": "image/png"
+      "type": "image/jpg"
     }
   ],
-  "start_url": "./",
+  "start_url": "/",
   "display": "standalone",
   "background_color": "#E16400",
   "theme_color": "#FF6600"

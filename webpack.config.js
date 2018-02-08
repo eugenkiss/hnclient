@@ -78,14 +78,14 @@ cfg.module = {
           useCache: true,
           useBabel: true,
           babelOptions: {
-              babelrc: false,
-              plugins: [
-                ["emotion", {
-                  "hoist":  true,
-                  "sourceMap": !isBuild,
-                  "autoLabel": !isBuild,
-                }],
-              ]
+            babelrc: false,
+            plugins: [
+              ['emotion', {
+                'hoist':  true,
+                'sourceMap': !isBuild,
+                'autoLabel': !isBuild,
+              }],
+            ]
           },
         }
       },
