@@ -51,7 +51,7 @@ build-dll-dev: $(out_dll_dev)
 gen-shells: node_modules
 	ENV=$(or $(env),loc) \
 	PORT=$(or $(port),$(port_ssr)) \
-	$(ts-node) -O '{"module":"commonjs", "moduleResolution": "node"}' src/ssr/gen-shells.tsx
+	$(ts-node) -O '{"module":"commonjs"}' src/ssr/gen-shells.tsx
 
 build: node_modules src webpack.config.js
 	rm -rf ./$(out)

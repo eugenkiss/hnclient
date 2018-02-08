@@ -120,7 +120,14 @@ if (isBuild) {
     new webpack.NoEmitOnErrorsPlugin(),
     new webpack.optimize.AggressiveMergingPlugin(),
     new webpack.optimize.ModuleConcatenationPlugin(),
-    new UglifyJSPlugin({ sourceMap: true }),
+    new UglifyJSPlugin({
+      sourceMap: true,
+      uglifyOptions: {
+        compress: {
+          passes: 3,
+        }
+      }
+    }),
     //new FaviconsWebpackPlugin(root('src', 'public', 'favicon.png')),
   )
 } else {
