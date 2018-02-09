@@ -20,9 +20,9 @@ Principles:
   - High perceived speed using the UI without giving up DX/abstractions on the programmatic side
 
 [WebPagetest](https://www.webpagetest.org/easy):
-  - [Mobile – Slow 3G](https://www.webpagetest.org/result/180204_1G_16498ea8439dc695cf46b6fa33c205e5/) 
-    (Lighthouse Performance Score: 75)
-  - [Mobile – Regular 3G](https://www.webpagetest.org/result/180204_PC_2c22222e5832cdd3406b4e93fce9227f/) 
+  - [Mobile – Slow 3G](https://www.webpagetest.org/result/180208_MC_589f0257c719d7a20c39d19818d6b42f) 
+    (Lighthouse Performance Score: 54) (The LightHouse trace almost always fails...)
+  - [Mobile – Regular 3G](https://www.webpagetest.org/result/180208_JJ_01f07a06adb2f1d7b7b68adc8902fe4f) 
     (Lighthouse Performance Score: 90)
 
 Notable Concepts:
