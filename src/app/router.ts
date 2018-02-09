@@ -11,6 +11,8 @@ function extractId(state: State) {
 export type SaveUiCb = (current: State) => { id: string, data: any }
 export type RestoreUiCb = (data: any) => void
 
+// TODO: Has to be rethought. The callbacks list should be a map from path to a list of callbacks.
+// Each callback for the given path will be called with either null or the saved state.
 export class RouterStore {
   @observable startNext: State
   @observable startPrev: State
@@ -22,19 +24,18 @@ export class RouterStore {
   restoreUiCbs = new Array<RestoreUiCb>()
   restoreUiCbIds = new Array<string>()
 
-  persistUiStates() {
-    this.callSaveUiCbs(extractId(this.current))
-    sessionStorage.setItem('uiStates', JSON.stringify(this.uiStates))
-  }
+  // persistUiStates() {
+  //   this.callSaveUiCbs(extractId(this.current))
+  //   sessionStorage.setItem('uiStates', JSON.stringify(this.uiStates))
+  // }
 
-  restoreUiStates() {
-    // Disable restoration, there is something wrong for edge cases (refresh)
-    // meta.id is not consistent after refresh
-    if (1==1) return
-    const uiStatesJson = sessionStorage.getItem('uiStates')
-    if (uiStatesJson == null) return
-    this.uiStates = JSON.parse(uiStatesJson)
-  }
+  // Disable (de)serialization for now, need to think deeper about it
+  // restoreUiStates() {
+  //   if (1==1) return
+  //   const uiStatesJson = sessionStorage.getItem('uiStates')
+  //   if (uiStatesJson == null) return
+  //   this.uiStates = JSON.parse(uiStatesJson)
+  // }
 
   addSaveUiCb = (cb: SaveUiCb): SaveUiCb => {
     this.saveUiCbs.push(cb)
