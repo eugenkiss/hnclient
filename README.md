@@ -105,5 +105,5 @@ TODO Longterm (if ever):
   - auto-hiding toolbar
   - Theming (dark mode)
   - pull to refresh (such a PITA): 
-    https://github.com/yusukeshibata/react-pullrefresh/issues/28
-    https://github.com/infernojs/inferno/issues/1001
+    - https://github.com/yusukeshibata/react-pullrefresh/issues/28
+    - https://github.com/infernojs/inferno/issues/1001
