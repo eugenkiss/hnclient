@@ -55,11 +55,11 @@ Shoutout:
 
 Observations:
   - Service Worker configuration and workflow is a pain in the ass:
-      - https://github.com/facebook/create-react-app/issues/2554
-      - https://twitter.com/dan_abramov/status/954146978564395008
-  - Browser history navigation is limited for apps
-  - Native development gives you a lot for free by sacrificing part of your freedom/customizability
-  - Why doesn't the Chrome browser use the a's title attribute as share title when sharing a link?
+    - https://github.com/facebook/create-react-app/issues/2554
+    - https://twitter.com/dan_abramov/status/954146978564395008
+  - Browser history navigation is limiting for apps
+  - Native development gives you a lot but requires you to sacrifice part of your freedom (e.g. customizability)
+  - Why doesn't the Chrome browser use the a's title attribute as the share title when sharing a link?
   - Even though inferno-compat is quite good it's still a PITA for edge cases
 
 
@@ -67,40 +67,34 @@ Observations:
   
   
 TODO:
-  - Update webpagetest entries
-  - Submit to https://github.com/tastejs/hacker-news-pwas
-  - Sessionstorage for persisting view state
   - remember scroll position for comments (scroll, go to about, go back)
   - pagination or just more
   - Create requester package? Make generic inpute type
-  - pull to refresh (such a PITA): 
-    https://github.com/yusukeshibata/react-pullrefresh/issues/28
-    https://github.com/infernojs/inferno/issues/1001
   
 TODO Longterm (if ever):
   - Reduce bundle size
-      - Code splitting (ReactLoadable)
+    - Code splitting (ReactLoadable)
   - compare to https://medium.com/@NareshBhatia/introducing-mobx-state-router-dae4cb9386fb
   - Improve Makefile
   - Would MobX State Tree help somehow? In retaining scroll position for example?
   - Use react-dom-lite once ready instead of Inferno
   - BFF proxy to simulate delay / user etc. in dev mode
-      - Failed to load stories: retry button
+    - Failed to load stories: retry button
   - Mutation API? http4k
-      - https://github.com/manmal/hn-android/tree/master/app/src/main/java/com/manuelmaly/hn
-      - upvote/downvote, flag, user account, comment etc.
+    - https://github.com/manmal/hn-android/tree/master/app/src/main/java/com/manuelmaly/hn
+    - upvote/downvote, flag, user account, comment etc.
   - Real SSR?
-      - https://github.com/kristoferbaxter/react-hn
-      - https://github.com/cheeaun/node-hnapi
+    - https://github.com/kristoferbaxter/react-hn
+    - https://github.com/cheeaun/node-hnapi
   - Animations/transitions. E.g. spinner fade out, overflow menu, shared element transition, etc.
   - React Native version
   - Steal some UI ideas from reddit is fun 
     e.g. selected/active comment, top/hot/... tabs underneath toolbar, share dialog
   - If last refresh > 1h, show it in a toast bar
   - Refactoring
-      - Extract style (color constants etc.)
+    - Extract style (color constants etc.)
   - Abstract/extract code into reusable libraries?
-      - Routing, pregen, req, scroll restoration
+    - Routing, pregen, req, scroll restoration
   - Error boundary (e.g. to not break client-side navigation on error)
   - How to make news.ycombinator.com open with a top-left X in Chrome on Android?
     I think it doesn't work for them because hn isn't mobile optimized?
@@ -110,3 +104,6 @@ TODO Longterm (if ever):
   - if type job render differently (e.g. job symbol instead of comments)
   - auto-hiding toolbar
   - Theming (dark mode)
+  - pull to refresh (such a PITA): 
+    https://github.com/yusukeshibata/react-pullrefresh/issues/28
+    https://github.com/infernojs/inferno/issues/1001
