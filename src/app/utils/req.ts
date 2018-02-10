@@ -1,7 +1,7 @@
 import {fromPromise, FULFILLED, IPromiseBasedObservable, PENDING, REJECTED} from 'mobx-utils'
 import {PromiseState} from 'mobx-utils/lib/from-promise'
 import {action, computed, IObservableValue, observable, ObservableMap, runInAction, when} from 'mobx'
-import {failedReq, fulfilledReq, sleep} from './utils'
+import {failedReq, fulfilledReq} from './utils'
 
 // PoC: Like fromPromise but generalized to continue making requests
 export class Requester<T> {
@@ -13,17 +13,9 @@ export class Requester<T> {
   constructor(private promiser: () => Promise<T>) {}
 
   private whenDisposer = () => {}
-  @action refresh(minDuration?: number): IPromiseBasedObservable<T> {
+  @action refresh(): IPromiseBasedObservable<T> {
     this.unstarted = false
-    const promise = minDuration == null ? this.promiser() :
-      (async () => {
-        const now = new Date().getTime()
-        const result = await this.promiser()
-        const duration = new Date().getTime() - now
-        if (minDuration != null) await sleep(minDuration - duration)
-        return result
-      })();
-    this.req = fromPromise(promise)
+    this.req = fromPromise(this.promiser())
     this.whenDisposer()
     this.whenDisposer = when(() => this.req.state !== PENDING, action(() => {
       if (this.req.state !== FULFILLED) return

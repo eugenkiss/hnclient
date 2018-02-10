@@ -51,6 +51,16 @@ export function makeExternalUserLink(userId: string) {
   return `https://news.ycombinator.com/user?id=${userId}`
 }
 
+export const minDuration = <T>(minDuration: number, promise: PromiseLike<T>): IPromiseBasedObservable<T> => {
+  return fromPromise((async () => {
+    const now = new Date().getTime()
+    const result = await promise
+    const duration = new Date().getTime() - now
+    await sleep(minDuration - duration)
+    return result
+  })())
+}
+
 // https://stackoverflow.com/a/6109105/283607
 export function timeAgo(now, then) {
     const msPerMinute = 60 * 1000

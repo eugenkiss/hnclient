@@ -6,6 +6,7 @@ import {Feed} from './comps/feed'
 import {StoryComp} from './comps/story'
 import {About} from './comps/about'
 import {FeedType} from './models/models'
+import {minDuration} from './utils/utils'
 
 const rs: Map<string, HNRoute> = new Map()
 
@@ -27,8 +28,9 @@ export class FeedRoute implements HNRoute {
   @action onActivate(store: Store, {kind}) {
     kind = kind == null ? FeedType.Top : kind
     store.headerTitle = 'HN'
-    // TODO: use minduration wrapper here!
-    store.refreshAction = () => store.getFeedItemsManualRefreshRequest = store.getFeedItems.refresh(300)
+    store.refreshAction = () => {
+      store.getFeedItemsManualRefreshRequest = minDuration(300, store.getFeedItems.refresh())
+    }
     if (store.getFeedItems.unstarted || kind !== this.prevKind) {
       this.prevKind = kind
       const unstarted = store.getFeedItems.unstarted
