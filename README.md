@@ -7,7 +7,7 @@ Inspired by [HN (Android)](https://github.com/manmal/hn-android/) and [HNPWA](ht
 
 Uses [HNPWA API](https://github.com/tastejs/hacker-news-pwas/blob/master/docs/api.md).
 
-Built using:
+Built with:
 - [React](https://reactjs.org)
 - [MobX](https://mobx.js.org)
 - [TypeScript](https://www.typescriptlang.org)
@@ -17,7 +17,7 @@ Built using:
 - [Styled System](http://jxnblk.com/styled-system)
 
 Principles:
-  - High perceived speed using the UI without giving up DX/abstractions on the programmatic side
+  - High perceived speed in the GUI without giving up DX/abstractions on the programmatic side
 
 [WebPagetest](https://www.webpagetest.org/easy):
   - [Mobile – Slow 3G](https://www.webpagetest.org/result/180208_MC_589f0257c719d7a20c39d19818d6b42f) 
