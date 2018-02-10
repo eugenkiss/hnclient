@@ -6,11 +6,104 @@ import {PENDING, REJECTED, whenAsync} from 'mobx-utils'
 import {css} from 'emotion'
 import * as FontAwesome from '@fortawesome/react-fontawesome'
 import {faComments} from '@fortawesome/fontawesome-free-solid'
-import {StoryRoute} from '../routes'
+import {FeedRoute, StoryRoute} from '../routes'
 import {A, Box, Flex, Span} from './basic'
 import {Link} from './link'
-import {FeedItem} from '../models/models'
+import {FeedItem, FeedType} from '../models/models'
 import {Store} from '../store'
+
+@inject('store')
+class TabEntry extends React.Component<{
+  store?: Store
+  active: boolean
+  title: string
+  onClick: () => void
+}> {
+  render() {
+    const { active, title, onClick } = this.props
+    return (
+      <Flex
+        onClick={onClick}
+        flex='1'
+        justify='center'
+        className={css`
+        position: relative;
+        height: 100%;
+        user-select: none;
+        cursor: pointer;
+      `}>
+        <Flex
+          onClick={onClick}
+          mx={1} f={2}
+          justify='center'
+          align='center'
+          className={css`
+        `}>
+          {title}
+        </Flex>
+        <Box
+          className={css`
+          opacity: ${active ? '1' : '0'};
+          position: absolute;
+          bottom: 0;
+          width: 100%;
+          height: 4px;
+          background: rgba(255, 255, 255, 0.6);
+        `}/>
+      </Flex>
+    )
+  }
+}
+
+@inject('store') @observer
+export class Tabbar extends Component<{
+  store?: Store
+}> {
+  handleFeedType = (kind?: FeedType) => () => {
+    this.props.store.navigate(FeedRoute.link(kind), {replace: true})
+  }
+
+  render() {
+    const {store} = this.props
+    const {selectedFeedType} = store
+    return (
+      <Flex align='center' className={css`
+        top: 0;
+        background: rgb(210,100,0);
+        font-size: 20px;
+        align-items: center;
+        color: white;
+        height: 42px;
+      `}>
+        <TabEntry
+          title='Hot'
+          active={selectedFeedType == null || selectedFeedType === FeedType.Top}
+          onClick={this.handleFeedType()}
+        />
+        <TabEntry
+          title='New'
+          active={selectedFeedType === FeedType.New}
+          onClick={this.handleFeedType(FeedType.New)}
+        />
+        <TabEntry
+          title='Show'
+          active={selectedFeedType === FeedType.Show}
+          onClick={this.handleFeedType(FeedType.Show)}
+        />
+        <TabEntry
+          title='Ask'
+          active={selectedFeedType === FeedType.Ask}
+          onClick={this.handleFeedType(FeedType.Ask)}
+        />
+        <TabEntry
+          title='Jobs'
+          active={selectedFeedType === FeedType.Job}
+          onClick={this.handleFeedType(FeedType.Job)}
+        />
+      </Flex>
+    )
+  }
+}
 
 @observer
 export class FeedItemComp extends Component<{
@@ -153,12 +246,17 @@ export class Feed extends Component<{store?: Store}> {
           innerRef={r => this.containerNode = r}
           className={css`
           position: relative;
-          transition: opacity 0.15s ease-in-out;
-          ${store.getFeedItemsManualRefreshRequest.state === PENDING && 'opacity: 0.25'};
           overflow: auto;
           height: 100%;
         `}>
-          {this.renderBody()}
+          <Tabbar/>
+          <Box
+            className={css`
+            transition: opacity 0.15s ease-in-out;
+            ${store.getFeedItemsManualRefreshRequest.state === PENDING && 'opacity: 0.25'};
+          `}>
+            {this.renderBody()}
+          </Box>
         </Box>
     )
   }

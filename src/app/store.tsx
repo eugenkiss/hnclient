@@ -40,7 +40,7 @@ export class Store extends BaseStore {
 
   refreshAction = null
 
-  @computed get selectedFeedItemType() {
+  @computed get selectedFeedType() {
     if (this.routerStore.startNext == null) return null
     return this.routerStore.startNext.params.kind
   }
@@ -57,7 +57,7 @@ export class Store extends BaseStore {
   }
 
   getFeedItems = new Requester<Array<FeedItem>>(async () => {
-    const stories = await this.api.getFeedItems(this.selectedFeedItemType || FeedType.Top)
+    const stories = await this.api.getFeedItems(this.selectedFeedType || FeedType.Top)
     runInAction(() => {
       this.storyIds = stories.map(s => s.id)
       for (const story of stories) {

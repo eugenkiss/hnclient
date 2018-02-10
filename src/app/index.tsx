@@ -6,27 +6,21 @@ import {IObservableValue, observable} from 'mobx'
 import {inject, observer, Provider} from 'mobx-react'
 import * as FontAwesome from '@fortawesome/react-fontawesome'
 import {
-  faBriefcase,
   faChevronLeft,
-  faClock,
   faDownload,
   faEllipsisV,
-  faEye,
-  faFire,
   faInfoCircle,
-  faQuestionCircle,
   faSyncAlt,
   faUser
 } from '@fortawesome/fontawesome-free-solid'
-import {IconDefinition} from '@fortawesome/fontawesome-common-types';
+import {IconDefinition} from '@fortawesome/fontawesome-common-types'
 import {css} from 'emotion'
 import {injectGlobal} from 'react-emotion'
 import {IS_DEV} from './cfg'
 import {AboutRoute, FeedRoute, StoryRoute} from './routes'
-import {Box, Flex, Overlay, Span} from './comps/basic'
+import {Box, Flex, Overlay} from './comps/basic'
 import {canUseDOM} from './utils/utils'
 import {Store} from './store'
-import {FeedType} from './models/models'
 import './font-awesome-css'
 
 const MobxDevTools = IS_DEV ? require('mobx-react-devtools').default : null
@@ -157,10 +151,6 @@ class OverflowMenu extends React.Component<{
     window.location.reload(true)
   }
 
-  handleFeedType = (kind?: FeedType) => () => {
-    this.props.store.navigate(FeedRoute.link(kind), {replace: true})
-  }
-
   render() {
     const { store, isOpen } = this.props
     if (!isOpen.get()) return null
@@ -182,30 +172,6 @@ class OverflowMenu extends React.Component<{
           }
         `}>
           {false && <OverflowMenuEntry title='Profile' icon={faUser} onClick={() => alert('TODO')}/>}
-          <OverflowMenuEntry
-            title='Hot' icon={faFire}
-            onClick={this.handleFeedType()}
-          />
-          <OverflowMenuEntry
-            title='New' icon={faClock}
-            onClick={this.handleFeedType(FeedType.New)}
-          />
-          {/*<OverflowMenuEntry*/}
-            {/*title='Best' icon={faArrowAltCircleUp}*/}
-            {/*onClick={this.handleSwitchStories(FeedItemType.Best)}*/}
-          {/*/>*/}
-          <OverflowMenuEntry
-            title='Show' icon={faEye}
-            onClick={this.handleFeedType(FeedType.Show)}
-          />
-          <OverflowMenuEntry
-            title='Ask' icon={faQuestionCircle}
-            onClick={this.handleFeedType(FeedType.Ask)}
-          />
-          <OverflowMenuEntry
-            title='Jobs' icon={faBriefcase}
-            onClick={this.handleFeedType(FeedType.Job)}
-          />
           <OverflowMenuEntry
             title='Update' icon={faDownload}
             onClick={this.handleUpdate}
@@ -275,26 +241,7 @@ export class Header extends Component<{
               text-decoration: none;
               color: #fff;
             `}>
-              {routerStore.current.name === FeedRoute.id ? (
-                <Span
-                  className={css`
-                  position: relative;
-                `}>
-                  HN
-                  <Span
-                    f={0}
-                    className={css`
-                    text-transform: lowercase;
-                    margin-left: 0.1rem;
-                    position: absolute;
-                    bottom: 2px;
-                  `}>
-                    {store.headerTitle}
-                  </Span>
-                </Span>
-              ) : (
-                store.headerTitle
-              )}
+              {store.headerTitle}
             </Box>
           )}
         </Box>

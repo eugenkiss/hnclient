@@ -26,7 +26,7 @@ export class FeedRoute implements HNRoute {
   prevKind: FeedType
   @action onActivate(store: Store, {kind}) {
     kind = kind == null ? FeedType.Top : kind
-    store.headerTitle = kind === FeedType.Top ? '' : kind
+    store.headerTitle = 'HN'
     // TODO: use minduration wrapper here!
     store.refreshAction = () => store.getFeedItemsManualRefreshRequest = store.getFeedItems.refresh(300)
     if (store.getFeedItems.unstarted || kind !== this.prevKind) {
