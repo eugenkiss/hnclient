@@ -62,8 +62,8 @@ export class Tabbar extends Component<{
 }> {
   static ID = 'tabbar'
 
-  handleFeedType = (kind?: FeedType) => () => {
-    this.props.store.navigate(FeedRoute.link(kind), {replace: true})
+  handleFeedType = (type?: FeedType) => () => {
+    this.props.store.navigate(FeedRoute.link(type), {replace: true})
   }
 
   render() {

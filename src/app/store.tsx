@@ -56,7 +56,7 @@ export class Store extends BaseStore {
 
   @computed get selectedFeedType() {
     if (this.routerStore.current == null) return null
-    return this.routerStore.current.params.kind
+    return this.routerStore.current.params.type
   }
 
 

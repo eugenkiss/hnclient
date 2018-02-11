@@ -22,7 +22,7 @@ export interface HNRoute extends Route {
 export class FeedRoute implements HNRoute {
   static id = 'feed'
   get name() { return FeedRoute.id }
-  get path() { return '/?:kind' }
+  get path() { return '/?:type' }
   globPath = '/'
   @action onActivate(store: Store) {
     store.headerTitle = 'HN'
@@ -39,8 +39,8 @@ export class FeedRoute implements HNRoute {
     store.refreshAction = null
   }
   // noinspection JSUnusedGlobalSymbols
-  static link = (kind?: FeedType): LinkData => ({
-    name: FeedRoute.id, params: {kind: kind}
+  static link = (type?: FeedType): LinkData => ({
+    name: FeedRoute.id, params: {type: type}
   })
   comp() { return <Feed/> }
 }
