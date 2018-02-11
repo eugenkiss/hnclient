@@ -2,17 +2,17 @@ import * as React from 'react'
 import {Component} from 'react'
 import {autorun, observable, when} from 'mobx'
 import {inject, observer} from 'mobx-react'
-import {PENDING, REJECTED} from 'mobx-utils'
+import {now, PENDING, REJECTED} from 'mobx-utils'
 import {css} from 'emotion'
 import * as FontAwesome from '@fortawesome/react-fontawesome'
 import {IconDefinition} from '@fortawesome/fontawesome-common-types'
-import {faBriefcase, faCaretDown, faCaretUp, faComments, faSpinner} from '@fortawesome/fontawesome-free-solid'
+import {faBriefcase, faCaretDown, faCaretUp, faComments, faSpinner, faTimes} from '@fortawesome/fontawesome-free-solid'
 import {FeedRoute, StoryRoute} from '../routes'
-import {A, Box, Flex, Space, Span} from './basic'
+import {A, Box, Fill, Flex, Space, Span} from './basic'
 import {Link} from './link'
 import {FeedItem, FeedType} from '../models/models'
 import {Store} from '../store'
-import {fulfilledReq, minDuration, smoothScrollToId} from '../utils/utils'
+import {fulfilledReq, getNow, minDuration, smoothScrollToId, timeAgo} from '../utils/utils'
 
 @inject('store')
 class TabEntry extends React.Component<{
@@ -183,6 +183,58 @@ export class FeedItemComp extends Component<{
           )}
 
         </Link>
+      </Flex>
+    )
+  }
+}
+
+@inject('store') @observer
+class RefreshWarning extends Component<{store?: Store}> {
+  render() {
+    const {store} = this.props
+    const interval = 1000 * 60 // 1m
+    if (now(interval) - store.lastDismissedRefreshWarning < store.feedFreshnessCutoff) {
+      return null
+    }
+    if (now(interval) - store.currentGetFeed.timestamp < store.feedFreshnessCutoff) {
+      return null
+    }
+    return (
+      <Flex
+        p={1} f={1} flex='1 1 auto'
+        justify='center' align='center'
+        className={css`
+        position: fixed;
+        width: 100%;
+        left: 0px;
+        bottom: 0px;
+        background: #f7f7f7;
+      `}>
+        <Fill/>
+        Data is older than {timeAgo(now(interval), store.currentGetFeed.timestamp)}.
+        <Space/>
+        <Box
+          onClick={() => store.refreshAction()}
+          p={1} m={-1}
+          className={css`
+          user-select: none;
+          cursor: pointer;
+          color: skyblue;
+          text-decoration: underline;
+        `}>
+          Refresh
+        </Box>
+        <Fill/>
+        <Box
+          onClick={() => store.lastDismissedRefreshWarning = getNow()}
+          p={1} m={-1}
+          className={css`
+          color: #999;
+          user-select: none;
+          cursor: pointer;
+        `}>
+          <FontAwesome icon={faTimes}/>
+        </Box>
       </Flex>
     )
   }
@@ -412,6 +464,7 @@ export class Feed extends Component<{store?: Store}> {
             )};
           `}>
             {this.renderBody()}
+            <RefreshWarning/>
             <Box className={css`
               height: ${store.windowHeight - store.headerHeight - this.moreHeight - 1}px;
               width: 100%;

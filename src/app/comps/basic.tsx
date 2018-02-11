@@ -27,6 +27,10 @@ export class Space extends React.Component {
   }
 }
 
+export const Fill = styled('div')`
+flex: 1 1 auto;
+`
+
 export const Box = styled('div')`
 ${space} 
 ${width}

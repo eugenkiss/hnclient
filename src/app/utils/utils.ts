@@ -64,6 +64,15 @@ export function smoothScrollToId(id: string) {
   if (pageEl != null) pageEl.scrollIntoView({block: 'start', behavior: 'smooth'})
 }
 
+export function getNow() {
+  return new Date().getTime()
+}
+
+function numberize(n: number, single: string) {
+  const result = n + ' ' + single
+  return n === 1 ? result : result + 's'
+}
+
 // https://stackoverflow.com/a/6109105/283607
 export function timeAgo(now, then) {
     const msPerMinute = 60 * 1000
@@ -75,22 +84,22 @@ export function timeAgo(now, then) {
     const elapsed = now - then
 
     if (elapsed < msPerHour) {
-         return Math.round(elapsed/msPerMinute) + ' minutes ago'
+         return numberize(Math.round(elapsed/msPerMinute), 'minute')
     }
 
     else if (elapsed < msPerDay ) {
-         return Math.round(elapsed/msPerHour ) + ' hours ago'
+         return numberize(Math.round(elapsed/msPerHour ), 'hour')
     }
 
     else if (elapsed < msPerMonth) {
-        return Math.round(elapsed/msPerDay) + ' days ago'
+        return numberize(Math.round(elapsed/msPerDay), 'day')
     }
 
     else if (elapsed < msPerYear) {
-        return Math.round(elapsed/msPerMonth) + ' months ago'
+        return numberize(Math.round(elapsed/msPerMonth), 'month')
     }
 
     else {
-        return Math.round(elapsed/msPerYear ) + ' years ago'
+        return numberize(Math.round(elapsed/msPerYear ), 'year')
     }
 }

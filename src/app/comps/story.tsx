@@ -104,7 +104,7 @@ class CommentHeaderComp extends Component<{
           title={`HN 💬 ${comment.user}: ${comment.excerpt}`}
           className={css`
         `}>
-          {comment.timeAgo}
+          {comment.timeAgo} ago
         </A>
         {minimized && <Span>……</Span>}
         <Box
@@ -315,7 +315,7 @@ class Header extends Component<{
                   <Space/>
                 </Span>
               }
-              {story.timeAgo}
+              {story.timeAgo} ago
               {story.commentsCount > 0 &&
                 <Span>
                   <Space/>|<Space/>

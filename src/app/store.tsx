@@ -5,7 +5,7 @@ import {DoneFn, NavigationOptions, Route, Router} from 'router5'
 import {makeRouter, RouterStore} from './router'
 import * as routes from './routes'
 import {LinkData} from './routes'
-import {canUseDOM, fulfilledReq} from './utils/utils'
+import {canUseDOM, fulfilledReq, getNow} from './utils/utils'
 import {BaseStore} from './utils/base-store'
 import {MapRequester, PageRequester} from './utils/req'
 import {ApiClient} from './api/client'
@@ -55,6 +55,8 @@ export class Store extends BaseStore {
   @observable scrollFeedToTop = false
 
   lastClickedFeedItemIdFleeting: number = null
+  feedFreshnessCutoff = 1000 * 60 * 60 // 1h
+  @observable lastDismissedRefreshWarning = getNow()
 
   @computed get selectedFeedType() {
     if (this.routerStore.current == null) return null

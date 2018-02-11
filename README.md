@@ -68,10 +68,14 @@ Observations:
   
   
 TODO:
+  - suffix top-level components with Screen
+    use getNow() instead of DateTime().getTime
+    use Fill instead of Box 1 1 auto
   - remember scroll position for comments (scroll, go to about, go back)
   - Create requester package? Make generic inpute type
   
 TODO Longterm (if ever):
+  - How to best make Story MapRequester cache limited to X entries?
   - BFF proxy to simulate delay / user etc. in dev mode
     - Failed to load stories: retry button
   - Mutation API? http4k
@@ -90,7 +94,6 @@ TODO Longterm (if ever):
   - React Native version
   - Steal some UI ideas from reddit is fun 
     e.g. selected/active comment, top/hot/... tabs underneath toolbar, share dialog
-  - If last refresh > 1h, show it in a toast bar
   - Refactoring
     - Extract style (color constants etc.)
   - Abstract/extract code into reusable libraries?
@@ -104,6 +107,8 @@ TODO Longterm (if ever):
   - depending on type change path (e.g. /story/{id} /job/{id} /ask/{id})
   - auto-hiding toolbar
   - Theming (dark mode)
+  - Storyview: If you scroll up/down fast and cover some distance
+    show scroll to top/button action
   - pull to refresh (such a PITA): 
     - https://github.com/yusukeshibata/react-pullrefresh/issues/28
     - https://github.com/infernojs/inferno/issues/1001
