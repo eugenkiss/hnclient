@@ -138,7 +138,7 @@ export class PageRequester<T, I=number> {
 export class MapRequester<I, T> {
   private map: ObservableMap<T> = observable.map<T>()
   private reqMap: ObservableMap<IPromiseBasedObservable<T>> = observable.map()
-  @observable lastReqId: I = null
+  @observable private lastReqId: I = null
   @computed private get lastReq(): IPromiseBasedObservable<T> {
     return this.lastReqId == null
       ? fulfilledReq
@@ -151,11 +151,11 @@ export class MapRequester<I, T> {
     const req = fromPromise(this.promiser(x))
     this.lastReqId = x
     this.reqMap.set(x.toString(), req)
-    when(() => this.reqMap.get(x.toString()).state !== PENDING, () => {
+    when(() => this.reqMap.get(x.toString()).state !== PENDING, action(() => {
       const req = this.reqMap.get(x.toString())
       if (req.state !== FULFILLED) return
       this.map.set(x.toString(), req.value)
-    })
+    }))
     return req
   }
 
@@ -166,12 +166,12 @@ export class MapRequester<I, T> {
 
   valueOrRefresh(x: I): T {
     const v = this.map.get(x.toString())
-    runInAction(() => {
+    setTimeout(action(() => { // Prevent mobx invariant violation. Note, async is no problem here as request is async anyway
       const r = this.reqMap.get(x.toString())
       if (v == null && (r == null || r.state !== PENDING && r.state !== REJECTED)) {
         this.refresh(x)
       }
-    })
+    }), 0)
     return v
   }
 
