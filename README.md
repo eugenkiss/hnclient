@@ -68,9 +68,6 @@ Observations:
   
   
 TODO:
-  - suffix top-level components with Screen
-    use getNow() instead of DateTime().getTime
-    use Fill instead of Box 1 1 auto
   - remember scroll position for comments (scroll, go to about, go back)
   - Create requester package? Make generic inpute type
   

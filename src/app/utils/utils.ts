@@ -52,9 +52,9 @@ export function makeExternalUserLink(userId: string) {
 }
 
 export const minDuration = <T>(minDuration: number): (p: Promise<T>) => Promise<T> => async (promise) => {
-  const now = new Date().getTime()
+  const now = getNow()
   const result = await promise
-  const duration = new Date().getTime() - now
+  const duration = getNow() - now
   await sleep(minDuration - duration)
   return result
 }

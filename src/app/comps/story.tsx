@@ -15,7 +15,7 @@ import {
 } from '@fortawesome/fontawesome-free-solid'
 import {Store} from '../store'
 import {Comment, FeedItem, Item, Story, StringStory} from '../models/models'
-import {A, Box, Flex, Space, Span} from './basic'
+import {A, Box, Fill, Flex, FlexClickable, Space, Span} from './basic'
 
 @observer
 class ContentComp extends Component<{
@@ -87,6 +87,7 @@ class CommentHeaderComp extends Component<{
     return (
       <Flex
         f={1}
+        align='center'
         className={css`
         color: #999;
       `}>
@@ -106,20 +107,22 @@ class CommentHeaderComp extends Component<{
         `}>
           {comment.timeAgo} ago
         </A>
-        {minimized && <Span>……</Span>}
-        <Box
+        <FlexClickable
           p={1} m={-1}
+          align='center'
           flex='1 1 auto'
           onClick={onMinimize}
           className={css`
           text-align: right;
           color: #ddd;
         `}>
+          {minimized && <Span>……</Span>}
+          <Fill/>
           <FontAwesome
             size={!minimized ? 'xs' : undefined}
             icon={minimized ? faExpand : faCompress}
           />
-        </Box>
+        </FlexClickable>
       </Flex>
     )
   }
@@ -189,6 +192,8 @@ class CommentComp extends Component<{
                 onClick={this.handleCollapseClick}
                 className={css`
                 color: #ddd;
+                cursor: pointer;
+                user-select: none;
               `}>
                 <FontAwesome
                   size={!this.collapsedChildren ? 'xs' : undefined}
@@ -326,7 +331,7 @@ class Header extends Component<{
               }
             </Flex>
           </Box>
-          <Box flex='1 1 auto' pr={1}/>
+          <Fill pr={1}/>
           <A
             f={2} p={1} m={-1} pb={2} mb={-2}
             color='#999'
@@ -363,7 +368,7 @@ class Header extends Component<{
 }
 
 @inject('store') @observer
-export class StoryComp extends Component<{
+export class StoryScreen extends Component<{
   store?: Store
   id: number
 }> {

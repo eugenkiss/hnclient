@@ -1,10 +1,10 @@
 import {alias, identifier, list, object, primitive, serializable} from 'serializr'
 import {action, computed} from 'mobx'
 import {now} from 'mobx-utils'
-import {makeExternalItemLink, makeExternalUserLink, timeAgo} from '../utils/utils'
+import {getNow, makeExternalItemLink, makeExternalUserLink, timeAgo} from '../utils/utils'
 
 export class Item {
-  _createdAt = new Date().getTime()
+  _createdAt = getNow()
   @serializable(identifier())
   id: number
   @serializable
@@ -70,7 +70,7 @@ export type Story = Item
 export type StringStory = {[P in keyof Story]: string}
 
 export class FeedItem {
-  _createdAt = new Date().getTime()
+  _createdAt = getNow()
   @serializable(identifier())
   id: number
   @serializable

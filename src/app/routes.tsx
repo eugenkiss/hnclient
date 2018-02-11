@@ -2,11 +2,11 @@ import * as React from 'react'
 import {action} from 'mobx'
 import {Params, Route, State} from 'router5/create-router'
 import {Store} from './store'
-import {Feed} from './comps/feed'
-import {StoryComp} from './comps/story'
-import {About} from './comps/about'
+import {FeedScreen} from './comps/feed'
+import {StoryScreen} from './comps/story'
+import {AboutScreen} from './comps/about'
 import {FeedType} from './models/models'
-import {minDuration} from './utils/utils'
+import {getNow, minDuration} from './utils/utils'
 
 const rs: Map<string, HNRoute> = new Map()
 
@@ -26,7 +26,7 @@ export class FeedRoute implements HNRoute {
   globPath = '/'
   @action onActivate(store: Store, _, prev) {
     store.headerTitle = 'HN'
-    if (prev.name === this.name && new Date().getTime() - store.currentGetFeed.timestamp > 1000 * 60 * 5) {
+    if (prev.name === this.name && getNow() - store.currentGetFeed.timestamp > 1000 * 60 * 5) {
       // If user switches tabs after a while he wants to see new stuff
       store.currentGetFeed.clearCache()
     }
@@ -46,7 +46,7 @@ export class FeedRoute implements HNRoute {
   static link = (type?: FeedType): LinkData => ({
     name: FeedRoute.id, params: {type: type}
   })
-  comp() { return <Feed/> }
+  comp() { return <FeedScreen/> }
 }
 rs.set(FeedRoute.id, new FeedRoute())
 
@@ -67,7 +67,7 @@ export class StoryRoute implements HNRoute {
   static link = (id): LinkData => ({
     name: StoryRoute.id, params: {id: id}
   })
-  comp({id}) { return <StoryComp id={id}/> }
+  comp({id}) { return <StoryScreen id={id}/> }
 }
 rs.set(StoryRoute.id, new StoryRoute())
 
@@ -81,7 +81,7 @@ export class AboutRoute implements HNRoute {
   }
   // noinspection JSUnusedGlobalSymbols
   static link = (): LinkData => ({name: AboutRoute.id})
-  comp() { return <About/> }
+  comp() { return <AboutScreen/> }
 }
 rs.set(AboutRoute.id, new AboutRoute())
 

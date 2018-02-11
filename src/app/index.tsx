@@ -18,7 +18,7 @@ import {css} from 'emotion'
 import {injectGlobal} from 'react-emotion'
 import {IS_DEV} from './cfg'
 import {AboutRoute, FeedRoute, StoryRoute} from './routes'
-import {Box, Flex, Overlay} from './comps/basic'
+import {Box, BoxClickable, Flex, FlexClickable, Overlay} from './comps/basic'
 import {canUseDOM} from './utils/utils'
 import {Store} from './store'
 import './font-awesome-css'
@@ -87,18 +87,17 @@ class HeaderButton extends Component<{
   render() {
     const { icon, onClick, marginLeft } = this.props
     return (
-      <Flex
+      <FlexClickable
         onClick={onClick}
         f={4}
         align='center' justify='center'
         className={css`
         height: 100%;
         width: 48px;
-        cursor: pointer;
         ${marginLeft == null ? '' : `margin-left: ${marginLeft}`};
       `}>
         <FontAwesome icon={icon}/>
-      </Flex>
+      </FlexClickable>
     )
   }
 }
@@ -163,11 +162,12 @@ class OverflowMenu extends React.Component<{
     if (!isOpen.get()) return null
     return (
       <Overlay isOpen={isOpen} onClick={this.handleModal}>
-        <Box f={3} onClick={this.handleMenuItemClick} className={css`
+        <BoxClickable
+          f={3}
+          onClick={this.handleMenuItemClick}
+          className={css`
           position: absolute;
           min-width: 150px;
-          user-select: none;
-          cursor: pointer;
           font-variant: all-petite-caps;
           right: 4px;
           top: 4px;
@@ -187,7 +187,7 @@ class OverflowMenu extends React.Component<{
             title='About' icon={faInfoCircle}
             onClick={() => store.navigate(AboutRoute.link())}
           />
-        </Box>
+        </BoxClickable>
       </Overlay>
     )
   }

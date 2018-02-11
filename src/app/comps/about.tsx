@@ -7,7 +7,7 @@ import {Store} from '../store'
 import {DATE} from '../cfg'
 
 @inject('store') @observer
-export class About extends Component<{store?: Store}> {
+export class AboutScreen extends Component<{store?: Store}> {
   render() {
     return (
       <Flex

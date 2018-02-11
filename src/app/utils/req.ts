@@ -1,7 +1,7 @@
 import {fromPromise, FULFILLED, IPromiseBasedObservable, PENDING, REJECTED} from 'mobx-utils'
 import {PromiseState} from 'mobx-utils/lib/from-promise'
 import {action, computed, IObservableValue, observable, ObservableMap, runInAction, when} from 'mobx'
-import {failedReq, fulfilledReq} from './utils'
+import {failedReq, fulfilledReq, getNow} from './utils'
 
 // PoC: Like fromPromise but generalized to continue making requests
 export class Requester<T, I=void> {
@@ -20,7 +20,7 @@ export class Requester<T, I=void> {
     this.whenDisposer = when(() => this.req.state !== PENDING, action(() => {
       if (this.req.state !== FULFILLED) return
       this.last.set(this.req.value)
-      this.lastTimeStamp.set(new Date().getTime())
+      this.lastTimeStamp.set(getNow())
     }))
     return this.req
   }
@@ -76,7 +76,7 @@ export class PageRequester<T, I=number> {
       const req = this.reqMap.get(x.toString())
       if (req.state !== FULFILLED) return
       this.map.set(x.toString(), req.value)
-      this.lastTimeStamp.set(new Date().getTime())
+      this.lastTimeStamp.set(getNow())
     }))
     return req
   }
@@ -90,7 +90,7 @@ export class PageRequester<T, I=number> {
       if (req.state !== FULFILLED) return
       this.clearCache()
       this.map.set(x.toString(), req.value)
-      this.lastTimeStamp.set(new Date().getTime())
+      this.lastTimeStamp.set(getNow())
     }))
     return req
   }

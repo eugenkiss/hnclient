@@ -8,7 +8,7 @@ import * as FontAwesome from '@fortawesome/react-fontawesome'
 import {IconDefinition} from '@fortawesome/fontawesome-common-types'
 import {faBriefcase, faCaretDown, faCaretUp, faComments, faSpinner, faTimes} from '@fortawesome/fontawesome-free-solid'
 import {FeedRoute, StoryRoute} from '../routes'
-import {A, Box, Fill, Flex, Space, Span} from './basic'
+import {A, Box, BoxClickable, Fill, Flex, FlexClickable, Space, Span} from './basic'
 import {Link} from './link'
 import {FeedItem, FeedType} from '../models/models'
 import {Store} from '../store'
@@ -24,18 +24,15 @@ class TabEntry extends React.Component<{
   render() {
     const { active, title, onClick } = this.props
     return (
-      <Flex
+      <FlexClickable
         onClick={onClick}
         flex='1'
         justify='center'
         className={css`
         position: relative;
         height: 100%;
-        user-select: none;
-        cursor: pointer;
       `}>
         <Flex
-          onClick={onClick}
           mx={1} f={2}
           justify='center'
           align='center'
@@ -52,7 +49,7 @@ class TabEntry extends React.Component<{
           height: 4px;
           background: rgba(255, 255, 255, 0.6);
         `}/>
-      </Flex>
+      </FlexClickable>
     )
   }
 }
@@ -157,7 +154,7 @@ export class FeedItemComp extends Component<{
             {item.domain != null && item.domain}
           </Flex>
         </Box>
-        <Box flex='1 1 auto' pr={1}/>
+        <Fill pr={1}/>
         <Link
           f={1} p={1} m={-1} py={1} my={-1}
           color='#999'
@@ -213,17 +210,15 @@ class RefreshWarning extends Component<{store?: Store}> {
         <Fill/>
         Data is older than {timeAgo(now(interval), store.currentGetFeed.timestamp)}.
         <Space/>
-        <Box
+        <BoxClickable
           onClick={() => store.refreshAction()}
           p={1} m={-1}
           className={css`
-          user-select: none;
-          cursor: pointer;
           color: skyblue;
           text-decoration: underline;
         `}>
           Refresh
-        </Box>
+        </BoxClickable>
         <Fill/>
         <Box
           onClick={() => store.lastDismissedRefreshWarning = getNow()}
@@ -265,8 +260,8 @@ for (let i = 0; i < 30; i++) {
 type ViewRestoreData = { scrollTop: number, itemId: number }
 
 @inject('store') @observer
-export class Feed extends Component<{store?: Store}> {
-  static ID = 'Feed'
+export class FeedScreen extends Component<{store?: Store}> {
+  static ID = 'FeedScreen'
   static MORE_ID = 'more'
 
   disposers = []
@@ -284,12 +279,12 @@ export class Feed extends Component<{store?: Store}> {
       store.scrollFeedToTop = false
     })
     this.saveUiCb = routerStore.addSaveUiCb(() => {
-      return { id: Feed.ID, data: {
+      return { id: FeedScreen.ID, data: {
         scrollTop: this.containerNode.scrollTop,
         itemId: store.lastClickedFeedItemIdFleeting,
       }}
     })
-    this.restoreUiCb = routerStore.addRestoreUiCb(Feed.ID, (data?: ViewRestoreData) => {
+    this.restoreUiCb = routerStore.addRestoreUiCb(FeedScreen.ID, (data?: ViewRestoreData) => {
       when(() => this.containerNode != null, () => {
         if (data == null) {
           this.containerNode.scrollTop = 0
@@ -317,15 +312,14 @@ export class Feed extends Component<{store?: Store}> {
 
   renderPageUpDownButton = (icon: IconDefinition, handler: (...args: any[]) => any) => {
     return (
-      <Box
+      <BoxClickable
         p={1} m={-1}
         onClick={handler}
         className={css`
         color: #999;
-        cursor: pointer;
       `}>
         <FontAwesome icon={icon} />
-      </Box>
+      </BoxClickable>
     )
   }
 
@@ -336,13 +330,13 @@ export class Feed extends Component<{store?: Store}> {
     if (atEnd) return
     this.moreReq = this.props.store.currentGetFeed.refresh(pageCount + 1, minDuration(500))
     await this.moreReq
-    smoothScrollToId(Feed.makeDomPageId(pageCount + 1))
+    smoothScrollToId(FeedScreen.makeDomPageId(pageCount + 1))
   }
 
   handlePageUp = (page: number) => {
     if (page == 2) {
-      const origEl = document.getElementById(Feed.makeDomPageId(page) + '-original')
-      const el = document.getElementById(Feed.makeDomPageId(page))
+      const origEl = document.getElementById(FeedScreen.makeDomPageId(page) + '-original')
+      const el = document.getElementById(FeedScreen.makeDomPageId(page))
       const origElY = origEl.getBoundingClientRect().top
       const elY = el.getBoundingClientRect().top
       if (elY - origElY < 20) {
@@ -352,15 +346,15 @@ export class Feed extends Component<{store?: Store}> {
       }
       return
     }
-    smoothScrollToId(Feed.makeDomPageId(page - 1))
+    smoothScrollToId(FeedScreen.makeDomPageId(page - 1))
   }
 
   handlePageDown = (pageCount: number, page: number) => {
     if (page >= pageCount) {
-      smoothScrollToId(Feed.MORE_ID)
+      smoothScrollToId(FeedScreen.MORE_ID)
       return
     }
-    smoothScrollToId(Feed.makeDomPageId(page + 1))
+    smoothScrollToId(FeedScreen.makeDomPageId(page + 1))
   }
 
   renderBody() {
@@ -386,10 +380,10 @@ export class Feed extends Component<{store?: Store}> {
       return (
         <Box>
           {pages.map(([page, items]) =>
-            <Box key={page} id={Feed.makeDomPageId(page) + '-original'}>
+            <Box key={page} id={FeedScreen.makeDomPageId(page) + '-original'}>
               {page > 1 && items.length > 0 &&
                 <Flex
-                  id={Feed.makeDomPageId(page)}
+                  id={FeedScreen.makeDomPageId(page)}
                   f={1} p={1}
                   justify='center' align='center'
                   className={css`
@@ -401,9 +395,9 @@ export class Feed extends Component<{store?: Store}> {
                   height: ${this.moreHeight}px;
                 `}>
                   {this.renderPageUpDownButton(faCaretDown, () => this.handlePageDown(pageCount, page))}
-                  <Box flex='1 1 auto'/>
+                  <Fill/>
                   Page {page}
-                  <Box flex='1 1 auto'/>
+                  <Fill/>
                   {this.renderPageUpDownButton(faCaretUp, () => this.handlePageUp(page))}
                 </Flex>
               }
@@ -412,22 +406,18 @@ export class Feed extends Component<{store?: Store}> {
               )}
             </Box>
           )}
-          <Flex
-            id={Feed.MORE_ID}
+          <FlexClickable
+            id={FeedScreen.MORE_ID}
             f={1} p={1}
             justify='center'
             onClick={() => this.handleNextPage(pageCount, atEnd)}
             className={css`
             color: #666;
             background: #f7f7f7;
-            user-select: none;
-            cursor: pointer;
             height: ${this.moreHeight}px;
           `}>
             {this.moreReq.state === PENDING ? (
-              <Box>
-                <FontAwesome icon={faSpinner} pulse/>
-              </Box>
+              <Box><FontAwesome icon={faSpinner} pulse/></Box>
             ) : (
               atEnd ? (
                 <Span>End</Span>
@@ -435,7 +425,7 @@ export class Feed extends Component<{store?: Store}> {
                 <Span>More…</Span>
               )
             )}
-          </Flex>
+          </FlexClickable>
         </Box>
       )
     }

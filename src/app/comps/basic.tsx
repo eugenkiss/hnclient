@@ -27,10 +27,6 @@ export class Space extends React.Component {
   }
 }
 
-export const Fill = styled('div')`
-flex: 1 1 auto;
-`
-
 export const Box = styled('div')`
 ${space} 
 ${width}
@@ -52,6 +48,20 @@ ${justifyContent}
 ${flexWrap}
 ${flexDirection}
 ${alignSelf}
+` as any
+
+export const Fill = styled(Box)`
+flex: 1 1 auto;
+` as any
+
+export const BoxClickable = styled(Box)`
+cursor: pointer;
+user-select: none;
+` as any
+
+export const FlexClickable = styled(Flex)`
+cursor: pointer;
+user-select: none;
 ` as any
 
 export const A = styled(props => <a target='_blank' rel='noopener' {...props}/>)`
