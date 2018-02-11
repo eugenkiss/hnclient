@@ -24,23 +24,19 @@ export class FeedRoute implements HNRoute {
   get name() { return FeedRoute.id }
   get path() { return '/?:kind' }
   globPath = '/'
-  prevKind: FeedType
-  @action onActivate(store: Store, {kind}) {
-    kind = kind == null ? FeedType.Top : kind
+  @action onActivate(store: Store) {
     store.headerTitle = 'HN'
-    store.refreshAction = () => {
-      store.getFeedItemsManualRefreshRequest = minDuration(300, store.getFeedItems.refresh())
+    if (store.currentGetFeed.listOfPages.length === 0) {
+      store.currentGetFeed.refresh(1)
     }
-    if (store.getFeedItems.unstarted || kind !== this.prevKind) {
-      this.prevKind = kind
-      const unstarted = store.getFeedItems.unstarted
-      const req = store.getFeedItems.refresh()
-      if (!unstarted) store.getFeedItemsManualRefreshRequest = req
+    store.refreshAction = async () => {
+      store.getFeedManualRefreshRequest = store.currentGetFeed.hardRefresh(1, minDuration(500))
+      await store.getFeedManualRefreshRequest
+      store.scrollFeedToTop = true
     }
   }
-  onDeactivate(store) {
+  onDeactivate(store: Store) {
     store.refreshAction = null
-    store.getFeedItems.cancel()
   }
   // noinspection JSUnusedGlobalSymbols
   static link = (kind?: FeedType): LinkData => ({
@@ -55,12 +51,12 @@ export class StoryRoute implements HNRoute {
   get name() { return StoryRoute.id }
   get path() { return '/story/:id' }
   globPath = '/story/*'
-  onActivate(store, {id}) {
+  onActivate(store: Store, {id}) {
     store.window.scrollTo(null, 0)
     store.refreshAction = () => store.getStory.refresh(id)
     store.getStory.refresh(id)
   }
-  onDeactivate(store, {id}) {
+  onDeactivate(store: Store, {id}) {
     store.refreshAction = null
     store.getStory.cancel(id)
   }
@@ -76,7 +72,7 @@ export class AboutRoute implements HNRoute {
   get name() { return AboutRoute.id }
   get path() { return '/about' }
   globPath = '/about'
-  onActivate(store) {
+  onActivate(store: Store) {
     store.headerTitle = 'About'
   }
   // noinspection JSUnusedGlobalSymbols

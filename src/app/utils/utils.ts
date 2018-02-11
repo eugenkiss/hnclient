@@ -3,8 +3,8 @@ import {fromPromise, IPromiseBasedObservable} from 'mobx-utils'
 
 export const infPromise = new Promise<any>(() => null)
 // noinspection JSUnusedGlobalSymbols
-export const infReq = fromPromise(infPromise)
-export const fulfilledReq = fromPromise.resolve(null)
+export const infReq: IPromiseBasedObservable<any> = fromPromise(infPromise)
+export const fulfilledReq: IPromiseBasedObservable<any> = fromPromise.resolve(null)
 // Other ways lead to exceptions being thrown by mobx-utils
 // noinspection JSUnusedGlobalSymbols, ReservedWordAsName
 export const failedReq: IPromiseBasedObservable<any> = {
@@ -51,14 +51,17 @@ export function makeExternalUserLink(userId: string) {
   return `https://news.ycombinator.com/user?id=${userId}`
 }
 
-export const minDuration = <T>(minDuration: number, promise: PromiseLike<T>): IPromiseBasedObservable<T> => {
-  return fromPromise((async () => {
-    const now = new Date().getTime()
-    const result = await promise
-    const duration = new Date().getTime() - now
-    await sleep(minDuration - duration)
-    return result
-  })())
+export const minDuration = <T>(minDuration: number): (p: Promise<T>) => Promise<T> => async (promise) => {
+  const now = new Date().getTime()
+  const result = await promise
+  const duration = new Date().getTime() - now
+  await sleep(minDuration - duration)
+  return result
+}
+
+export function smoothScrollToId(id: string) {
+  const pageEl = document.getElementById(id)
+  if (pageEl != null) pageEl.scrollIntoView({block: 'start', behavior: 'smooth'})
 }
 
 // https://stackoverflow.com/a/6109105/283607

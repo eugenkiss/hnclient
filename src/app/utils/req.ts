@@ -4,18 +4,18 @@ import {action, computed, IObservableValue, observable, ObservableMap, runInActi
 import {failedReq, fulfilledReq} from './utils'
 
 // PoC: Like fromPromise but generalized to continue making requests
-export class Requester<T> {
+export class Requester<T, I=void> {
   private last: IObservableValue<T> = observable(null)
   private lastTimeStamp: IObservableValue<number> = observable(-1)
   @observable private req: IPromiseBasedObservable<T> = fulfilledReq
-  unstarted = true
 
-  constructor(private promiser: () => Promise<T>) {}
+  constructor(private promiser: (input: I) => Promise<T>) {}
 
   private whenDisposer = () => {}
-  @action refresh(): IPromiseBasedObservable<T> {
-    this.unstarted = false
-    this.req = fromPromise(this.promiser())
+
+  // TODO: how to make input required when generic type is not void but not required otherwise? Overloads?
+  @action refresh(input?: I): IPromiseBasedObservable<T> {
+    this.req = fromPromise(this.promiser(input))
     this.whenDisposer()
     this.whenDisposer = when(() => this.req.state !== PENDING, action(() => {
       if (this.req.state !== FULFILLED) return
@@ -23,6 +23,18 @@ export class Requester<T> {
       this.lastTimeStamp.set(new Date().getTime())
     }))
     return this.req
+  }
+
+  @action clearCache() {
+    this.last.set(null)
+    this.lastTimeStamp.set(-1)
+  }
+
+  valueOrRefresh(input?: I): T {
+    if (this.value == null && (this.req.state !== PENDING && this.req.state !== REJECTED)) {
+      this.refresh(input)
+    }
+    return this.value
   }
 
   @action cancel() {
@@ -39,6 +51,86 @@ export class Requester<T> {
 
   get state(): PromiseState {
     return this.req.state
+  }
+}
+
+// PoC (TODO: MoreLoader as a consecutive specialization...)
+export class PageRequester<T, I=number> {
+  private map: ObservableMap<Array<T>> = observable.map()
+  private reqMap: ObservableMap<IPromiseBasedObservable<Array<T>>> = observable.map()
+  @observable lastReqPage: I = null
+  @computed private get lastReq(): IPromiseBasedObservable<Array<T>> {
+    return this.lastReqPage == null
+      ? fulfilledReq
+      : this.reqMap.get(this.lastReqPage.toString())
+  }
+
+  constructor(private promiser: (x: I) => Promise<Array<T>>) {}
+
+  @action refresh(x: I, wrapper: (p: Promise<Array<T>>) => Promise<Array<T>> = x => x): IPromiseBasedObservable<Array<T>> {
+    const req = fromPromise(wrapper(this.promiser(x)))
+    this.lastReqPage = x
+    this.reqMap.set(x.toString(), req)
+    when(() => this.reqMap.get(x.toString()).state !== PENDING, action(() => {
+      const req = this.reqMap.get(x.toString())
+      if (req.state !== FULFILLED) return
+      this.map.set(x.toString(), req.value)
+    }))
+    return req
+  }
+
+  @action hardRefresh(x: I, wrapper: (p: Promise<Array<T>>) => Promise<Array<T>> = x => x): IPromiseBasedObservable<Array<T>> {
+    const req = fromPromise(wrapper(this.promiser(x)))
+    this.lastReqPage = x
+    this.reqMap.set(x.toString(), req)
+    when(() => this.reqMap.get(x.toString()).state !== PENDING, action(() => {
+      const req = this.reqMap.get(x.toString())
+      if (req.state !== FULFILLED) return
+      this.clearCache()
+      this.map.set(x.toString(), req.value)
+    }))
+    return req
+  }
+
+  @action clearCache() {
+    this.map.clear()
+  }
+
+  @action cancel(x: I) {
+    const req = this.reqMap.get(x.toString()) || {} as any
+    if (req.state === PENDING) this.reqMap.set(x.toString(), failedReq)
+  }
+
+  valueOrRefresh(x: I): Array<T> {
+    const v = this.map.get(x.toString())
+    runInAction(() => {
+      const r = this.reqMap.get(x.toString())
+      if (v == null && (r == null || r.state !== PENDING && r.state !== REJECTED)) {
+        this.refresh(x)
+      }
+    })
+    return v
+  }
+
+  value(x: I): Array<T> {
+    return this.map.get(x.toString())
+  }
+
+  state(x: I): PromiseState {
+    return (this.reqMap.get(x.toString()) || fulfilledReq).state
+  }
+
+  get lastState(): PromiseState {
+    return this.lastReq.state
+  }
+
+  @computed get listOfPages(): Array<[number, Array<T>]> {
+    const pages = this.map.keys().sort((a, b) => parseInt(a) - parseInt(b))
+    const result = []
+    for (const page of pages) {
+      result.push([parseInt(page), this.map.get(page)])
+    }
+    return result
   }
 }
 

@@ -18,6 +18,15 @@ import {autorun, IObservableValue} from 'mobx'
 import {observer} from 'mobx-react'
 import {css} from 'emotion'
 
+export class Space extends React.Component {
+  render() {
+    // You have to use 00A0 because of JSX
+    // But then line breaks are prevented
+    // -> Put zero-width space after 00A0
+    return '\u00A0\u200B'
+  }
+}
+
 export const Box = styled('div')`
 ${space} 
 ${width}

@@ -6,7 +6,7 @@ import {canUseDOM} from './utils'
 const anyFunction = (...args: any[]): any => {}
 
 export class BaseStore {
-  get window() {
+  get window(): any {
     if (canUseDOM) return window
     return {
       addEventListener: anyFunction,

@@ -1,5 +1,5 @@
-import {autorun, computed, observable, runInAction} from 'mobx'
-import {IPromiseBasedObservable, PENDING} from 'mobx-utils'
+import {action, autorun, computed, observable, runInAction} from 'mobx'
+import {PENDING} from 'mobx-utils'
 import * as NProgress from 'nprogress'
 import {DoneFn, NavigationOptions, Route, Router} from 'router5'
 import {makeRouter, RouterStore} from './router'
@@ -7,7 +7,7 @@ import * as routes from './routes'
 import {LinkData} from './routes'
 import {canUseDOM, fulfilledReq} from './utils/utils'
 import {BaseStore} from './utils/base-store'
-import {MapRequester, Requester} from './utils/req'
+import {MapRequester, PageRequester} from './utils/req'
 import {ApiClient} from './api/client'
 import {FeedItem, FeedType, Story} from './models/models'
 
@@ -25,8 +25,11 @@ export class Store extends BaseStore {
 
     if ('scrollRestoration' in this.history) { this.history.scrollRestoration = 'manual' }
 
+    this.window.addEventListener('resize', this.handleResize)
+    this.handleResize()
+
     autorun(() => {
-      if ( this.getFeedItems.state === PENDING
+      if ( this.currentGetFeed.lastState === PENDING
         || this.getStory.lastState === PENDING
       ) {
         this.startProgress()
@@ -36,37 +39,70 @@ export class Store extends BaseStore {
     })
   }
 
+  @observable windowWidth = 1
+  @observable windowHeight = 1
+  @action handleResize = () => {
+    this.windowHeight = this.window.innerHeight
+    this.windowWidth = this.window.innerWidth
+  }
+
+  headerHeight = 48
+
   @observable headerTitle = null
 
-  refreshAction = null
+  @observable refreshAction = null
+
+  @observable scrollFeedToTop = false
 
   @computed get selectedFeedType() {
-    if (this.routerStore.startNext == null) return null
-    return this.routerStore.startNext.params.kind
+    if (this.routerStore.current == null) return null
+    return this.routerStore.current.params.kind
   }
 
 
-  @observable storyIds: Array<number> = []
   feedItemDb = observable.map<FeedItem>()
-  @computed get feedItems(): Array<FeedItem> {
-    const result = []
-    for (const id of this.storyIds) {
-      result.push(this.feedItemDb.get(id.toString()))
+  @computed get currentListOfPages(): Array<[number, Array<FeedItem>]> {
+    const pages = []
+    for (const [page, items] of this.currentGetFeed.listOfPages) {
+      const freshItems = []
+      for (const item of items) {
+        freshItems.push(this.feedItemDb.get(item.id.toString()))
+      }
+      pages.push([page, freshItems])
     }
-    return result
+    return pages
   }
 
-  getFeedItems = new Requester<Array<FeedItem>>(async () => {
-    const stories = await this.api.getFeedItems(this.selectedFeedType || FeedType.Top)
+  @observable getFeedManualRefreshRequest = fulfilledReq
+
+  makeFeedRequester = (type: FeedType) => new PageRequester<FeedItem>(async (page: number) => {
+    const items = await this.api.getFeedItems(type, page)
     runInAction(() => {
-      this.storyIds = stories.map(s => s.id)
-      for (const story of stories) {
-        this.feedItemDb.set(story.id.toString(), story)
+      for (const item of items) {
+        const dbItem = this.feedItemDb.get(item.id.toString())
+        if (dbItem != null && dbItem._createdAt > item._createdAt) continue
+        this.feedItemDb.set(item.id.toString(), item)
       }
     })
-    return stories
+    return items
   })
-  @observable getFeedItemsManualRefreshRequest: IPromiseBasedObservable<any> = fulfilledReq
+
+  getHotFeed = this.makeFeedRequester(FeedType.Top)
+  getNewFeed = this.makeFeedRequester(FeedType.New)
+  getShowFeed = this.makeFeedRequester(FeedType.Show)
+  getAskFeed = this.makeFeedRequester(FeedType.Ask)
+  getJobsFeed = this.makeFeedRequester(FeedType.Job)
+
+  @computed get currentGetFeed() {
+    switch (this.selectedFeedType) {
+      case FeedType.New: return this.getNewFeed
+      case FeedType.Show: return this.getShowFeed
+      case FeedType.Ask: return this.getAskFeed
+      case FeedType.Job: return this.getJobsFeed
+      case FeedType.Top: return this.getHotFeed
+      default: return this.getHotFeed
+    }
+  }
 
   getStory = new MapRequester<Number, Story>(async (id: number) => {
     const story = await this.api.getItem(id)
@@ -76,7 +112,6 @@ export class Store extends BaseStore {
     }
     return story
   })
-
 
   navigate = (linkData: LinkData, options?: NavigationOptions, done?: DoneFn) => {
     const {name, params} = linkData

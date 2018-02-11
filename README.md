@@ -37,9 +37,10 @@ Notable Concepts:
     It is roughly inspired by how it's done on Android. View state restoration is enabled by the employed routing
     approach. It is assumed that each view/screen is uniquely identifiable by its path.
   - The way requests and their results are handled/cached is special in the sense that I did not
-    encounter this way in other projects. It's quite convenient though. The idea is to have an observable request
-    generator object for each endpoint that encapsulates results and meta information. Slightly
-    similar to the Rx Single object but simpler / smaller in scope and also inspired by:
+    encounter this approach in other projects. It's quite convenient. The idea is to have an observable request
+    generator object for each endpoint that encapsulates results and meta information. Then there are special
+    variations of this object, for example for paginated endpoints. Slightly similar to the Rx Single object but 
+    simpler and much more specific in scope. Also inspired by:
     https://medium.com/@mweststrate/mobx-utils-community-driven-utility-belt-for-mobx-264346cb2744#3222
     - TODO (Rephrase properly): Reactive item database. To solve E.g. you go to story, comment count is updated,
       you go back to overview, but overview shows old comment count
@@ -67,22 +68,24 @@ Observations:
   
   
 TODO:
+  - rename kind to type
+  - if type job render differently (e.g. job symbol instead of comments)
+  - glow feed item when going back
   - remember scroll position for comments (scroll, go to about, go back)
-  - pagination or just more
   - Create requester package? Make generic inpute type
   
 TODO Longterm (if ever):
-  - Reduce bundle size
-    - Code splitting (ReactLoadable)
-  - compare to https://medium.com/@NareshBhatia/introducing-mobx-state-router-dae4cb9386fb
-  - Improve Makefile
-  - Would MobX State Tree help somehow? In retaining scroll position for example?
-  - Use react-dom-lite once ready instead of Inferno
   - BFF proxy to simulate delay / user etc. in dev mode
     - Failed to load stories: retry button
   - Mutation API? http4k
     - https://github.com/manmal/hn-android/tree/master/app/src/main/java/com/manuelmaly/hn
     - upvote/downvote, flag, user account, comment etc.
+  - Use react-dom-lite once ready instead of Inferno
+  - Reduce bundle size
+    - Code splitting (ReactLoadable)
+  - compare to https://medium.com/@NareshBhatia/introducing-mobx-state-router-dae4cb9386fb
+  - Improve Makefile
+  - Would MobX State Tree help somehow? In retaining scroll position for example?
   - Real SSR?
     - https://github.com/kristoferbaxter/react-hn
     - https://github.com/cheeaun/node-hnapi
@@ -100,8 +103,8 @@ TODO Longterm (if ever):
     I think it doesn't work for them because hn isn't mobile optimized?
   - User detail page, single comment page
   - Search for a post, search inside comments
-  - depending on type change path (e.g. /story /job /ask)
-  - if type job render differently (e.g. job symbol instead of comments)
+  - Skeleton loading comments
+  - depending on type change path (e.g. /story/{id} /job/{id} /ask/{id})
   - auto-hiding toolbar
   - Theming (dark mode)
   - pull to refresh (such a PITA): 

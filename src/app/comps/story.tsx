@@ -15,7 +15,7 @@ import {
 } from '@fortawesome/fontawesome-free-solid'
 import {Store} from '../store'
 import {Comment, FeedItem, Item, Story, StringStory} from '../models/models'
-import {A, Box, Flex, Span} from './basic'
+import {A, Box, Flex, Space, Span} from './basic'
 
 @observer
 class ContentComp extends Component<{
@@ -282,7 +282,7 @@ class Header extends Component<{
             `}>
               <Box f={2}>
                 {story.title}
-                {'\u00A0'}
+                <Space/>
                 {story.domain != null &&
                   <Span f={1} color='#999' fontWeight='normal'>({story.domain})</Span>
                 }
@@ -290,13 +290,10 @@ class Header extends Component<{
             </A>
             <Flex mt={1} f={0} align='center' color='#999'>
               {story.points}
-              {'\u00A0'}
+              <Space/>
               <FontAwesome icon={faArrowAltCircleUp}/>
-              {'\u00A0'}
-              |
-              {'\u00A0'}
-              by
-              {'\u00A0'}
+              <Space/>|<Space/>
+              by<Space/>
               <A
                 fontWeight='bold'
                 target='_blank'
@@ -305,15 +302,13 @@ class Header extends Component<{
                 >
                 {story.user}
               </A>
-              {'\u00A0'}
+              <Space/>
               {story.timeAgo}
               {story.commentsCount > 0 &&
                 <Span>
-                  {'\u00A0'}
-                  |
-                  {'\u00A0'}
+                  <Space/>|<Space/>
                   {story.commentsCount}
-                  {'\u00A0'}
+                  <Space/>
                   <FontAwesome icon={faComments}/>
                 </Span>
               }
@@ -454,37 +449,31 @@ export class StoryComp extends Component<{
           height: 100%;
         `}>
           <Header story={this.story}/>
-          {this.story.commentsCount > 0 ? (
             <Box>
-              <CommentsComp
-                level={0}
-                comments={this.story.comments}
-                renderedCommentCount={this.renderedCommentCounter.get()}
-                renderedCommentCounter={this.renderedCommentCounter}
-              />
+              {this.story.commentsCount > 0 ? (
+                <CommentsComp
+                  level={0}
+                  comments={this.story.comments}
+                  renderedCommentCount={this.renderedCommentCounter.get()}
+                  renderedCommentCounter={this.renderedCommentCounter}
+                />
+              ) : (
+                <Box p={1} f={1}>
+                  No comments
+                </Box>
+              )}
               <Box mt={1} className={css`
-              height: 100vh;
-              width: 100%;
-              background: repeating-linear-gradient(
-                -45deg,
-                #fafafa,
-                #fafafa 5px,
-                #fff 5px,
-                #fff 10px
-              );
-            `}/>
+                height: ${store.windowHeight - store.headerHeight}px;
+                width: 100%;
+                background: repeating-linear-gradient(
+                  -45deg,
+                  #fafafa,
+                  #fafafa 5px,
+                  #fff 5px,
+                  #fff 10px
+                );
+              `}/>
             </Box>
-          ) : (
-            <Flex
-              flex='1 1 auto' p={1} f={1}
-              justify='center'
-              align='center'
-              className={css`
-                text-align: center;
-              `}>
-              No comments
-            </Flex>
-          )}
         </Flex>
       )
     }

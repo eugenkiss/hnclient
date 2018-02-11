@@ -204,7 +204,7 @@ export class Header extends Component<{
         font-size: 20px;
         align-items: center;
         color: rgba(0,0,0,0.4);
-        height: 48px;
+        height: ${store.headerHeight}px;
       `}>
         {routerStore.current.name !== FeedRoute.id &&
           <HeaderButton
