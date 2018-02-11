@@ -289,20 +289,32 @@ class Header extends Component<{
               </Box>
             </A>
             <Flex mt={1} f={0} align='center' color='#999'>
-              {story.points}
-              <Space/>
-              <FontAwesome icon={faArrowAltCircleUp}/>
-              <Space/>|<Space/>
-              by<Space/>
-              <A
-                fontWeight='bold'
-                target='_blank'
-                title={`HN User: ${story.user}`}
-                href={story.externalUserLink}
-                >
-                {story.user}
-              </A>
-              <Space/>
+              {story.points != null &&
+                <Span>
+                  {story.points}
+                  <Space/>
+                  <FontAwesome icon={faArrowAltCircleUp}/>
+                </Span>
+              }
+              {story.points != null && story.user != null &&
+                <Span>
+                  <Space/>|<Space/>
+                </Span>
+              }
+              {story.user != null &&
+                <Span>
+                  by<Space/>
+                  <A
+                    fontWeight='bold'
+                    target='_blank'
+                    title={`HN User: ${story.user}`}
+                    href={story.externalUserLink}
+                    >
+                    {story.user}
+                  </A>
+                  <Space/>
+                </Span>
+              }
               {story.timeAgo}
               {story.commentsCount > 0 &&
                 <Span>

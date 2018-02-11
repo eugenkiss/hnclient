@@ -23,8 +23,8 @@ export class Item {
   dead: boolean // TODO: handle
   @serializable
   type: string
-  @serializable
-  url?: string
+  @serializable(alias('url', primitive()))
+  _url?: string
   @serializable
   domain?: string
 
@@ -34,6 +34,15 @@ export class Item {
   commentsCount: number
   @serializable
   level: number
+
+  @computed get url(): string {
+    if (this._url == null) return null
+    if (!this._url.startsWith('http')) {
+      // This means it points to ycombinator.com
+      return makeExternalItemLink(this.id.toString())
+    }
+    return this._url
+  }
 
   @computed get timeAgo(): string {
     return timeAgo(now(), this.time * 1000)
@@ -74,12 +83,21 @@ export class FeedItem {
   time: number
   @serializable
   type: string
-  @serializable
-  url?: string
+  @serializable(alias('url', primitive()))
+  _url?: string
   @serializable
   domain?: string
   @serializable(alias('comments_count', primitive()))
   commentsCount: number
+
+  @computed get url(): string {
+    if (this._url == null) return null
+    if (!this._url.startsWith('http')) {
+      // This means it points to ycombinator.com
+      return makeExternalItemLink(this.id.toString())
+    }
+    return this._url
+  }
 
   @computed get timeAgo(): string {
     return timeAgo(now(), this.time * 1000)
@@ -98,7 +116,7 @@ export class FeedItem {
     this.points = story.points
     this.user = story.user
     this.type = story.type
-    this.url = story.url
+    this._url = story.url
     this.domain = story.domain
     this.commentsCount = story.commentsCount
   }

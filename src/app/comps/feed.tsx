@@ -141,13 +141,9 @@ export class FeedItemComp extends Component<{
             </Box>
           </A>
           <Flex mt={1} f={0} align='center' color='#999'>
-            {item.points != null ? item.points : '…'} points
-            {item.domain &&
-              <Span>
-                <Space/>|<Space/>
-                {item.domain}
-              </Span>
-            }
+            {item.points != null && `${item.points} points`}
+            {item.points != null && item.domain != null && <Span><Space/>|<Space/></Span>}
+            {item.domain != null && item.domain}
           </Flex>
         </Box>
         <Box flex='1 1 auto' pr={1}/>
