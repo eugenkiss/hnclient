@@ -5,7 +5,8 @@ import {inject, observer} from 'mobx-react'
 import {PENDING, REJECTED} from 'mobx-utils'
 import {css} from 'emotion'
 import * as FontAwesome from '@fortawesome/react-fontawesome'
-import {faBriefcase, faComments, faSpinner} from '@fortawesome/fontawesome-free-solid'
+import {IconDefinition} from '@fortawesome/fontawesome-common-types'
+import {faBriefcase, faCaretDown, faCaretUp, faComments, faSpinner} from '@fortawesome/fontawesome-free-solid'
 import {FeedRoute, StoryRoute} from '../routes'
 import {A, Box, Flex, Space, Span} from './basic'
 import {Link} from './link'
@@ -114,6 +115,8 @@ export class FeedItemComp extends Component<{
   item: FeedItem
   readOnly?: boolean
 }> {
+  static makeDomFeedItemId = (id: number) => `feed-item-${id}`
+
   handleContainerClick = (e) => {
     if (!this.props.readOnly) return
     e.stopPropagation()
@@ -121,7 +124,7 @@ export class FeedItemComp extends Component<{
     e.preventDefault()
   }
 
-  handleLinkClick = (e) => {
+  handleLinkClick = () => {
     const {store, item} = this.props
     store.lastClickedFeedItemIdFleeting = item.id
     setTimeout(() => store.lastClickedFeedItemIdFleeting = null, 10)
@@ -131,7 +134,7 @@ export class FeedItemComp extends Component<{
     const { item } = this.props
     return (
       <Flex
-        id={`feed-item-${item.id}`}
+        id={FeedItemComp.makeDomFeedItemId(item.id)}
         flex='1 1 auto'
         p={1} py={1}
         onClickCapture={this.handleContainerClick}
@@ -207,11 +210,12 @@ for (let i = 0; i < 30; i++) {
   skeletonJobFeedItems.push(jobItem)
 }
 
-type ViewRestoreData = { scrollTop: number, itemId: string }
+type ViewRestoreData = { scrollTop: number, itemId: number }
 
 @inject('store') @observer
 export class Feed extends Component<{store?: Store}> {
   static ID = 'Feed'
+  static MORE_ID = 'more'
 
   disposers = []
   saveUiCb
@@ -241,7 +245,7 @@ export class Feed extends Component<{store?: Store}> {
         }
         this.containerNode.scrollTop = data.scrollTop
         if (data.itemId != null) {
-          const feedItemComp = document.getElementById(`feed-item-${data.itemId}`)
+          const feedItemComp = document.getElementById(FeedItemComp.makeDomFeedItemId(data.itemId))
           if (feedItemComp != null) {
             feedItemComp.style.cssText = 'animation: ease-out glowing 500ms'
           }
@@ -257,6 +261,22 @@ export class Feed extends Component<{store?: Store}> {
     routerStore.delRestoreUiCb(this.restoreUiCb)
   }
 
+  static makeDomPageId = (id: number) => `page-${id}`
+
+  renderPageUpDownButton = (icon: IconDefinition, handler: (...args: any[]) => any) => {
+    return (
+      <Box
+        p={1} m={-1}
+        onClick={handler}
+        className={css`
+        color: #999;
+        cursor: pointer;
+      `}>
+        <FontAwesome icon={icon} />
+      </Box>
+    )
+  }
+
   moreHeight = 33
   @observable moreReq = fulfilledReq
 
@@ -264,7 +284,31 @@ export class Feed extends Component<{store?: Store}> {
     if (atEnd) return
     this.moreReq = this.props.store.currentGetFeed.refresh(pageCount + 1, minDuration(500))
     await this.moreReq
-    smoothScrollToId(`page-${pageCount + 1}`)
+    smoothScrollToId(Feed.makeDomPageId(pageCount + 1))
+  }
+
+  handlePageUp = (page: number) => {
+    if (page == 2) {
+      const origEl = document.getElementById(Feed.makeDomPageId(page) + '-original')
+      const el = document.getElementById(Feed.makeDomPageId(page))
+      const origElY = origEl.getBoundingClientRect().top
+      const elY = el.getBoundingClientRect().top
+      if (elY - origElY < 20) {
+        smoothScrollToId(Tabbar.ID)
+      } else {
+        smoothScrollToId(origEl.id)
+      }
+      return
+    }
+    smoothScrollToId(Feed.makeDomPageId(page - 1))
+  }
+
+  handlePageDown = (pageCount: number, page: number) => {
+    if (page >= pageCount) {
+      smoothScrollToId(Feed.MORE_ID)
+      return
+    }
+    smoothScrollToId(Feed.makeDomPageId(page + 1))
   }
 
   renderBody() {
@@ -290,12 +334,12 @@ export class Feed extends Component<{store?: Store}> {
       return (
         <Box>
           {pages.map(([page, items]) =>
-            <Box key={page}>
+            <Box key={page} id={Feed.makeDomPageId(page) + '-original'}>
               {page > 1 && items.length > 0 &&
                 <Flex
-                  id={`page-${page}`}
+                  id={Feed.makeDomPageId(page)}
                   f={1} p={1}
-                  justify='center'
+                  justify='center' align='center'
                   className={css`
                   color: #666;
                   background: #f7f7f7;
@@ -304,7 +348,11 @@ export class Feed extends Component<{store?: Store}> {
                   top: -1px;
                   height: ${this.moreHeight}px;
                 `}>
+                  {this.renderPageUpDownButton(faCaretDown, () => this.handlePageDown(pageCount, page))}
+                  <Box flex='1 1 auto'/>
                   Page {page}
+                  <Box flex='1 1 auto'/>
+                  {this.renderPageUpDownButton(faCaretUp, () => this.handlePageUp(page))}
                 </Flex>
               }
               {items.map(item =>
@@ -313,6 +361,7 @@ export class Feed extends Component<{store?: Store}> {
             </Box>
           )}
           <Flex
+            id={Feed.MORE_ID}
             f={1} p={1}
             justify='center'
             onClick={() => this.handleNextPage(pageCount, atEnd)}
