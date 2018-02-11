@@ -1,6 +1,6 @@
 import * as React from 'react'
 import {action} from 'mobx'
-import {Route} from 'router5/create-router'
+import {Params, Route, State} from 'router5/create-router'
 import {Store} from './store'
 import {Feed} from './comps/feed'
 import {StoryComp} from './comps/story'
@@ -15,8 +15,8 @@ export type LinkData = {name: string, params?: object}
 export interface HNRoute extends Route {
   globPath: string // For Firebase rewrite rules
   comp: (next?: any) => any
-  onActivate?: (store: Store, next?: any, prev?: any) => void
-  onDeactivate?: (store: Store, next?: any, prev?: any) => void
+  onActivate?: (store: Store, current?: Params, prev?: State) => void
+  onDeactivate?: (store: Store, current?: Params, next?: State) => void
 }
 
 export class FeedRoute implements HNRoute {
@@ -24,10 +24,14 @@ export class FeedRoute implements HNRoute {
   get name() { return FeedRoute.id }
   get path() { return '/?:type' }
   globPath = '/'
-  @action onActivate(store: Store) {
+  @action onActivate(store: Store, _, prev) {
     store.headerTitle = 'HN'
+    if (prev.name === this.name && new Date().getTime() - store.currentGetFeed.timestamp > 1000 * 60 * 5) {
+      // If user switches tabs after a while he wants to see new stuff
+      store.currentGetFeed.clearCache()
+    }
     if (store.currentGetFeed.listOfPages.length === 0) {
-      store.currentGetFeed.refresh(1)
+      store.currentGetFeed.refresh(1, minDuration(1000))
     }
     store.refreshAction = async () => {
       store.getFeedManualRefreshRequest = store.currentGetFeed.hardRefresh(1, minDuration(500))

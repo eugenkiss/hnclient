@@ -87,13 +87,13 @@ function makeMobxRouterPlugin(store: Store): PluginFactory {
         if (prevState != null) store.routerStore.callSaveUiCbs(extractId(prevState))
 
         if (prevRoute.onDeactivate != null) {
-          prevRoute.onDeactivate(store, prevParams, nextParams)
+          prevRoute.onDeactivate(store, prevParams, nextState)
         }
 
         store.routerStore.current = nextState
 
         if (nextRoute.onActivate != null) {
-          nextRoute.onActivate(store, nextParams, prevParams)
+          nextRoute.onActivate(store, nextParams, (prevState || {} as any))
         }
 
         if (prevState != null && nextState.meta.id < prevState.meta.id) {

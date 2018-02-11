@@ -64,6 +64,7 @@ export class PageRequester<T, I=number> {
       ? fulfilledReq
       : this.reqMap.get(this.lastReqPage.toString())
   }
+  private lastTimeStamp: IObservableValue<number> = observable(-1)
 
   constructor(private promiser: (x: I) => Promise<Array<T>>) {}
 
@@ -75,6 +76,7 @@ export class PageRequester<T, I=number> {
       const req = this.reqMap.get(x.toString())
       if (req.state !== FULFILLED) return
       this.map.set(x.toString(), req.value)
+      this.lastTimeStamp.set(new Date().getTime())
     }))
     return req
   }
@@ -88,12 +90,14 @@ export class PageRequester<T, I=number> {
       if (req.state !== FULFILLED) return
       this.clearCache()
       this.map.set(x.toString(), req.value)
+      this.lastTimeStamp.set(new Date().getTime())
     }))
     return req
   }
 
   @action clearCache() {
     this.map.clear()
+    this.lastTimeStamp.set(-1)
   }
 
   @action cancel(x: I) {
@@ -131,6 +135,10 @@ export class PageRequester<T, I=number> {
       result.push([parseInt(page), this.map.get(page)])
     }
     return result
+  }
+
+  get timestamp(): number {
+    return this.lastTimeStamp.get()
   }
 }
 
