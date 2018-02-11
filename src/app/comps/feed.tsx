@@ -5,7 +5,7 @@ import {inject, observer} from 'mobx-react'
 import {PENDING, REJECTED} from 'mobx-utils'
 import {css} from 'emotion'
 import * as FontAwesome from '@fortawesome/react-fontawesome'
-import {faComments, faSpinner} from '@fortawesome/fontawesome-free-solid'
+import {faBriefcase, faComments, faSpinner} from '@fortawesome/fontawesome-free-solid'
 import {FeedRoute, StoryRoute} from '../routes'
 import {A, Box, Flex, Space, Span} from './basic'
 import {Link} from './link'
@@ -162,8 +162,14 @@ export class FeedItemComp extends Component<{
           justify-content: center;
           align-items: center;
         `}>
-          <FontAwesome icon={faComments} size='lg'/>
-          <Span mt={'0.2rem'}>{item.commentsCount != null ? item.commentsCount : '…'}</Span>
+          {item.type !== FeedType.Job ? ([
+            <FontAwesome key={1} icon={faComments} size='lg'/>
+              ,
+            <Span key={2} mt={'0.2rem'}>{item.commentsCount != null ? item.commentsCount : '…'}</Span>
+          ]) : (
+            <FontAwesome key={1} icon={faBriefcase} size='lg'/>
+          )}
+
         </Link>
       </Flex>
     )

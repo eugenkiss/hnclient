@@ -128,5 +128,5 @@ export enum FeedType {
   // Best = 'best',
   Ask = 'ask',
   Show = 'show',
-  Job = 'jobs',
+  Job = 'job',
 }
