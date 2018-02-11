@@ -68,7 +68,6 @@ Observations:
   
   
 TODO:
-  - glow feed item when going back
   - remember scroll position for comments (scroll, go to about, go back)
   - Create requester package? Make generic inpute type
   

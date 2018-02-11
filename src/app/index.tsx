@@ -70,6 +70,13 @@ a {
   opacity: 1.0;
   transform: rotate(3deg) translate(0px, -4px);
 }
+
+@keyframes glowing {
+  0% {  background: initial; }
+  30% {  background: initial; }
+  40% {  background: #fdd0c3;  }
+  100% {  background: iniitial; }
+}
 `
 
 class HeaderButton extends Component<{

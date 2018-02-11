@@ -108,8 +108,9 @@ export class Tabbar extends Component<{
   }
 }
 
-@observer
+@inject('store') @observer
 export class FeedItemComp extends Component<{
+  store?: Store
   item: FeedItem
   readOnly?: boolean
 }> {
@@ -120,10 +121,17 @@ export class FeedItemComp extends Component<{
     e.preventDefault()
   }
 
+  handleLinkClick = (e) => {
+    const {store, item} = this.props
+    store.lastClickedFeedItemIdFleeting = item.id
+    setTimeout(() => store.lastClickedFeedItemIdFleeting = null, 10)
+  }
+
   render() {
     const { item } = this.props
     return (
       <Flex
+        id={`feed-item-${item.id}`}
         flex='1 1 auto'
         p={1} py={1}
         onClickCapture={this.handleContainerClick}
@@ -151,6 +159,7 @@ export class FeedItemComp extends Component<{
           f={1} p={1} m={-1} py={1} my={-1}
           color='#999'
           link={StoryRoute.link(item.id)}
+          onClick={this.handleLinkClick}
           title={`HN: ${item.title}`}
           className={css`
           width: 48px;
@@ -198,7 +207,7 @@ for (let i = 0; i < 30; i++) {
   skeletonJobFeedItems.push(jobItem)
 }
 
-type ViewRestoreData = { scrollTop: number }
+type ViewRestoreData = { scrollTop: number, itemId: string }
 
 @inject('store') @observer
 export class Feed extends Component<{store?: Store}> {
@@ -221,6 +230,7 @@ export class Feed extends Component<{store?: Store}> {
     this.saveUiCb = routerStore.addSaveUiCb(() => {
       return { id: Feed.ID, data: {
         scrollTop: this.containerNode.scrollTop,
+        itemId: store.lastClickedFeedItemIdFleeting,
       }}
     })
     this.restoreUiCb = routerStore.addRestoreUiCb(Feed.ID, (data?: ViewRestoreData) => {
@@ -230,6 +240,12 @@ export class Feed extends Component<{store?: Store}> {
           return
         }
         this.containerNode.scrollTop = data.scrollTop
+        if (data.itemId != null) {
+          const feedItemComp = document.getElementById(`feed-item-${data.itemId}`)
+          if (feedItemComp != null) {
+            feedItemComp.style.cssText = 'animation: ease-out glowing 500ms'
+          }
+        }
       })
     })
   }
@@ -283,8 +299,9 @@ export class Feed extends Component<{store?: Store}> {
                   className={css`
                   color: #666;
                   background: #f7f7f7;
-                  top: -1px;
+                  user-select: none;
                   position: sticky;
+                  top: -1px;
                   height: ${this.moreHeight}px;
                 `}>
                   Page {page}
@@ -302,6 +319,8 @@ export class Feed extends Component<{store?: Store}> {
             className={css`
             color: #666;
             background: #f7f7f7;
+            user-select: none;
+            cursor: pointer;
             height: ${this.moreHeight}px;
           `}>
             {this.moreReq.state === PENDING ? (

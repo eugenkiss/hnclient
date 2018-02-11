@@ -19,6 +19,7 @@ export class Link extends Component<{
   render() {
     const {router} = this.props.store
     const {link, target, ...rest} = this.props
+    delete (rest as any).onClick
     const href = router.buildPath(link.name, link.params as any)
 
     return (

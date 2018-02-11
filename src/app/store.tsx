@@ -54,6 +54,8 @@ export class Store extends BaseStore {
 
   @observable scrollFeedToTop = false
 
+  lastClickedFeedItemIdFleeting: number = null
+
   @computed get selectedFeedType() {
     if (this.routerStore.current == null) return null
     return this.routerStore.current.params.type
