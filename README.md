@@ -104,6 +104,8 @@ TODO Longterm (if ever):
   - depending on type change path (e.g. /story/{id} /job/{id} /ask/{id})
   - auto-hiding toolbar
   - Theming (dark mode)
+  - do not render feed item in new page if it exists in a previous page
+  - Toast message on failed request
   - Storyview: If you scroll up/down fast and cover some distance
     show scroll to top/button action
   - pull to refresh (such a PITA): 
