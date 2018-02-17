@@ -62,17 +62,22 @@ Observations:
   - Native development gives you a lot but requires you to sacrifice part of your freedom (e.g. customizability)
   - Why doesn't the Chrome browser use the a's title attribute as the share title when sharing a link?
   - Even though inferno-compat is quite good it's still a PITA for edge cases
+  - Build configuration as well as correctly setting up tree shaking / dead code elimination
+    in this heterogeneous ecosystem is a PITA
 
 
 ---------------------------------  
   
   
 TODO:
+  - How to best make Story MapRequester cache limited to X entries?
+  - show up button for more...
   - remember scroll position for comments (scroll, go to about, go back)
+  - use disposer pattern for callbacks
+  - show pulsating overview while comments are loading even if they are already cached
   - Create requester package? Make generic inpute type
   
 TODO Longterm (if ever):
-  - How to best make Story MapRequester cache limited to X entries?
   - BFF proxy to simulate delay / user etc. in dev mode
     - Failed to load stories: retry button
   - Mutation API? http4k
@@ -88,6 +93,7 @@ TODO Longterm (if ever):
     - https://github.com/kristoferbaxter/react-hn
     - https://github.com/cheeaun/node-hnapi
   - Animations/transitions. E.g. spinner fade out, overflow menu, shared element transition, etc.
+    - Animate/count numbers up/down (e.g. points) when new data/values arrive
   - React Native version
   - Steal some UI ideas from reddit is fun 
     e.g. selected/active comment, top/hot/... tabs underneath toolbar, share dialog
