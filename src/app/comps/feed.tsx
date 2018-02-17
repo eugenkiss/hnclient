@@ -262,7 +262,6 @@ type ViewRestoreData = { scrollTop: number, itemId: number }
 @inject('store') @observer
 export class FeedScreen extends Component<{store?: Store}> {
   static ID = 'FeedScreen'
-  static MORE_ID = 'more'
 
   disposers = []
 
@@ -318,6 +317,10 @@ export class FeedScreen extends Component<{store?: Store}> {
     )
   }
 
+  renderPageUpButton = (page) => this.renderPageUpDownButton(faCaretUp, () => this.handlePageUp(page))
+
+  renderPageDownButton = (page) => this.renderPageUpDownButton(faCaretDown, () => this.handlePageDown(page))
+
   moreHeight = 33
   @observable moreReq = fulfilledReq
 
@@ -344,11 +347,7 @@ export class FeedScreen extends Component<{store?: Store}> {
     smoothScrollToId(FeedScreen.makeDomPageId(page - 1))
   }
 
-  handlePageDown = (pageCount: number, page: number) => {
-    if (page >= pageCount) {
-      smoothScrollToId(FeedScreen.MORE_ID)
-      return
-    }
+  handlePageDown = (page: number) => {
     smoothScrollToId(FeedScreen.makeDomPageId(page + 1))
   }
 
@@ -389,11 +388,11 @@ export class FeedScreen extends Component<{store?: Store}> {
                   top: -1px;
                   height: ${this.moreHeight}px;
                 `}>
-                  {this.renderPageUpDownButton(faCaretDown, () => this.handlePageDown(pageCount, page))}
+                  {this.renderPageDownButton(page)}
                   <Fill/>
                   Page {page}
                   <Fill/>
-                  {this.renderPageUpDownButton(faCaretUp, () => this.handlePageUp(page))}
+                  {this.renderPageUpButton(page)}
                 </Flex>
               }
               {items.map(item =>
@@ -401,26 +400,31 @@ export class FeedScreen extends Component<{store?: Store}> {
               )}
             </Box>
           )}
-          <FlexClickable
-            id={FeedScreen.MORE_ID}
+          <Span id={FeedScreen.makeDomPageId(pageCount + 1) + '-original'}/>
+          <Flex
+            id={FeedScreen.makeDomPageId(pageCount + 1)}
             f={1} p={1}
             justify='center'
-            onClick={() => this.handleNextPage(pageCount, atEnd)}
             className={css`
             color: #666;
             background: #f7f7f7;
             height: ${this.moreHeight}px;
           `}>
+            <Fill/>
             {this.moreReq.state === PENDING ? (
               <Box><FontAwesome icon={faSpinner} pulse/></Box>
             ) : (
               atEnd ? (
                 <Span>End</Span>
               ): (
-                <Span>More…</Span>
+                <BoxClickable p={1} m={-1} onClick={() => this.handleNextPage(pageCount, atEnd)}>
+                  More…
+                </BoxClickable>
               )
             )}
-          </FlexClickable>
+            <Fill/>
+            {pageCount <= 1 && this.renderPageUpButton(pageCount + 1)}
+          </Flex>
         </Box>
       )
     }

@@ -70,7 +70,6 @@ Observations:
   
   
 TODO:
-  - show up button for more...
   - remember scroll position for comments (scroll, go to about, go back)
   - show pulsating overview while comments are loading even if they are already cached
   - Create requester package? Make generic inpute type
