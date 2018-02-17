@@ -1,5 +1,5 @@
 import * as React from 'react'
-import * as ReactPortal from 'react-portal'
+import * as ReactDOM from 'react-dom'
 import styled from 'react-emotion'
 import {
   alignItems,
@@ -17,6 +17,7 @@ import {
 import {autorun, IObservableValue} from 'mobx'
 import {observer} from 'mobx-react'
 import {css} from 'emotion'
+import {canUseDOM} from '../utils/utils'
 
 export class Space extends React.Component {
   render() {
@@ -82,7 +83,30 @@ ${color}
 ${flex}
 ` as any
 
-export const Portal = ReactPortal.Portal
+class Portal extends React.Component {
+  defaultNode = null
+
+  componentWillUnmount() {
+    if (this.defaultNode) {
+      document.body.removeChild(this.defaultNode)
+    }
+    this.defaultNode = null
+  }
+
+  render() {
+    if (!canUseDOM) {
+      return null
+    }
+    if (this.defaultNode ==  null) {
+      this.defaultNode = document.createElement('div')
+      document.body.appendChild(this.defaultNode)
+    }
+    return ReactDOM.createPortal(
+      this.props.children,
+      this.defaultNode
+    )
+  }
+}
 
 @observer
 export class Overlay extends React.Component<{
