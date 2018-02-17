@@ -143,8 +143,9 @@ export class PageRequester<T, I=number> {
 }
 
 // PoC
-export class MapRequester<I, T> {
+export class MapRequestMaker<I, T> {
   private map: ObservableMap<T> = observable.map<T>()
+  private dateMap: Map<string, number> = new Map<string, number>()
   private reqMap: ObservableMap<IPromiseBasedObservable<T>> = observable.map()
   @observable private lastReqId: I = null
   @computed private get lastReq(): IPromiseBasedObservable<T> {
@@ -153,18 +154,39 @@ export class MapRequester<I, T> {
       : this.reqMap.get(this.lastReqId.toString())
   }
 
-  constructor(private promiser: (x: I) => Promise<T>) {}
+  constructor(
+    private promiseMaker: (x: I) => Promise<T>,
+    private maxItemCount: number = Number.MAX_SAFE_INTEGER
+  ) {}
 
   @action refresh(x: I): IPromiseBasedObservable<T> {
-    const req = fromPromise(this.promiser(x))
+    const req = fromPromise(this.promiseMaker(x))
     this.lastReqId = x
     this.reqMap.set(x.toString(), req)
+
     when(() => this.reqMap.get(x.toString()).state !== PENDING, action(() => {
       const req = this.reqMap.get(x.toString())
       if (req.state !== FULFILLED) return
       this.map.set(x.toString(), req.value)
+      this.dateMap.set(x.toString(), getNow())
+      this.cacheEviction()
     }))
+
     return req
+  }
+
+  @action private cacheEviction() {
+    if (this.map.size <= Math.max(1, this.maxItemCount)) return
+    let keyOldest = null, dateOldest = Number.MAX_SAFE_INTEGER
+    for (const [key, date] of this.dateMap) {
+      if (date < dateOldest) {
+        dateOldest = date
+        keyOldest = key
+      }
+    }
+    this.map.delete(keyOldest)
+    this.dateMap.delete(keyOldest)
+    this.reqMap.delete(keyOldest)
   }
 
   @action cancel(x: I) {

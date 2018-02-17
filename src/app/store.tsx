@@ -7,7 +7,7 @@ import * as routes from './routes'
 import {LinkData} from './routes'
 import {canUseDOM, fulfilledReq, getNow} from './utils/utils'
 import {BaseStore} from './utils/base-store'
-import {MapRequester, PageRequester} from './utils/req'
+import {MapRequestMaker, PageRequester} from './utils/req'
 import {ApiClient} from './api/client'
 import {FeedItem, FeedType, Story} from './models/models'
 
@@ -108,14 +108,14 @@ export class Store extends BaseStore {
     }
   }
 
-  getStory = new MapRequester<Number, Story>(async (id: number) => {
+  getStory = new MapRequestMaker<Number, Story>(async (id: number) => {
     const story = await this.api.getItem(id)
     const feedItem = this.feedItemDb.get(id.toString())
     if (feedItem != null && story._createdAt > feedItem._createdAt) {
       feedItem.updateFromStory(story)
     }
     return story
-  })
+  }, 5)
 
   navigate = (linkData: LinkData, options?: NavigationOptions, done?: DoneFn) => {
     const {name, params} = linkData

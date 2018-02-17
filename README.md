@@ -70,7 +70,6 @@ Observations:
   
   
 TODO:
-  - How to best make Story MapRequester cache limited to X entries?
   - show up button for more...
   - remember scroll position for comments (scroll, go to about, go back)
   - use disposer pattern for callbacks
