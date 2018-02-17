@@ -288,11 +288,15 @@ export default class App extends React.Component<{
     router.start(this.props.initialPath)
   }
 
-  renderBody() {
+  renderScreenStack() {
     const {routerStore, routesMap} = this.store
     const cur = routerStore.current
     if (cur == null) return null
-    return routesMap.get(cur.name).comp(cur.params)
+    const lastIndex = routerStore.history.length - 1
+    //console.log(routerStore.history.map(x => x.name))
+    return routerStore.history.map((x, i) =>
+        routesMap.get(x.name).comp(i, i === lastIndex, x.params)
+    )
   }
 
   render() {
@@ -318,7 +322,7 @@ export default class App extends React.Component<{
             background: #ffffff;
             overflow: hidden;
           `}>
-            {this.renderBody()}
+            {this.renderScreenStack()}
           </Box>
         </Flex>
       </Provider>

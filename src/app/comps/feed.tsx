@@ -260,7 +260,10 @@ for (let i = 0; i < 30; i++) {
 type ViewRestoreData = { scrollTop: number, itemId: number }
 
 @inject('store') @observer
-export class FeedScreen extends Component<{store?: Store}> {
+export class FeedScreen extends Component<{
+  store?: Store,
+  active: boolean
+}> {
   static ID = 'FeedScreen'
 
   disposers = []
@@ -295,6 +298,10 @@ export class FeedScreen extends Component<{store?: Store}> {
           const feedItemComp = document.getElementById(FeedItemComp.makeDomFeedItemId(data.itemId))
           if (feedItemComp != null) {
             feedItemComp.style.cssText = 'animation: ease-out glowing 500ms'
+            setTimeout(() => { // Fix for mobile Chrome browser
+              if (feedItemComp == null) return
+              feedItemComp.style.cssText = ''
+            }, 500)
           }
         }
       })
@@ -434,11 +441,12 @@ export class FeedScreen extends Component<{store?: Store}> {
   }
 
   render() {
-    const {store} = this.props
+    const {active, store} = this.props
     return (
         <Box
           innerRef={r => this.containerNode = r}
           className={css`
+          ${active ? '' : 'display: none'};
           position: relative;
           overflow: auto;
           height: 100%;

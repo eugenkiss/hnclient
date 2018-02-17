@@ -1,6 +1,7 @@
-import {observable} from 'mobx'
+import {observable, runInAction} from 'mobx'
 import createRouter, {Plugin, PluginFactory, Route, Router, State} from 'router5'
 import browserPlugin from 'router5/plugins/browser'
+import {NavigationOptions} from 'router5/core/navigation'
 import {routesMap} from './routes'
 import {Store} from './store'
 
@@ -65,7 +66,7 @@ export class RouterStore {
 function makeMobxRouterPlugin(store: Store): PluginFactory {
   function mobxRouterPlugin(): Plugin {
     return {
-      onTransitionSuccess(nextState?: State, prevState?: State) {
+      onTransitionSuccess(nextState?: State, prevState?: State, opts?: NavigationOptions) {
         const prevParams = (prevState || {} as any).params || {}
         const nextParams = nextState.params || {}
         const prevRoute = routesMap.get((prevState || {} as any).name) || {} as any
@@ -79,11 +80,24 @@ function makeMobxRouterPlugin(store: Store): PluginFactory {
           prevRoute.onDeactivate(store, prevParams, nextState)
         }
 
-        store.routerStore.current = nextState
+        runInAction(() => {
+          store.routerStore.current = nextState
 
-        if (nextRoute.onActivate != null) {
-          nextRoute.onActivate(store, nextParams, (prevState || {} as any))
-        }
+          const h = store.routerStore.history
+          if (prevState != null && opts.replace) {
+            if (nextState.meta.id < prevState.meta.id) {
+              h.pop()
+            } else {
+              h[h.length-1] = nextState
+            }
+          } else {
+            h.push(nextState)
+          }
+
+          if (nextRoute.onActivate != null) {
+            nextRoute.onActivate(store, nextParams, (prevState || {} as any))
+          }
+        })
 
         if (prevState != null && nextState.meta.id < prevState.meta.id) {
           store.routerStore.callRestoreListeners(extractId(nextState))

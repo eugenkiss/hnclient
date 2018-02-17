@@ -1,9 +1,9 @@
 import * as React from 'react'
-import {action} from 'mobx'
+import {action, when} from 'mobx'
 import {Params, Route, State} from 'router5/create-router'
 import {Store} from './store'
 import {FeedScreen} from './comps/feed'
-import {StoryScreen} from './comps/story'
+import {skeletonStory, StoryScreen} from './comps/story'
 import {AboutScreen} from './comps/about'
 import {FeedType} from './models/models'
 import {getNow, minDuration} from './utils/utils'
@@ -14,7 +14,7 @@ export type LinkData = {name: string, params?: object}
 
 export interface HNRoute extends Route {
   globPath: string // For Firebase rewrite rules
-  comp: (next?: any) => any
+  comp: (key: number, active: boolean, next?: Params) => any
   onActivate?: (store: Store, current?: Params, prev?: State) => void
   onDeactivate?: (store: Store, current?: Params, next?: State) => void
 }
@@ -46,7 +46,9 @@ export class FeedRoute implements HNRoute {
   static link = (type?: FeedType): LinkData => ({
     name: FeedRoute.id, params: {type: type}
   })
-  comp() { return <FeedScreen/> }
+  comp(key, active) {
+    return <FeedScreen key={key} active={active}/>
+  }
 }
 rs.set(FeedRoute.id, new FeedRoute())
 
@@ -55,19 +57,31 @@ export class StoryRoute implements HNRoute {
   get name() { return StoryRoute.id }
   get path() { return '/story/:id' }
   globPath = '/story/*'
-  onActivate(store: Store, {id}) {
+  disposers = new Map<number, Array<() => void>>()
+  @action onActivate(store: Store, {id}) {
     store.window.scrollTo(null, 0)
     store.refreshAction = () => store.getStory.refresh(id)
     store.getStory.refresh(id)
+
+    if (this.disposers.get(id) == null) this.disposers.set(id, [])
+    store.headerTitle = skeletonStory.title
+    const feedItem = store.feedItemDb.get(id.toString())
+    if (feedItem != null) store.headerTitle = feedItem.title
+    this.disposers.get(id).push(when(() => store.getStory.value(id) != null, () => {
+      store.headerTitle = store.getStory.value(id).title
+    }))
   }
   onDeactivate(store: Store, {id}) {
     store.refreshAction = null
     store.getStory.cancel(id)
+    for (const disposer of this.disposers.get(id)) disposer()
   }
   static link = (id): LinkData => ({
     name: StoryRoute.id, params: {id: id}
   })
-  comp({id}) { return <StoryScreen id={id}/> }
+  comp(key, active, params) {
+    return <StoryScreen key={key} active={active} id={params.id}/>
+  }
 }
 rs.set(StoryRoute.id, new StoryRoute())
 
@@ -81,7 +95,7 @@ export class AboutRoute implements HNRoute {
   }
   // noinspection JSUnusedGlobalSymbols
   static link = (): LinkData => ({name: AboutRoute.id})
-  comp() { return <AboutScreen/> }
+  comp(key, active) { return <AboutScreen key={key}/> }
 }
 rs.set(AboutRoute.id, new AboutRoute())
 

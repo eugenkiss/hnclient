@@ -48,7 +48,7 @@ export class Store extends BaseStore {
 
   headerHeight = 48
 
-  @observable headerTitle = null
+  @observable headerTitle: string = null
 
   @observable refreshAction = null
 

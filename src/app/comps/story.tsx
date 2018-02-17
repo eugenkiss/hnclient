@@ -1,6 +1,6 @@
 import * as React from 'react'
 import {Component} from 'react'
-import {autorun, computed, observable, when} from 'mobx'
+import {computed, observable, when} from 'mobx'
 import {inject, observer} from 'mobx-react'
 import {REJECTED} from 'mobx-utils'
 import {css} from 'emotion'
@@ -59,7 +59,7 @@ class ContentComp extends Component<{
   }
 }
 
-const skeletonStory: StringStory = {
+export const skeletonStory: StringStory = {
   id: '…',
   title: '…… … … ……… … ……… … … ……… …… ………… ………',
   points: '…',
@@ -372,6 +372,7 @@ type ViewRestoreData = { scrollTop: number }
 @inject('store') @observer
 export class StoryScreen extends Component<{
   store?: Store
+  active: boolean
   id: number
 }> {
   static ID = 'StoryScreen'
@@ -406,15 +407,6 @@ export class StoryScreen extends Component<{
 
     const {store} = this.props
     const {routerStore} = store
-
-    store.headerTitle = skeletonStory.title
-    this.disposers.push(autorun(() => {
-      if (this.story != null) {
-        store.headerTitle = this.story.title
-      } else if (this.feedItem != null) {
-        store.headerTitle = this.feedItem.title
-      }
-    }))
 
     this.disposers.push(routerStore.addSaveListener(() => {
       return { id: StoryScreen.ID, data: {
@@ -529,10 +521,12 @@ export class StoryScreen extends Component<{
   }
 
   render() {
+    const {active} = this.props
     return (
       <Box
         innerRef={r => this.containerNode = r}
         className={css`
+        ${active ? '' : 'display: none'};
         overflow-y: auto;
         overflow-x: hidden;
         height: 100%;
