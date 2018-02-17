@@ -35,7 +35,8 @@ Notable Concepts:
   - The routing/navigation approach is roughly inspired by: https://vincent.is/testing-a-different-spa-routing/
   - View state restoration (such as scroll positions) is done in a novel way as far as I know.
     It is roughly inspired by how it's done on Android. View state restoration is enabled by the employed routing
-    approach. It is assumed that each view/screen is uniquely identifiable by its path.
+    approach. It is assumed that each view/screen is uniquely identifiable by its path. Going forward
+    in history is deliberately ignored when restoring view state.
   - The way requests and their results are handled/cached is special in the sense that I did not
     encounter this approach in other projects. It's quite convenient. The idea is to have an observable request
     generator object for each endpoint that encapsulates results and meta information. Then there are special

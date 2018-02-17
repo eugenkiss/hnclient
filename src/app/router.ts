@@ -1,5 +1,5 @@
 import {observable} from 'mobx'
-import createRouter, {PluginFactory, Route, Router, State} from 'router5'
+import createRouter, {Plugin, PluginFactory, Route, Router, State} from 'router5'
 import browserPlugin from 'router5/plugins/browser'
 import {routesMap} from './routes'
 import {Store} from './store'
@@ -63,9 +63,9 @@ export class RouterStore {
 }
 
 function makeMobxRouterPlugin(store: Store): PluginFactory {
-  function mobxRouterPlugin() {
+  function mobxRouterPlugin(): Plugin {
     return {
-      'onTransitionSuccess': (nextState: State, prevState: State) => {
+      onTransitionSuccess(nextState?: State, prevState?: State) {
         const prevParams = (prevState || {} as any).params || {}
         const nextParams = nextState.params || {}
         const prevRoute = routesMap.get((prevState || {} as any).name) || {} as any
@@ -85,7 +85,7 @@ function makeMobxRouterPlugin(store: Store): PluginFactory {
           nextRoute.onActivate(store, nextParams, (prevState || {} as any))
         }
 
-        if (prevState != null) {
+        if (prevState != null && nextState.meta.id < prevState.meta.id) {
           store.routerStore.callRestoreListeners(extractId(nextState))
         }
       },
