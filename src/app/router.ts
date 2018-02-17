@@ -8,8 +8,8 @@ function extractId(state: State) {
   return state.path
 }
 
-export type SaveUiCb = (current: State) => { id: string, data: any }
-export type RestoreUiCb = (data: any) => void
+export type SaveListener = (current: State) => { id: string, data: any }
+export type RestoreListener = (data: any) => void
 
 // TODO: Has to be rethought. The callbacks list should be a map from path to a list of callbacks.
 // Each callback for the given path will be called with either null or the saved state.
@@ -18,45 +18,32 @@ export class RouterStore {
   @observable history = observable.array<State>()
 
   uiStates: {[id:number]: {[id:string]: any}} = {}
-  saveUiCbs = new Array<SaveUiCb>()
-  restoreUiCbs = new Array<RestoreUiCb>()
+  saveUiCbs = new Array<SaveListener>()
+  restoreUiCbs = new Array<RestoreListener>()
   restoreUiCbIds = new Array<string>()
 
-  // persistUiStates() {
-  //   this.callSaveUiCbs(extractId(this.current))
-  //   sessionStorage.setItem('uiStates', JSON.stringify(this.uiStates))
-  // }
-
-  // Disable (de)serialization for now, need to think deeper about it
-  // restoreUiStates() {
-  //   if (1==1) return
-  //   const uiStatesJson = sessionStorage.getItem('uiStates')
-  //   if (uiStatesJson == null) return
-  //   this.uiStates = JSON.parse(uiStatesJson)
-  // }
-
-  addSaveUiCb = (cb: SaveUiCb): SaveUiCb => {
+  addSaveListener = (cb: SaveListener): () => void => {
     this.saveUiCbs.push(cb)
-    return cb
+    return () => this.removeSaveListener(cb)
   }
 
-  addRestoreUiCb = (id: string, cb: RestoreUiCb): RestoreUiCb => {
+  addRestoreListener = (id: string, cb: RestoreListener): () => void => {
     this.restoreUiCbs.push(cb)
     this.restoreUiCbIds.push(id)
-    return cb
+    return () => this.removeRestoreListener(cb)
   }
 
-  delSaveUiCb = (cb: SaveUiCb) => {
+  private removeSaveListener = (cb: SaveListener) => {
     this.saveUiCbs.splice(this.saveUiCbs.indexOf(cb), 1)
   }
 
-  delRestoreUiCb = (cb: RestoreUiCb) => {
+  private removeRestoreListener = (cb: RestoreListener) => {
     const i = this.restoreUiCbs.indexOf(cb)
     this.restoreUiCbs.splice(i, 1)
     this.restoreUiCbIds.splice(i, 1)
   }
 
-  callSaveUiCbs = (id: string) => {
+  callSaveListeners = (id: string) => {
     for (const cb of this.saveUiCbs) {
       const res = cb(this.current)
       const saved = this.uiStates[id] || {}
@@ -65,7 +52,7 @@ export class RouterStore {
     }
   }
 
-  callRestoreUiCbs = (id: string) => {
+  callRestoreListeners = (id: string) => {
     for (let i = 0; i < this.restoreUiCbs.length; i++) {
       const cbId = this.restoreUiCbIds[i]
       const cb = this.restoreUiCbs[i]
@@ -84,7 +71,9 @@ function makeMobxRouterPlugin(store: Store): PluginFactory {
         const prevRoute = routesMap.get((prevState || {} as any).name) || {} as any
         const nextRoute = routesMap.get(nextState.name)
 
-        if (prevState != null) store.routerStore.callSaveUiCbs(extractId(prevState))
+        if (prevState != null) {
+          store.routerStore.callSaveListeners(extractId(prevState))
+        }
 
         if (prevRoute.onDeactivate != null) {
           prevRoute.onDeactivate(store, prevParams, nextState)
@@ -97,7 +86,7 @@ function makeMobxRouterPlugin(store: Store): PluginFactory {
         }
 
         if (prevState != null && nextState.meta.id < prevState.meta.id) {
-          store.routerStore.callRestoreUiCbs(extractId(nextState))
+          store.routerStore.callRestoreListeners(extractId(nextState))
         }
       },
     }

@@ -265,26 +265,24 @@ export class FeedScreen extends Component<{store?: Store}> {
   static MORE_ID = 'more'
 
   disposers = []
-  saveUiCb
-  restoreUiCb
 
   @observable containerNode = null
 
   componentDidMount() {
     const {store} = this.props
     const {routerStore} = store
-    autorun(() => {
+    this.disposers.push(autorun(() => {
       if (store.scrollFeedToTop === false) return
       smoothScrollToId(Tabbar.ID)
       store.scrollFeedToTop = false
-    })
-    this.saveUiCb = routerStore.addSaveUiCb(() => {
+    }))
+    this.disposers.push(routerStore.addSaveListener(() => {
       return { id: FeedScreen.ID, data: {
         scrollTop: this.containerNode.scrollTop,
         itemId: store.lastClickedFeedItemIdFleeting,
       }}
-    })
-    this.restoreUiCb = routerStore.addRestoreUiCb(FeedScreen.ID, (data?: ViewRestoreData) => {
+    }))
+    this.disposers.push(routerStore.addRestoreListener(FeedScreen.ID, (data?: ViewRestoreData) => {
       when(() => this.containerNode != null, () => {
         if (data == null) {
           this.containerNode.scrollTop = 0
@@ -298,14 +296,11 @@ export class FeedScreen extends Component<{store?: Store}> {
           }
         }
       })
-    })
+    }))
   }
 
   componentWillUnmount() {
     for (const disposer of this.disposers) disposer()
-    const {routerStore} = this.props.store
-    routerStore.delSaveUiCb(this.saveUiCb)
-    routerStore.delRestoreUiCb(this.restoreUiCb)
   }
 
   static makeDomPageId = (id: number) => `page-${id}`
