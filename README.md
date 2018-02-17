@@ -72,7 +72,6 @@ Observations:
   
 TODO:
   - show pulsating overview while comments are loading even if they are already cached
-  - Update to Inferno 4
   - Create requester package? Make generic inpute type
   
 TODO Longterm (if ever):

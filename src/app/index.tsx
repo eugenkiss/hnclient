@@ -107,7 +107,7 @@ class OverflowMenuEntry extends React.Component<{
   store?: Store
   title: string
   icon: IconDefinition
-  onClick: () => void
+  onClick: (...args: any[]) => void
 }> {
   render() {
     const { title, icon, onClick } = this.props
@@ -153,12 +153,18 @@ class OverflowMenu extends React.Component<{
     e.stopPropagation()
   }
 
-  handleUpdate = () => {
+  handleUpdate = (e) => {
+    this.props.onClick(e)
     window.location.reload(true)
   }
 
+  handleAbout = (e) => {
+    this.props.onClick(e)
+    this.props.store.navigate(AboutRoute.link())
+  }
+
   render() {
-    const { store, isOpen } = this.props
+    const { isOpen } = this.props
     if (!isOpen.get()) return null
     return (
       <Overlay isOpen={isOpen} onClick={this.handleModal}>
@@ -185,7 +191,7 @@ class OverflowMenu extends React.Component<{
           />
           <OverflowMenuEntry
             title='About' icon={faInfoCircle}
-            onClick={() => store.navigate(AboutRoute.link())}
+            onClick={this.handleAbout}
           />
         </BoxClickable>
       </Overlay>
