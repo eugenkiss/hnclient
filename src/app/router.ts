@@ -85,7 +85,7 @@ function makeMobxRouterPlugin(store: Store): PluginFactory {
           nextRoute.onActivate(store, nextParams, (prevState || {} as any))
         }
 
-        if (prevState != null && nextState.meta.id < prevState.meta.id) {
+        if (prevState != null) {
           store.routerStore.callRestoreListeners(extractId(nextState))
         }
       },

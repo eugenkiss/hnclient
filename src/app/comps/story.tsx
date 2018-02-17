@@ -1,6 +1,6 @@
 import * as React from 'react'
 import {Component} from 'react'
-import {autorun, computed, observable} from 'mobx'
+import {autorun, computed, observable, when} from 'mobx'
 import {inject, observer} from 'mobx-react'
 import {REJECTED} from 'mobx-utils'
 import {css} from 'emotion'
@@ -367,15 +367,20 @@ class Header extends Component<{
   }
 }
 
+type ViewRestoreData = { scrollTop: number }
+
 @inject('store') @observer
 export class StoryScreen extends Component<{
   store?: Store
   id: number
 }> {
+  static ID = 'StoryScreen'
+
   // Poor man's React Fibers to decrease transition time to this component (latency, faster initial render)
   mounted = true
   toRenderCommentsLength = 4
   renderedCommentCounter = new Counter(this.toRenderCommentsLength)
+  @observable finishedCommentsRendering = false
   handleIncreaseRenderCommentsLength = () => {
     if (!this.mounted) return
     // https://stackoverflow.com/a/34999925/283607
@@ -388,6 +393,54 @@ export class StoryScreen extends Component<{
   }
 
   disposers = []
+  when = (cond, cb) => this.disposers.push(when(cond, cb))
+
+  @observable containerNode = null
+
+  componentDidMount() {
+    this.mounted = true
+    this.toRenderCommentsLength = 4
+    this.renderedCommentCounter.frozen = false
+    this.renderedCommentCounter.set(this.toRenderCommentsLength)
+    this.finishedCommentsRendering = false
+
+    const {store} = this.props
+    const {routerStore} = store
+
+    store.headerTitle = skeletonStory.title
+    this.disposers.push(autorun(() => {
+      if (this.story != null) {
+        store.headerTitle = this.story.title
+      } else if (this.feedItem != null) {
+        store.headerTitle = this.feedItem.title
+      }
+    }))
+
+    this.disposers.push(routerStore.addSaveListener(() => {
+      return { id: StoryScreen.ID, data: {
+        scrollTop: this.containerNode.scrollTop,
+      }}
+    }))
+
+    this.disposers.push(routerStore.addRestoreListener(StoryScreen.ID, (data?: ViewRestoreData) => {
+      this.when(() => this.containerNode != null, () => {
+        if (data == null) {
+          this.containerNode.scrollTop = 0
+          return
+        }
+        this.containerNode.scrollTop = data.scrollTop
+        // Due to "fiber rendering approach"
+        this.when(() => this.finishedCommentsRendering, () => {
+          this.containerNode.scrollTop = data.scrollTop
+        })
+      })
+    }))
+  }
+
+  componentWillUnmount() {
+    this.mounted = false
+    for (const disposer of this.disposers) disposer()
+  }
 
   @computed get story(): Story {
     const { store, id } = this.props
@@ -397,28 +450,6 @@ export class StoryScreen extends Component<{
   @computed get feedItem(): FeedItem {
     const { store, id } = this.props
     return store.feedItemDb.get(id.toString())
-  }
-
-  componentDidMount() {
-    this.mounted = true
-    this.toRenderCommentsLength = 4
-    this.renderedCommentCounter.frozen = false
-    this.renderedCommentCounter.set(this.toRenderCommentsLength)
-
-    const { store } = this.props
-    store.headerTitle = skeletonStory.title
-    this.disposers.push(autorun(() => {
-      if (this.story != null) {
-        store.headerTitle = this.story.title
-      } else if (this.feedItem != null) {
-        store.headerTitle = this.feedItem.title
-      }
-    }))
-  }
-
-  componentWillUnmount() {
-    this.mounted = false
-    for (const disposer of this.disposers) disposer()
   }
 
   renderBody() {
@@ -457,6 +488,7 @@ export class StoryScreen extends Component<{
         setTimeout(this.handleIncreaseRenderCommentsLength)
       } else {
         this.renderedCommentCounter.frozen = true
+        setTimeout(() => this.finishedCommentsRendering = true)
       }
 
       return (
@@ -498,7 +530,9 @@ export class StoryScreen extends Component<{
 
   render() {
     return (
-      <Box className={css`
+      <Box
+        innerRef={r => this.containerNode = r}
+        className={css`
         overflow-y: auto;
         overflow-x: hidden;
         height: 100%;

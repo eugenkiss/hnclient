@@ -264,17 +264,20 @@ export class FeedScreen extends Component<{store?: Store}> {
   static ID = 'FeedScreen'
 
   disposers = []
+  when = (cond, cb) => this.disposers.push(when(cond, cb))
 
   @observable containerNode = null
 
   componentDidMount() {
     const {store} = this.props
     const {routerStore} = store
+
     this.disposers.push(autorun(() => {
       if (store.scrollFeedToTop === false) return
       smoothScrollToId(Tabbar.ID)
       store.scrollFeedToTop = false
     }))
+
     this.disposers.push(routerStore.addSaveListener(() => {
       return { id: FeedScreen.ID, data: {
         scrollTop: this.containerNode.scrollTop,
@@ -282,7 +285,7 @@ export class FeedScreen extends Component<{store?: Store}> {
       }}
     }))
     this.disposers.push(routerStore.addRestoreListener(FeedScreen.ID, (data?: ViewRestoreData) => {
-      when(() => this.containerNode != null, () => {
+      this.when(() => this.containerNode != null, () => {
         if (data == null) {
           this.containerNode.scrollTop = 0
           return
