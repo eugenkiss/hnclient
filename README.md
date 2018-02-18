@@ -75,6 +75,11 @@ TODO:
   - Create requester package? Make generic inpute type
   
 TODO Longterm (if ever):
+  - How to stop/freeze mobx from forceUpdating a component while it is not active?
+    To prevent _accidental_ rerendering of old screen just before switching to new one.
+    Note that I want to retain the old component tree to quickly redraw it when going
+    back to the screen so just returning null when !active doesn't cut it completely.
+    See also: https://github.com/mobxjs/mobx-react/issues/50 
   - BFF proxy to simulate delay / user etc. in dev mode
     - Failed to load stories: retry button
   - Mutation API? http4k

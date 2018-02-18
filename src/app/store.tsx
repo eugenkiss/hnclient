@@ -4,7 +4,7 @@ import * as NProgress from 'nprogress'
 import {DoneFn, NavigationOptions, Route, Router} from 'router5'
 import {makeRouter, RouterStore} from './router'
 import * as routes from './routes'
-import {LinkData} from './routes'
+import {FeedRoute, LinkData} from './routes'
 import {canUseDOM, fulfilledReq, getNow} from './utils/utils'
 import {BaseStore} from './utils/base-store'
 import {MapRequestMaker, PageRequester} from './utils/req'
@@ -29,6 +29,7 @@ export class Store extends BaseStore {
     this.handleResize()
 
     autorun(() => {
+      if (this.routerStore.current == null) return
       if ( this.currentGetFeed.lastState === PENDING
         || this.getStory.lastState === PENDING
       ) {
@@ -58,9 +59,12 @@ export class Store extends BaseStore {
   feedFreshnessCutoff = 1000 * 60 * 60 // 1h
   @observable lastDismissedRefreshWarning = getNow()
 
+  private lastSelectedFeedType = null
   @computed get selectedFeedType() {
-    if (this.routerStore.current == null) return null
-    return this.routerStore.current.params.type
+    if (this.routerStore.current.name != FeedRoute.id) {
+      return this.lastSelectedFeedType
+    }
+    return this.lastSelectedFeedType = this.routerStore.current.params.type
   }
 
 

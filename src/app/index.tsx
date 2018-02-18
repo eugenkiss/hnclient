@@ -290,8 +290,6 @@ export default class App extends React.Component<{
 
   renderScreenStack() {
     const {routerStore, routesMap} = this.store
-    const cur = routerStore.current
-    if (cur == null) return null
     const lastIndex = routerStore.history.length - 1
     //console.log(routerStore.history.map(x => x.name))
     return routerStore.history.map((x, i) =>
