@@ -60,13 +60,33 @@ export class Tabbar extends Component<{
 }> {
   static ID = 'tabbar'
 
+  disposers = []
+
+  componentDidMount() {
+    const {store} = this.props
+    this.disposers.push(autorun(() => {
+      this.selected = store.selectedFeedType
+    }))
+  }
+
+  componentWillUnmount() {
+    for (const disposer of this.disposers) disposer()
+  }
+
+  @observable selected
+
+  timeout = null
   handleFeedType = (type?: FeedType) => () => {
-    this.props.store.navigate(FeedRoute.link(type), {replace: true})
+    this.selected = type
+
+    clearTimeout(this.timeout)
+    this.timeout = setTimeout(() => {
+      this.props.store.navigate(FeedRoute.link(type), {replace: true})
+    }, 20)
   }
 
   render() {
-    const {store} = this.props
-    const {selectedFeedType} = store
+    const selected = this.selected
     return (
       <Flex id={Tabbar.ID} align='center' className={css`
         top: 0;
@@ -78,27 +98,27 @@ export class Tabbar extends Component<{
       `}>
         <TabEntry
           title='Hot'
-          active={selectedFeedType == null || selectedFeedType === FeedType.Top}
+          active={selected == null || selected === FeedType.Top}
           onClick={this.handleFeedType()}
         />
         <TabEntry
           title='New'
-          active={selectedFeedType === FeedType.New}
+          active={selected === FeedType.New}
           onClick={this.handleFeedType(FeedType.New)}
         />
         <TabEntry
           title='Show'
-          active={selectedFeedType === FeedType.Show}
+          active={selected === FeedType.Show}
           onClick={this.handleFeedType(FeedType.Show)}
         />
         <TabEntry
           title='Ask'
-          active={selectedFeedType === FeedType.Ask}
+          active={selected === FeedType.Ask}
           onClick={this.handleFeedType(FeedType.Ask)}
         />
         <TabEntry
           title='Jobs'
-          active={selectedFeedType === FeedType.Job}
+          active={selected === FeedType.Job}
           onClick={this.handleFeedType(FeedType.Job)}
         />
       </Flex>
