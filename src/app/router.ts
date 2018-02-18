@@ -84,9 +84,11 @@ function makeMobxRouterPlugin(store: Store): PluginFactory {
           store.routerStore.current = nextState
 
           const h = store.routerStore.history
+          let fromStack = false
           if (prevState != null && opts.replace) {
             if (nextState.meta.id < prevState.meta.id) {
               h.pop()
+              fromStack = true
             } else {
               h[h.length-1] = nextState
             }
@@ -95,7 +97,7 @@ function makeMobxRouterPlugin(store: Store): PluginFactory {
           }
 
           if (nextRoute.onActivate != null) {
-            nextRoute.onActivate(store, nextParams, (prevState || {} as any))
+            nextRoute.onActivate(store, fromStack, nextParams, (prevState || {} as any))
           }
         })
 

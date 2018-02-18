@@ -15,7 +15,7 @@ export type LinkData = {name: string, params?: object}
 export interface HNRoute extends Route {
   globPath: string // For Firebase rewrite rules
   comp: (key: number, active: boolean, next?: Params) => any
-  onActivate?: (store: Store, current?: Params, prev?: State) => void
+  onActivate?: (store: Store, fromStack: boolean, current?: Params, prev?: State) => void
   onDeactivate?: (store: Store, current?: Params, next?: State) => void
 }
 
@@ -24,7 +24,7 @@ export class FeedRoute implements HNRoute {
   get name() { return FeedRoute.id }
   get path() { return '/?:type' }
   globPath = '/'
-  @action onActivate(store: Store, _, prev) {
+  @action onActivate(store: Store, _, __, prev) {
     store.headerTitle = 'HN'
     if (prev.name === this.name && getNow() - store.currentGetFeed.timestamp > 1000 * 60 * 5) {
       // If user switches tabs after a while he wants to see new stuff
@@ -58,10 +58,10 @@ export class StoryRoute implements HNRoute {
   get path() { return '/story/:id' }
   globPath = '/story/*'
   disposers = new Map<number, Array<() => void>>()
-  @action onActivate(store: Store, {id}) {
+  @action onActivate(store: Store, fromStack, {id}) {
     store.window.scrollTo(null, 0)
     store.refreshAction = () => store.getStory.refresh(id)
-    store.getStory.refresh(id)
+    if (!fromStack) store.getStory.refresh(id)
 
     if (this.disposers.get(id) == null) this.disposers.set(id, [])
     store.headerTitle = skeletonStory.title
