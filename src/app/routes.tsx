@@ -61,7 +61,7 @@ export class StoryRoute implements HNRoute {
   @action onActivate(store: Store, fromStack, {id}) {
     store.window.scrollTo(null, 0)
     store.refreshAction = () => store.getStory.refresh(id)
-    if (!fromStack) store.getStory.refresh(id)
+    if (!fromStack) store.getStory.refresh(id, minDuration(250))
 
     if (this.disposers.get(id) == null) this.disposers.set(id, [])
     store.headerTitle = skeletonStory.title

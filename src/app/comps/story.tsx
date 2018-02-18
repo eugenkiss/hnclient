@@ -11,7 +11,6 @@ import {
   faCompress,
   faExpand,
   faExternalLinkSquareAlt,
-  faSpinner
 } from '@fortawesome/fontawesome-free-solid'
 import {Store} from '../store'
 import {Comment, FeedItem, Item, Story, StringStory} from '../models/models'
@@ -369,6 +368,56 @@ class Header extends Component<{
 
 type ViewRestoreData = { scrollTop: number }
 
+class SkeletonComments extends Component {
+  render() {
+    return (
+      <Flex
+        flexDirection='column'
+        p={1}
+        className={css`
+        animation: ease-in-out pulsating 1500ms infinite;
+        height: 100%;
+        width: 100%;
+      `}>
+        <Box
+          className={css`
+          height: 15px;
+          width: 300px;
+          background: #e1e1e1
+        `}/>
+        <Box
+          mt={1}
+          className={css`
+          height: 30px;
+          width: 100%;
+          background: #ebebeb
+        `}/>
+        <Box
+          mt={1}
+          className={css`
+          height: 40px;
+          width: 100%;
+          background: #f0f0f0
+        `}/>
+        <Box
+          mt={1}
+          className={css`
+          height: 30px;
+          width: 100%;
+          background: #f5f5f5
+        `}/>
+        <Box
+          mt={1}
+          className={css`
+          height: 30px;
+          width: 100%;
+          background: #f8f8f8
+        `}/>
+      </Flex>
+    )
+  }
+}
+
 @inject('store') @observer
 export class StoryScreen extends Component<{
   store?: Store
@@ -470,7 +519,7 @@ export class StoryScreen extends Component<{
             {store.getStory.state(id) === REJECTED ? (
               <div>Failed to load story!</div>
             ) : (
-              <FontAwesome icon={faSpinner} pulse/>
+              <SkeletonComments/>
             )}
           </Flex>
         </Flex>

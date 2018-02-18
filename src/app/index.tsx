@@ -77,6 +77,12 @@ a {
   40% {  background: #fdd0c3;  }
   100% {  background: iniitial; }
 }
+
+@keyframes pulsating {
+  0% {  opacity: 1; }
+  50% {  opacity: 0.5; }
+  100% {  opacity: 1; }
+}
 `
 
 class HeaderButton extends Component<{
@@ -188,7 +194,7 @@ class OverflowMenu extends React.Component<{
         onClick={this.handleMenuItemClick}
         className={css`
         position: absolute;
-        zIndex: ${zIndex};
+        z-index: ${zIndex};
         min-width: 150px;
         font-variant: all-petite-caps;
         right: 4px;

@@ -159,8 +159,8 @@ export class MapRequestMaker<I, T> {
     private maxItemCount: number = Number.MAX_SAFE_INTEGER
   ) {}
 
-  @action refresh(x: I): IPromiseBasedObservable<T> {
-    const req = fromPromise(this.promiseMaker(x))
+  @action refresh(x: I, wrapper: (p: Promise<T>) => Promise<T> = x => x): IPromiseBasedObservable<T> {
+    const req = fromPromise(wrapper(this.promiseMaker(x)))
     this.lastReqId = x
     this.reqMap.set(x.toString(), req)
 

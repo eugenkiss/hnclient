@@ -71,7 +71,6 @@ Observations:
   
   
 TODO:
-  - show pulsating overview while comments are loading even if they are already cached
   - Create requester package? Make generic inpute type
   
 TODO Longterm (if ever):
@@ -108,7 +107,6 @@ TODO Longterm (if ever):
     I think it doesn't work for them because hn isn't mobile optimized?
   - User detail page, single comment page
   - Search for a post, search inside comments
-  - Skeleton loading comments
   - depending on type change path (e.g. /story/{id} /job/{id} /ask/{id})
   - auto-hiding toolbar
   - Theming (dark mode)
