@@ -3,6 +3,8 @@ import {action, computed} from 'mobx'
 import {now} from 'mobx-utils'
 import {getNow, makeExternalItemLink, makeExternalUserLink, timeAgo} from '../utils/utils'
 
+const interval = 60 * 1000
+
 export class Item {
   _createdAt = getNow()
   @serializable(identifier())
@@ -45,7 +47,7 @@ export class Item {
   }
 
   @computed get timeAgo(): string {
-    return timeAgo(now(), this.time * 1000)
+    return timeAgo(now(interval), this.time * 1000)
   }
 
   @computed get excerpt(): string {
@@ -100,7 +102,7 @@ export class FeedItem {
   }
 
   @computed get timeAgo(): string {
-    return timeAgo(now(), this.time * 1000)
+    return timeAgo(now(interval), this.time * 1000)
   }
 
   get externalUserLink(): string | null {
