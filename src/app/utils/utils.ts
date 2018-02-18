@@ -51,6 +51,7 @@ export function makeExternalUserLink(userId: string) {
   return `https://news.ycombinator.com/user?id=${userId}`
 }
 
+// TODO: Doesn't handle rejected promise
 export const minDuration = <T>(minDuration: number): (p: Promise<T>) => Promise<T> => async (promise) => {
   const now = getNow()
   const result = await promise
