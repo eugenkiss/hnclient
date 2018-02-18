@@ -1,5 +1,5 @@
 import {alias, identifier, list, object, primitive, serializable} from 'serializr'
-import {action, computed} from 'mobx'
+import {action, computed, observable} from 'mobx'
 import {now} from 'mobx-utils'
 import {getNow, makeExternalItemLink, makeExternalUserLink, timeAgo} from '../utils/utils'
 
@@ -10,8 +10,10 @@ export class Item {
   @serializable(identifier())
   id: number
   @serializable
+  @observable
   title: string
   @serializable
+  @observable
   points?: number
   @serializable
   user?: string
@@ -33,6 +35,7 @@ export class Item {
   @serializable(list(object(Item)))
   comments: Array<Item>
   @serializable(alias('comments_count', primitive()))
+  @observable
   commentsCount: number
   @serializable
   level: number
@@ -76,8 +79,10 @@ export class FeedItem {
   @serializable(identifier())
   id: number
   @serializable
+  @observable
   title: string
   @serializable
+  @observable
   points?: number
   @serializable
   user?: string
@@ -90,6 +95,7 @@ export class FeedItem {
   @serializable
   domain?: string
   @serializable(alias('comments_count', primitive()))
+  @observable
   commentsCount: number
 
   @computed get url(): string {
