@@ -18,7 +18,7 @@ import {css} from 'emotion'
 import {injectGlobal} from 'react-emotion'
 import {IS_DEV} from './cfg'
 import {AboutRoute, FeedRoute, StoryRoute} from './routes'
-import {Box, BoxClickable, Flex, FlexClickable, Overlay} from './comps/basic'
+import {Box, BoxClickable, Flex, FlexClickable} from './comps/basic'
 import {canUseDOM} from './utils/utils'
 import {Store} from './store'
 import './font-awesome-css'
@@ -142,8 +142,22 @@ class OverflowMenu extends React.Component<{
   isOpen: IObservableValue<boolean>
   onClick: (e: any) => void
 }> {
+  ref = null
 
-  handleModal = (e) => {
+  componentDidMount() {
+    window.addEventListener('click', this.handleOutsideClick, true)
+  }
+
+  componentWillUnmount() {
+    window.removeEventListener('click', this.handleOutsideClick, true)
+  }
+
+  handleOutsideClick = (e) => {
+    const container = ReactDOM.findDOMNode(this.ref)
+    let target = e.target
+    while (target && target !== container) target = target.parentElement
+    if (target === container) return
+
     this.props.onClick(e)
     e.stopPropagation()
   }
@@ -166,35 +180,36 @@ class OverflowMenu extends React.Component<{
   render() {
     const { isOpen } = this.props
     if (!isOpen.get()) return null
+    const zIndex = Header.zIndex + 1
     return (
-      <Overlay isOpen={isOpen} onClick={this.handleModal}>
-        <BoxClickable
-          f={3}
-          onClick={this.handleMenuItemClick}
-          className={css`
-          position: absolute;
-          min-width: 150px;
-          font-variant: all-petite-caps;
-          right: 4px;
-          top: 4px;
-          background: #df5d1e;
-          color: white;
-          box-shadow: 0px 2px 4px rgba(0,0,0,0.5);
-          & *:not(:last-child) {
-            border-bottom: 2px solid rgba(0,0,0,0);
-          }
-        `}>
-          {false && <OverflowMenuEntry title='Profile' icon={faUser} onClick={() => alert('TODO')}/>}
-          <OverflowMenuEntry
-            title='Update' icon={faDownload}
-            onClick={this.handleUpdate}
-          />
-          <OverflowMenuEntry
-            title='About' icon={faInfoCircle}
-            onClick={this.handleAbout}
-          />
-        </BoxClickable>
-      </Overlay>
+      <BoxClickable
+        ref={r => this.ref = r}
+        f={3}
+        onClick={this.handleMenuItemClick}
+        className={css`
+        position: absolute;
+        zIndex: ${zIndex};
+        min-width: 150px;
+        font-variant: all-petite-caps;
+        right: 4px;
+        top: 4px;
+        background: #df5d1e;
+        color: white;
+        box-shadow: 0px 2px 4px rgba(0,0,0,0.5);
+        & *:not(:last-child) {
+          border-bottom: 2px solid rgba(0,0,0,0);
+        }
+      `}>
+        {false && <OverflowMenuEntry title='Profile' icon={faUser} onClick={() => alert('TODO')}/>}
+        <OverflowMenuEntry
+          title='Update' icon={faDownload}
+          onClick={this.handleUpdate}
+        />
+        <OverflowMenuEntry
+          title='About' icon={faInfoCircle}
+          onClick={this.handleAbout}
+        />
+      </BoxClickable>
     )
   }
 }
@@ -203,6 +218,8 @@ class OverflowMenu extends React.Component<{
 export class Header extends Component<{
   store?: Store
 }> {
+  static zIndex = 1000
+
   readonly isOverflowOpen = observable(false)
 
   render() {
@@ -213,7 +230,7 @@ export class Header extends Component<{
         position: relative;
         top: 0;
         background: linear-gradient(to bottom, rgb(255, 102, 0) 0%, rgb(225,100,0) 100%);
-        z-index: 9999;
+        z-index: ${Header.zIndex};
         font-size: 20px;
         align-items: center;
         color: rgba(0,0,0,0.4);
@@ -303,12 +320,16 @@ export default class App extends React.Component<{
         <Flex flexDirection='column' className={css`
           overflow: hidden;
           height: 100%;
+          min-width: 740px;
+          max-width: 900px;
           width: 85%;
           margin: auto;
           padding: 10px 0 0 0;
           @media (max-width: 750px) {
             padding: 0;
             width: auto;
+            min-width: auto;
+            max-width: auto;
           }
         `}>
           {IS_DEV && <MobxDevTools position={{bottom: 0, right: 0}}/>}
