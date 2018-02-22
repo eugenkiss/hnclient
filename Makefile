@@ -25,8 +25,7 @@ install: node_modules
 
 node_modules: package.json
 	npm install
-	@rm -f node_modules/.modified
-	@touch -m node_modules/.modified
+	@touch -m node_modules
 
 
 # Dev Mode #

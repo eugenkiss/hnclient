@@ -37,6 +37,9 @@ Notable Concepts:
     It is roughly inspired by how it's done on Android. View state restoration is enabled by the employed routing
     approach. It is assumed that each view/screen is uniquely identifiable by its path. Going forward
     in history is deliberately ignored when restoring view state.
+  - To make screen restoration fast when navigating back top-level components (screens) are not destroyed when
+    navigating away from them. Instead, they have their `display` CSS attribute set to `none`. That is,
+    we have a stack of screens.
   - The way requests and their results are handled/cached is special in the sense that I did not
     encounter this approach in other projects. It's quite convenient. The idea is to have an observable request
     generator object for each endpoint that encapsulates results and meta information. Then there are special
