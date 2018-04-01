@@ -159,11 +159,9 @@ class OverflowMenu extends React.Component<{
   }
 
   handleOutsideClick = (e) => {
+    // TODO: Why does innerref not give the node directly?
     const container = ReactDOM.findDOMNode(this.ref)
-    let target = e.target
-    while (target && target !== container) target = target.parentElement
-    if (target === container) return
-
+    if (e.target.contains(container)) return
     this.props.onClick(e)
     e.stopPropagation()
   }
@@ -189,7 +187,7 @@ class OverflowMenu extends React.Component<{
     const zIndex = Header.zIndex + 1
     return (
       <BoxClickable
-        ref={r => this.ref = r}
+        innerRef={r => this.ref = r}
         f={3}
         onClick={this.handleMenuItemClick}
         className={css`

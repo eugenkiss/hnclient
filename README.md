@@ -76,6 +76,11 @@ Observations:
 TODO:
   - Create requester package? Make generic inpute type
   
+  - Put NavigationsOptions to 'router5'
+  - Use history.back only when stack > 1 for back arrow, otherwise home
+  - data is older 48 years
+  - maxage for requests
+  
 TODO Longterm (if ever):
   - How to stop/freeze mobx from forceUpdating a component while it is not active?
     To prevent _accidental_ rerendering of old screen just before switching to new one.
