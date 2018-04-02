@@ -1,9 +1,9 @@
 // https://github.com/FortAwesome/react-fontawesome/issues/27
 
 import {injectGlobal} from 'emotion'
-import * as fontawesome from '@fortawesome/fontawesome'
+import Fontawesome from '@fortawesome/fontawesome'
 
-fontawesome.config.autoAddCss = false
+Fontawesome.config.autoAddCss = false
 
 injectGlobal`
 svg:not(:root).svg-inline--fa {

@@ -1,3 +1,5 @@
+NPM_BIN=./node_modules/.bin
+
 # Constants #
 #############
 
@@ -8,12 +10,6 @@ port_ssr=5002
 # to remove the need for PHONY
 out=dist
 out_dll_dev=dist-dll-dev
-
-webpack=./node_modules/webpack/bin/webpack.js
-webpack-dev-server=./node_modules/webpack-dev-server/bin/webpack-dev-server.js
-sw-precache=./node_modules/sw-precache/cli.js
-ts-node=./node_modules/ts-node/dist/bin.js
-#typescript=./node_modules/typescript/bin/tsc # TODO
 
 
 # Installation #
@@ -34,12 +30,12 @@ node_modules: package.json
 dev: node_modules build-dll-dev
 	ENV=loc \
 	PORT=$(or $(port),$(port_dev)) \
-	$(webpack-dev-server) -d --progress --colors --open
+	$(NPM_BIN)/webpack-dev-server -d --progress --colors --open
 
 $(out_dll_dev): node_modules webpack.dll.js webpack.config.js
 	rm -rf ./$(out_dll_dev)
 	OUTPUT_DLL=$(out_dll_dev) \
-	$(webpack) --config webpack.dll.js --progress --profile
+	$(NPM_BIN)/webpack --config webpack.dll.js --progress --profile
 
 build-dll-dev: $(out_dll_dev)
 
@@ -50,15 +46,15 @@ build-dll-dev: $(out_dll_dev)
 gen-shells: node_modules
 	ENV=$(or $(env),loc) \
 	PORT=$(or $(port),$(port_ssr)) \
-	$(ts-node) -O '{"module":"commonjs"}' src/ssr/gen-shells.tsx
+	$(NPM_BIN)/ts-node -O '{"module":"commonjs","esModuleInterop":true}' src/ssr/gen-shells.tsx
 
 build: node_modules src webpack.config.js
 	rm -rf ./$(out)
 	BUILD=true \
 	OUTPUT=$(out) \
-	$(webpack) --progress --profile
+	$(NPM_BIN)/webpack --progress --profile
 	$(MAKE) gen-shells env=prd
-	$(sw-precache) --config=sw-precache-config.js
+	$(NPM_BIN)/sw-precache --config=sw-precache-config.js
 
 
 # Deployment #

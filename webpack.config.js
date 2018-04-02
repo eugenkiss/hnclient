@@ -2,14 +2,16 @@ const path = require('path')
 const exec = require('child_process').execSync
 const webpack = require('webpack')
 
-// noinspection JSUnusedLocalSymbols
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin
-const UglifyJSPlugin = require('uglifyjs-webpack-plugin')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const CopyWebpackPlugin = require('copy-webpack-plugin')
 const DllReferencePlugin = webpack.DllReferencePlugin
 const AddAssetHtmlPlugin = require('add-asset-html-webpack-plugin')
-// const FaviconsWebpackPlugin = require('favicons-webpack-plugin')
+const FaviconsWebpackPlugin = require('favicons-webpack-plugin')
+
+
+const ANALYZER = false
+const FAVICONS = false
 
 const PORT = process.env['PORT'] || '5001'
 const OUTPUT_DLL = process.env['OUTPUT_DLL'] || 'dist-dll-dev'
@@ -23,14 +25,14 @@ const DATE = new Date().getTime()
 const GIT_HASH = exec('git rev-parse --short HEAD').toString().trim()
 const GIT_STATUS = exec('test -z "$(git status --porcelain)" || echo "dirty"').toString().trim()
 
+
 const cfg = {}
+
+cfg.mode = isBuild ? 'production' : 'development'
+
 cfg.context = root('src')
 
-if (isBuild) {
-  cfg.devtool = 'source-map'
-} else {
-  cfg.devtool = 'cheap-module-eval-source-map'
-}
+cfg.devtool = isBuild ? 'source-map' : undefined
 
 // PITA!!!
 const hostName = require('os').hostname().toLowerCase()
@@ -51,11 +53,7 @@ cfg.output = {
 cfg.target = 'web'
 
 cfg.resolve = {
-  //modules: [root(), 'node_modules'],
   extensions: ['.ts', '.js', '.jsx', '.tsx'],
-  // Fix webpack's default behavior to not load packages with jsnext:main module
-  // (jsnext:main directs not usually distributable es6 format, but es6 sources)
-  mainFields: ['module', 'browser', 'main'],
 }
 
 cfg.resolve.alias = {
@@ -68,7 +66,7 @@ if (isBuild) {
 }
 
 cfg.module = {
-  loaders: [
+  rules: [
     {
       test: /\.tsx?$/,
       include: root('src', 'app'),
@@ -109,26 +107,25 @@ cfg.plugins.push(
   new CopyWebpackPlugin([{
     from: root('src/public')
   }]),
-  // new BundleAnalyzerPlugin({
-  //   analyzerPort: 9999,
-  // }),
 )
+
+if (ANALYZER) {
+  cfg.plugins.push(
+    new BundleAnalyzerPlugin({
+      analyzerPort: 9999,
+    }),
+  )
+}
+
+if (FAVICONS) {
+  cfg.plugins.push(
+    new FaviconsWebpackPlugin(root('src', 'public', 'favicon.png')),
+  )
+}
 
 if (isBuild) {
   cfg.plugins.push(
     new webpack.IgnorePlugin(/mobx-react-devtools/),
-    new webpack.NoEmitOnErrorsPlugin(),
-    new webpack.optimize.AggressiveMergingPlugin(),
-    new webpack.optimize.ModuleConcatenationPlugin(),
-    new UglifyJSPlugin({
-      sourceMap: true,
-      uglifyOptions: {
-        compress: {
-          passes: 3,
-        }
-      }
-    }),
-    //new FaviconsWebpackPlugin(root('src', 'public', 'favicon.png')),
   )
 } else {
   cfg.plugins.push(
@@ -170,6 +167,7 @@ cfg.devServer = {
 }
 
 module.exports = cfg
+
 
 function root(args) {
   args = Array.prototype.slice.call(arguments, 0)

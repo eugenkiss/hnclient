@@ -1,22 +1,45 @@
 import * as React from 'react'
 import * as ReactDOM from 'react-dom'
+import {autorun, IObservableValue} from 'mobx'
+import {IAutorunOptions} from 'mobx/lib/api/autorun'
+import {IReactionPublic} from 'mobx/lib/core/reaction'
+import {observer} from 'mobx-react'
+import {css} from 'emotion'
 import styled from 'react-emotion'
 import {
   alignItems,
   alignSelf,
+  background,
+  borderRadius,
+  borders,
+  bottom,
+  boxShadow,
   color,
   flex,
   flexDirection,
   flexWrap,
   fontSize,
   fontWeight,
+  height,
   justifyContent,
+  left,
+  maxHeight,
+  maxWidth,
+  minHeight,
+  minWidth,
+  position,
+  propTypes,
+  right,
   space,
-  width
+  style,
+  styles,
+  textAlign,
+  top,
+  util,
+  width,
+  zIndex,
 } from 'styled-system'
-import {autorun, IObservableValue} from 'mobx'
-import {observer} from 'mobx-react'
-import {css} from 'emotion'
+import tag from 'clean-tag'
 import {canUseDOM} from '../utils/utils'
 
 export class Space extends React.Component {
@@ -28,28 +51,71 @@ export class Space extends React.Component {
   }
 }
 
-export const Box = styled('div')`
-${space} 
-${width}
+const vspace = props => {
+  let v = props.vspace
+  const theme = util.fallbackTheme(props)
+  if (v == null) return undefined
+  if (theme && theme.space && theme.space[v]) {
+    v = util.px(theme.space[v])
+  }
+  return css`
+    &>* {
+      margin-top: ${v};
+    }
+    &>*:first-child {
+      margin-top: 0;
+    }
+  `
+}
+
+const hspace = props => {
+  let v = props.hspace
+  const theme = util.fallbackTheme(props)
+  if (v == null) return undefined
+  if (theme && theme.space && theme.space[v]) {
+    v = util.px(theme.space[v])
+  }
+  return css`
+    &>* {
+      margin-left: ${v};
+    }
+    &>*:first-child {
+      margin-left: 0;
+    }
+  `
+}
+
+// TODO: Is there an easy way to say 'apply all of the styles to this styled-component'?
+export const Box = styled(tag)`
+${vspace} ${hspace}
+${space}
+${width} ${height}
+${minWidth} ${maxWidth} ${minHeight} ${maxHeight}
 ${fontSize}
 ${fontWeight}
-${color} 
-${flex}
-` as any
-
-export const Flex = styled('div')`
-display: flex;
-${space}
-${width}
-${fontSize}
 ${color}
 ${flex}
+${textAlign}
+${background}
+${borders} ${borderRadius}
+${boxShadow}
+${position} ${zIndex} ${left} ${top} ${right} ${bottom}
+` as any
+
+export const Flex = styled(Box)`
+display: flex;
 ${alignItems}
 ${justifyContent}
 ${flexWrap}
 ${flexDirection}
 ${alignSelf}
 ` as any
+
+export const VFlex = styled(Flex)`
+` as any
+VFlex.defaultProps = {
+  flexDirection: 'column'
+}
 
 export const Fill = styled(Box)`
 flex: 1 1 auto;
@@ -65,6 +131,10 @@ cursor: pointer;
 user-select: none;
 ` as any
 
+export const Span = styled(Box.withComponent(tag.span))`
+display: inline-block;
+` as any
+
 export const A = styled(props => <a target='_blank' rel='noopener' {...props}/>)`
 ${space} 
 ${width} 
@@ -74,14 +144,37 @@ ${color}
 ${flex}
 ` as any
 
-export const Span = styled('span')`
-${space} 
-${width} 
-${fontSize}
-${fontWeight}
-${color} 
-${flex}
-` as any
+export class Comp<P = {}, S = {}> extends React.Component<P, S> {
+  disposers = []
+
+  autorun = (view: (r: IReactionPublic) => any, opts?: IAutorunOptions) =>
+    this.disposers.push(autorun(view, opts))
+
+  componentWillUnmount() {
+    for (const disposer of this.disposers) disposer()
+  }
+}
+
+export class Stack extends React.Component {
+  render() {
+    const [first, ...rest] = React.Children.toArray(this.props.children)
+    if (first == null) return null
+    return (
+      <Box
+        className={css`
+        position: relative;
+        &>*:not(:first-child) {
+          position: absolute;
+          top: 0;
+          left: 0;
+        }
+      `}>
+        {first}
+        {rest && <Stack>{rest}</Stack>}
+      </Box>
+    )
+  }
+}
 
 class Portal extends React.Component {
   defaultNode = null

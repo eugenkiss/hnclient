@@ -68,7 +68,8 @@ export class Store extends BaseStore {
   }
 
 
-  feedItemDb = observable.map<FeedItem>()
+  // TODO: string -> ID
+  feedItemDb = observable.map<string, FeedItem>()
   @computed get currentListOfPages(): Array<[number, Array<FeedItem>]> {
     const pages = []
     for (const [page, items] of this.currentGetFeed.listOfPages) {

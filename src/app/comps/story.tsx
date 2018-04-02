@@ -4,7 +4,7 @@ import {computed, observable, when} from 'mobx'
 import {inject, observer} from 'mobx-react'
 import {REJECTED} from 'mobx-utils'
 import {css} from 'emotion'
-import * as FontAwesome from '@fortawesome/react-fontawesome'
+import FontAwesome from '@fortawesome/react-fontawesome'
 import {
   faArrowAltCircleUp,
   faComments,

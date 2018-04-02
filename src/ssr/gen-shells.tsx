@@ -1,10 +1,10 @@
 import {execSync} from 'child_process'
-import * as http from 'http'
-import * as fs from 'fs'
-import * as url from 'url'
-import * as express from 'express'
-import * as compression from 'compression'
-import * as React from 'react'
+import http from 'http'
+import fs from 'fs'
+import url from 'url'
+import express from 'express'
+import compression from 'compression'
+import React from 'react'
 
 import {renderToString} from 'react-dom/server'
 import {renderStylesToString} from 'emotion-server'
@@ -16,7 +16,7 @@ global['navigator'] = { userAgent: 'node.js' }
 
 // https://github.com/developit/preact/issues/720#issuecomment-312500876
 require('module-alias').addAliases({
-  'react'  : 'inferno-compat',
+  'react': 'inferno-compat',
   'react-dom': 'inferno-compat',
   'react-dom/server': 'inferno-server',
 })

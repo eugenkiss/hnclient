@@ -4,7 +4,10 @@ import {Component} from 'react'
 import * as ReactDOM from 'react-dom'
 import {IObservableValue, observable} from 'mobx'
 import {inject, observer, Provider} from 'mobx-react'
-import * as FontAwesome from '@fortawesome/react-fontawesome'
+import {css} from 'emotion'
+import {injectGlobal} from 'react-emotion'
+import {ThemeProvider} from 'emotion-theming'
+import FontAwesome from '@fortawesome/react-fontawesome'
 import {
   faChevronLeft,
   faDownload,
@@ -14,11 +17,9 @@ import {
   faUser
 } from '@fortawesome/fontawesome-free-solid'
 import {IconDefinition} from '@fortawesome/fontawesome-common-types'
-import {css} from 'emotion'
-import {injectGlobal} from 'react-emotion'
 import {IS_DEV} from './cfg'
 import {AboutRoute, FeedRoute, StoryRoute} from './routes'
-import {Box, BoxClickable, Flex, FlexClickable} from './comps/basic'
+import {Box, BoxClickable, Comp, Flex, FlexClickable} from './comps/basic'
 import {canUseDOM} from './utils/utils'
 import {Store} from './store'
 import './font-awesome-css'
@@ -85,6 +86,10 @@ a {
 }
 `
 
+const theme = {
+  space: [4, 8, 16, 32, 64, 128, 256, 512],
+}
+
 class HeaderButton extends Component<{
   icon: IconDefinition
   onClick: () => void
@@ -143,7 +148,7 @@ class OverflowMenuEntry extends React.Component<{
 }
 
 @inject('store') @observer
-class OverflowMenu extends React.Component<{
+class OverflowMenu extends Comp<{
   store?: Store
   isOpen: IObservableValue<boolean>
   onClick: (e: any) => void
@@ -151,17 +156,19 @@ class OverflowMenu extends React.Component<{
   ref = null
 
   componentDidMount() {
-    window.addEventListener('click', this.handleOutsideClick, true)
-  }
-
-  componentWillUnmount() {
-    window.removeEventListener('click', this.handleOutsideClick, true)
+    this.autorun(() => {
+      if (this.props.isOpen.get()) {
+        window.addEventListener('click', this.handleOutsideClick, true)
+      } else {
+        window.removeEventListener('click', this.handleOutsideClick, true)
+      }
+    })
   }
 
   handleOutsideClick = (e) => {
     // TODO: Why does innerref not give the node directly?
     const container = ReactDOM.findDOMNode(this.ref)
-    if (e.target.contains(container)) return
+    if (container.contains(e.target)) return
     this.props.onClick(e)
     e.stopPropagation()
   }
@@ -224,7 +231,7 @@ export class Header extends Component<{
 }> {
   static zIndex = 1000
 
-  readonly isOverflowOpen = observable(false)
+  readonly isOverflowOpen = observable.box(false)
 
   render() {
     const {store} = this.props
@@ -320,35 +327,37 @@ export default class App extends React.Component<{
 
   render() {
     return (
-      <Provider store={this.store}>
-        <Flex flexDirection='column' className={css`
-          overflow: hidden;
-          height: 100%;
-          min-width: 740px;
-          max-width: 900px;
-          width: 85%;
-          margin: auto;
-          padding: 10px 0 0 0;
-          @media (max-width: 750px) {
-            padding: 0;
-            width: auto;
-            min-width: auto;
-            max-width: auto;
-          }
-        `}>
-          {IS_DEV && <MobxDevTools position={{bottom: 0, right: 0}}/>}
-          <Header/>
-          <Box flex='1' className={css`
-            position: relative; // For pull to refresh
-            height: 100%;
-            color: #000;
-            background: #ffffff;
+      <ThemeProvider theme={theme}>
+        <Provider store={this.store}>
+          <Flex flexDirection='column' className={css`
             overflow: hidden;
+            height: 100%;
+            min-width: 740px;
+            max-width: 900px;
+            width: 85%;
+            margin: auto;
+            padding: 10px 0 0 0;
+            @media (max-width: 750px) {
+              padding: 0;
+              width: auto;
+              min-width: auto;
+              max-width: auto;
+            }
           `}>
-            {this.renderScreenStack()}
-          </Box>
-        </Flex>
-      </Provider>
+            {IS_DEV && <MobxDevTools position={{bottom: 0, right: 0}}/>}
+            <Header/>
+            <Box flex='1' className={css`
+              position: relative; // For pull to refresh
+              height: 100%;
+              color: #000;
+              background: #ffffff;
+              overflow: hidden;
+            `}>
+              {this.renderScreenStack()}
+            </Box>
+          </Flex>
+        </Provider>
+      </ThemeProvider>
     )
   }
 }

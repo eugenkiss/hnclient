@@ -8,6 +8,7 @@ const pkg = require('./package.json')
 const OUTPUT_DLL = process.env['OUTPUT_DLL'] || 'dist-dll-dev'
 
 module.exports = {
+  mode: 'development',
   entry: {
     dependencies: Object.keys(pkg.dependencies),
   },

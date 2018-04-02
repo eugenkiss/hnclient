@@ -5,8 +5,8 @@ import {failedReq, fulfilledReq, getNow} from './utils'
 
 // PoC: Like fromPromise but generalized to continue making requests
 export class Requester<T, I=void> {
-  private last: IObservableValue<T> = observable(null)
-  private lastTimeStamp: IObservableValue<number> = observable(-1)
+  private last: IObservableValue<T> = observable.box(null)
+  private lastTimeStamp: IObservableValue<number> = observable.box(-1)
   @observable private req: IPromiseBasedObservable<T> = fulfilledReq
 
   constructor(private promiser: (input: I) => Promise<T>) {}
@@ -56,15 +56,15 @@ export class Requester<T, I=void> {
 
 // PoC (TODO: MoreLoader as a consecutive specialization...)
 export class PageRequester<T, I=number> {
-  private map: ObservableMap<Array<T>> = observable.map()
-  private reqMap: ObservableMap<IPromiseBasedObservable<Array<T>>> = observable.map()
+  private map: ObservableMap<string, Array<T>> = observable.map()
+  private reqMap: ObservableMap<string, IPromiseBasedObservable<Array<T>>> = observable.map()
   @observable lastReqPage: I = null
   @computed private get lastReq(): IPromiseBasedObservable<Array<T>> {
     return this.lastReqPage == null
       ? fulfilledReq
       : this.reqMap.get(this.lastReqPage.toString())
   }
-  private lastTimeStamp: IObservableValue<number> = observable(-1)
+  private lastTimeStamp: IObservableValue<number> = observable.box(-1)
 
   constructor(private promiser: (x: I) => Promise<Array<T>>) {}
 
@@ -129,7 +129,7 @@ export class PageRequester<T, I=number> {
   }
 
   @computed get listOfPages(): Array<[number, Array<T>]> {
-    const pages = this.map.keys().sort((a, b) => parseInt(a) - parseInt(b))
+    const pages = Array.from(this.map.keys()).sort((a, b) => parseInt(a) - parseInt(b))
     const result = []
     for (const page of pages) {
       result.push([parseInt(page), this.map.get(page)])
@@ -144,9 +144,9 @@ export class PageRequester<T, I=number> {
 
 // PoC
 export class MapRequestMaker<I, T> {
-  private map: ObservableMap<T> = observable.map<T>()
+  private map: ObservableMap<string, T> = observable.map()
   private dateMap: Map<string, number> = new Map<string, number>()
-  private reqMap: ObservableMap<IPromiseBasedObservable<T>> = observable.map()
+  private reqMap: ObservableMap<string, IPromiseBasedObservable<T>> = observable.map()
   @observable private lastReqId: I = null
   @computed private get lastReq(): IPromiseBasedObservable<T> {
     return this.lastReqId == null
