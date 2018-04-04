@@ -213,7 +213,7 @@ class RefreshWarning extends Component<{store?: Store}> {
     if (now(interval) - store.lastDismissedRefreshWarning < store.feedFreshnessCutoff) {
       return null
     }
-    if (now(interval) - store.currentGetFeed.timestamp < store.feedFreshnessCutoff) {
+    if (now(interval) - store.getFeed.timestamp < store.feedFreshnessCutoff) {
       return null
     }
     return (
@@ -228,7 +228,7 @@ class RefreshWarning extends Component<{store?: Store}> {
         background: #f7f7f7;
       `}>
         <Fill/>
-        Data is older than {timeAgo(now(interval), store.currentGetFeed.timestamp)}.
+        Data is older than {timeAgo(now(interval), store.getFeed.timestamp)}.
         <Space/>
         <BoxClickable
           onClick={() => store.refreshAction()}
@@ -356,7 +356,7 @@ export class FeedScreen extends Component<{
 
   handleNextPage = async (pageCount: number, atEnd: boolean) => {
     if (atEnd) return
-    this.moreReq = this.props.store.currentGetFeed.refresh(pageCount + 1, minDuration(500))
+    this.moreReq = this.props.store.getFeed.refresh(pageCount + 1, minDuration(500))
     await this.moreReq
     smoothScrollToId(FeedScreen.makeDomPageId(pageCount + 1))
   }
@@ -383,7 +383,7 @@ export class FeedScreen extends Component<{
 
   renderBody() {
     const {store} = this.props
-    const req = store.currentGetFeed
+    const req = store.getFeed
     if (req.listOfPages == null || req.listOfPages.length === 0) {
       switch (req.lastState) {
         case REJECTED: return <div>Failed to load stories!</div>

@@ -26,15 +26,15 @@ export class FeedRoute implements HNRoute {
   globPath = '/'
   @action onActivate(store: Store, _, __, prev) {
     store.headerTitle = 'HN'
-    if (prev.name === this.name && getNow() - store.currentGetFeed.timestamp > 1000 * 60 * 5) {
+    if (prev.name === this.name && getNow() - store.getFeed.timestamp > 1000 * 60 * 5) {
       // If user switches tabs after a while he wants to see new stuff
-      store.currentGetFeed.clearCache()
+      store.getFeed.clearCache()
     }
-    if (store.currentGetFeed.listOfPages.length === 0) {
-      store.currentGetFeed.refresh(1, minDuration(1000))
+    if (store.getFeed.listOfPages.length === 0) {
+      store.getFeed.refresh(1, minDuration(1000))
     }
     store.refreshAction = async () => {
-      store.getFeedManualRefreshRequest = store.currentGetFeed.hardRefresh(1, minDuration(500))
+      store.getFeedManualRefreshRequest = store.getFeed.hardRefresh(1, minDuration(500))
       await store.getFeedManualRefreshRequest
       store.scrollFeedToTop = true
     }

@@ -30,7 +30,7 @@ export class Store extends BaseStore {
 
     autorun(() => {
       if (this.routerStore.current == null) return
-      if ( this.currentGetFeed.lastState === PENDING
+      if ( this.getFeed.lastState === PENDING
         || this.getStory.lastState === PENDING
       ) {
         this.startProgress()
@@ -72,7 +72,7 @@ export class Store extends BaseStore {
   feedItemDb = observable.map<string, FeedItem>()
   @computed get currentListOfPages(): Array<[number, Array<FeedItem>]> {
     const pages = []
-    for (const [page, items] of this.currentGetFeed.listOfPages) {
+    for (const [page, items] of this.getFeed.listOfPages) {
       const freshItems = []
       for (const item of items) {
         freshItems.push(this.feedItemDb.get(item.id.toString()))
@@ -102,7 +102,7 @@ export class Store extends BaseStore {
   getAskFeed = this.makeFeedRequester(FeedType.Ask)
   getJobsFeed = this.makeFeedRequester(FeedType.Job)
 
-  @computed get currentGetFeed() {
+  @computed get getFeed() {
     switch (this.selectedFeedType) {
       case FeedType.New: return this.getNewFeed
       case FeedType.Show: return this.getShowFeed
