@@ -74,7 +74,10 @@ Observations:
   
   
 TODO:
-  - Create requester package? Make generic inpute type
+  - Create requester package? Make generic inpute type 
+    - Progress here, used in production but no time yet to open source...
+  - Use https://github.com/grahammendick/navigation! It's all that I ever wished for!
+    - That's what I want: https://navigation4asp.net/2018/06/11/pwa-stack-navigation-native/
   
   - Put NavigationsOptions to 'router5'
   - Use history.back only when stack > 1 for back arrow, otherwise home
@@ -82,11 +85,12 @@ TODO:
   - maxage for requests
   
 TODO Longterm (if ever):
+  - GraphQL API?: https://github.com/tigranpetrossian/hn-api
   - How to stop/freeze mobx from forceUpdating a component while it is not active?
     To prevent _accidental_ rerendering of old screen just before switching to new one.
     Note that I want to retain the old component tree to quickly redraw it when going
     back to the screen so just returning null when !active doesn't cut it completely.
-    See also: https://github.com/mobxjs/mobx-react/issues/50 
+    See also: https://github.com/mobxjs/mobx-react/issues/50
   - BFF proxy to simulate delay / user etc. in dev mode
     - Failed to load stories: retry button
   - Mutation API? http4k
